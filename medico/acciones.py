@@ -246,9 +246,11 @@ def mostrar(acciones: list[dict], astro_id: int, yo_nombre: str, clave: str, ser
                     for src in sorted(set(re.findall(r"SRC\d{3}", frag["texto"])) - {arg}):
                         s = next((f for f in conocimiento.fragmentos() if f["id"] == src), None)
                         if s:
-                            partes = [p.strip() for p in s["texto"].split("|")]
-                            url = next((p for p in partes if p.startswith("http")), None)
-                            st.markdown(f"**{src}** · {partes[0].split(': ',1)[-1]}" + (f" · [abrir fuente]({url})" if url else ""))
+                            titulo = (re.search(r"- titulo: (.*)", s["texto"]) or [None, "(sin título registrado)"])[1]
+                            url = (re.search(r"https?://\S+", s["texto"]) or [None])[0]
+                            st.markdown(f"**{src}** · {titulo}" + (f" · [abrir fuente]({url})" if url else ""))
+                        else:
+                            st.markdown(f"**{src}** · sin datos de la fuente registrados todavía")
                     for url in re.findall(r"https?://\S+", frag["texto"]):
                         st.markdown(f"[Abrir fuente original]({url.rstrip('|)')})")
         elif k in PENDIENTES:

@@ -28,24 +28,58 @@ def tokens(t: str) -> set[str]:
     return {w[:6] for w in re.findall(r"[a-z0-9]{3,}", norm(t)) if w not in VACIAS}
 
 
+OCULTAR = re.compile(r"^- (Fecha de revisión|Estado del registro):")
+MARCA_PENDIENTE = "[REVISAR]"
+
+
+def _limpiar(texto: str) -> tuple[str, list[str]]:
+    """Quita lo que el médico no debe ver ([REVISAR], fechas y estados internos).
+    Devuelve el texto limpio y los campos que estaban pendientes (para el informe del equipo)."""
+    limpio, pendientes = [], []
+    for linea in texto.splitlines():
+        if OCULTAR.match(linea):
+            continue
+        m = re.match(r"^- ([^:]+): \[REVISAR\]\s*$", linea)
+        if m:
+            pendientes.append(m.group(1))
+            continue
+        limpio.append(linea)
+    return "\n".join(limpio), pendientes
+
+
 @lru_cache(maxsize=1)
 def fragmentos() -> list[dict]:
-    """Cada '## ' es un fragmento; las filas de tablas '| XXX123 |' son fragmentos propios."""
+    """Cada '## ' es un fragmento; las filas de tablas '| XXX123 |' son fragmentos propios
+    (con el nombre de cada columna). Los [REVISAR] no llegan al médico."""
     res = []
     for ruta in sorted(CARPETA.rglob("*.md")):
         texto = ruta.read_text(encoding="utf-8")
         for bloque in re.split(r"(?m)^## ", texto)[1:]:
             titulo, _, cuerpo = bloque.partition("\n")
-            filas = [l for l in cuerpo.splitlines() if re.match(r"\|\s*[A-Z]{2,4}\d{2,}", l)]
+            lineas = cuerpo.splitlines()
+            encabezado, filas = None, []
+            for i, l in enumerate(lineas):
+                if l.startswith("|") and i + 1 < len(lineas) and re.match(r"\|\s*:?-{3}", lineas[i + 1]):
+                    encabezado = [c.strip() for c in l.strip().strip("|").split("|")]
+                elif re.match(r"\|\s*[A-Z]{2,4}\d{2,}", l):
+                    filas.append((encabezado, l))
             if filas:
-                for f in filas:
-                    celdas = [c.strip() for c in f.strip("|").split("|")]
-                    res.append({"id": celdas[0], "titulo": celdas[1] if len(celdas) > 1 else celdas[0],
-                                "texto": f"{celdas[0]}: " + " | ".join(celdas[1:]), "archivo": ruta.name})
+                for enc, f in filas:
+                    celdas = [c.strip() for c in f.strip().strip("|").split("|")]
+                    nombres = enc if enc and len(enc) == len(celdas) else [f"campo{i + 1}" for i in range(len(celdas))]
+                    pend = [n for n, c in zip(nombres, celdas) if c == MARCA_PENDIENTE]
+                    campos = [f"- {n}: {c.replace('<br>', '; ')}" for n, c in zip(nombres, celdas)
+                              if c and c != MARCA_PENDIENTE and n not in ("fecha_revision", "estado")]
+                    nombre = celdas[1] if len(celdas) > 1 and celdas[1] != MARCA_PENDIENTE else ""
+                    res.append({"id": celdas[0], "titulo": nombre or celdas[0],
+                                "texto": f"## {celdas[0]}" + (f" — {nombre}" if nombre else "") + "\n" + "\n".join(campos),
+                                "archivo": ruta.name, "pendientes": pend})
             else:
                 m = re.match(r"([A-Z]{2,4}\d{2,})", titulo)
+                limpio, pend = _limpiar(cuerpo.strip())
+                limpio = limpio.replace(MARCA_PENDIENTE, "")
                 res.append({"id": m.group(1) if m else titulo[:40], "titulo": titulo.strip(),
-                            "texto": f"## {titulo}\n{cuerpo.strip()}", "archivo": ruta.name})
+                            "texto": f"## {titulo}\n{limpio}", "archivo": ruta.name, "pendientes": pend})
     return res
 
 
