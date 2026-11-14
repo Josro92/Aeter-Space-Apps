@@ -13,6 +13,7 @@ window.__voz = (function(){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   let rec=null, on=false, busy=false, speaking=false, busyTimer=null, desbloqueado=false;
   let vistos={}, cola=[], navVisto=null, sirenaOn=false, sirenaTimer=null, ctx=null, nbeep=0, uref=null;
+  let interimTimer=null, marcaProc=null;
   let ultimoEstado='', oido='', diag=[], ventanaHasta=0, vozTimer=null, avisoTimer=null, vozToken=0, manual=false, bargeRec=null, hablado=[], ignorarHasta=0, interrumpidoEn=0, finHabla=0;
   function cortarVoz(){ pararBarge(); vozToken++; clearTimeout(vozTimer); try{speechSynthesis.cancel();}catch(_){} speaking=false; }
   function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
@@ -171,7 +172,17 @@ window.__voz = (function(){
           continue;
         }
         if(busy || Date.now()<ignorarHasta) continue;
-        if(!res.isFinal){ estado('🎙️ '+t.slice(0,50)); continue; }
+        if(!res.isFinal){
+          estado('🎙️ '+t.slice(0,50)); clearTimeout(interimTimer);
+          const soloLlamado=/^(oye |hey |hola |ok )?(medico|medica|doctor|doctora)( virtual)?$/.test(limpio(n).trim());
+          interimTimer=setTimeout(function(){ if(speaking||busy) return; marcaProc={n:n,wake:soloLlamado,ts:Date.now()}; procesar(t); }, soloLlamado?600:1100);
+          continue;
+        }
+        clearTimeout(interimTimer);
+        if(marcaProc && Date.now()-marcaProc.ts<8000){
+          const m=marcaProc; marcaProc=null;
+          if(n===m.n || (!m.wake && n.indexOf(m.n)===0)) continue;     // ya lo atendí con el texto parcial
+        }
         if(n.split(/\s+/).length>=3 && Date.now()-finHabla<4000 && eco(n)){ log('Ignoro el eco de mi voz'); continue; }
         procesar(t);
       }
@@ -263,11 +274,18 @@ window.__voz = (function(){
   }
 
   /* ---------- navegación ---------- */
+  function pulsar(el){
+    ['pointerdown','mousedown','pointerup','mouseup','click'].forEach(function(tp){
+      const Ev=tp.indexOf('pointer')===0?PointerEvent:MouseEvent;
+      el.dispatchEvent(new Ev(tp,{bubbles:true,cancelable:true,view:window,button:0,pointerType:'mouse'}));
+    });
+  }
   function navegar(pasos){
     (function clic(i){
-      const b=[].slice.call(document.querySelectorAll('button[role="tab"]')).find(function(x){return x.textContent.indexOf(pasos[i])>=0;});
-      if(b) b.click();
-      if(i+1<pasos.length) setTimeout(function(){clic(i+1);},350);
+      const tabs=[].slice.call(document.querySelectorAll('[data-testid="stTab"], button[role="tab"]'));
+      const b=tabs.find(function(x){return x.textContent.indexOf(pasos[i])>=0;});
+      if(b){ pulsar(b); } else { log('No encuentro la pestaña «'+pasos[i]+'»'); }
+      if(i+1<pasos.length) setTimeout(function(){clic(i+1);},450);
     })(0);
   }
 
