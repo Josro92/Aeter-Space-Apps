@@ -201,7 +201,7 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
     color_corazon = "#ff3b30" if fc > 100 else "#2ecc71"
    
     svg_corazon = (
-        f'<svg class="corazon-svg" viewBox="100 50 200 180" xmlns="http://w3.org">'
+        f'<svg class="corazon-svg" viewBox="100 50 200 180" xmlns="http://www.w3.org/2000/svg">'
         f'<path id="corazon-path" stroke-width="8" '
         f'style="--c-corazon:{color_corazon}; --duracion:{duracion:.2f}s;" '
         f'd="m200.04,112.01c24.5,-70.29 120.49,0 0,90.37c-120.49,-90.37 -24.5,-160.66 0,-90.37z"/>'
