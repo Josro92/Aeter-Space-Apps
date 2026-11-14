@@ -1,0 +1,2 @@
+Ponga aquí el logo de la empresa con el nombre exacto: logo.png
+(fondo transparente y unos 600 px de ancho funciona bien). Si no existe, se muestra el cohete.

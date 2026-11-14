@@ -38,6 +38,36 @@ def iniciar_servicio() -> ServicioSensores:
 
 
 servicio = iniciar_servicio()
+
+
+# --------------------------------------------------------------------------- pantalla de inicio
+def pantalla_inicio() -> None:
+    """Portada con un solo botón. Ese toque activa el audio y el micrófono del médico."""
+    st.markdown("""<style>
+    [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], [data-testid="stHeader"]{display:none}
+    .portada{text-align:center;padding-top:14vh}
+    .portada h1{font-size:3.4rem;letter-spacing:.06em;margin-bottom:.2rem}
+    .portada p{opacity:.75;font-size:1.1rem;margin-bottom:2.2rem}
+    </style>""", unsafe_allow_html=True)
+    _, centro, _ = st.columns([1, 2, 1])
+    with centro:
+        logo = Path(__file__).with_name("assets") / "logo.png"
+        if logo.exists():
+            st.image(str(logo), width="stretch")
+        else:
+            st.markdown("<div class='portada'><div style='font-size:5rem'>🚀</div></div>", unsafe_allow_html=True)
+        st.markdown("<div class='portada' style='padding-top:0'><h1>Aéter</h1>"
+                    "<p>Monitoreo de signos vitales y médico virtual de a bordo</p></div>",
+                    unsafe_allow_html=True)
+        st.button("▶  Iniciar", type="primary", width="stretch", key="btn_iniciar",
+                  on_click=lambda: st.session_state.update(iniciado=True))
+        st.caption("Al iniciar, el médico virtual saluda y queda escuchando. Permita el micrófono si el navegador lo pide.")
+
+
+if not st.session_state.get("iniciado"):
+    pantalla_inicio()
+    st.stop()
+
 astronautas = db.listar_astronautas()
 por_id = {a["id"]: a for a in astronautas}
 
