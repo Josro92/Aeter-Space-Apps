@@ -13,7 +13,7 @@ window.__voz = (function(){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   let rec=null, on=false, busy=false, speaking=false, busyTimer=null, desbloqueado=false;
   let vistos={}, cola=[], navVisto=null, sirenaOn=false, sirenaTimer=null, ctx=null, nbeep=0, uref=null;
-  let ultimoEstado='', oido='', diag=[], ventanaHasta=0, vozTimer=null, avisoTimer=null, vozToken=0, manual=false, bargeRec=null;
+  let ultimoEstado='', oido='', diag=[], ventanaHasta=0, vozTimer=null, avisoTimer=null, vozToken=0, manual=false, bargeRec=null, hablado=[], ignorarHasta=0, interrumpidoEn=0, finHabla=0;
   function cortarVoz(){ pararBarge(); vozToken++; clearTimeout(vozTimer); try{speechSynthesis.cancel();}catch(_){} speaking=false; }
   function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
   const LLAMADO=/(^|[^a-z])(medico|medica|doctor|doctora)([^a-z]|$)/;
@@ -112,7 +112,7 @@ window.__voz = (function(){
     const tk=++vozToken;
     function uno(){
       if(tk!==vozToken) return;
-      if(i>=lista.length){ clearTimeout(vozTimer); pararBarge(); speaking=false; if(!inmediato) siguiente(); else iniciar(); return; }
+      if(i>=lista.length){ clearTimeout(vozTimer); speaking=false; finHabla=Date.now(); ignorarHasta=Date.now()+900; if(!inmediato) siguiente(); else iniciar(); return; }
       const u=new SpeechSynthesisUtterance(lista[i++]); uref=u;      // referencia: evita que Chrome la descarte
       u.lang='es-MX'; u.rate=parseFloat(LS.get('voz_vel','1'))||1;
       const v=elegirVoz(); if(v){ u.voice=v; u.lang=v.lang; }
@@ -120,44 +120,69 @@ window.__voz = (function(){
       u.onerror=function(e){ if(tk!==vozToken||e.error==='interrupted'||e.error==='canceled') return; log('Voz: '+(e.error||'error')); uno(); };
       speechSynthesis.speak(u);
     }
-    speaking=true; estado('🔊 Hablando…'); parar();
-    if(on) setTimeout(function(){ if(speaking && tk===vozToken) iniciarBarge(tk, texto); }, 700);
+    speaking=true; estado('🔊 Hablando…'); hablado.push({n:norm(texto),ts:Date.now()}); if(hablado.length>6) hablado.shift();
     clearTimeout(vozTimer);
     vozTimer=setTimeout(function(){ if(speaking && tk===vozToken){ log('La voz no terminó: continúo'); cortarVoz(); if(!inmediato) siguiente(); else iniciar(); } }, 5000+texto.length*110);
     setTimeout(uno, inmediato?120:0);
   }
   function siguiente(){
     if(speaking||!desbloqueado) return;
-    if(!cola.length){ busy=false; clearTimeout(busyTimer); ventanaHasta=Date.now()+25000; estado(''); iniciar(); return; }
+    if(!cola.length){ busy=false; clearTimeout(busyTimer); ventanaHasta=Date.now()+25000; ignorarHasta=Math.max(ignorarHasta,Date.now()+500); estado(rec?'🎙️ Escuchando…':''); iniciar(); return; }
     decir(cola.shift(), false);
   }
 
   /* ---------- micrófono ---------- */
+  function limpio(s){ return ' '+s.replace(/[^a-z0-9ñ ]/g,' ').replace(/\s+/g,' ').trim()+' '; }
+  function eco(n){ const ahora=Date.now(), q=limpio(n); return hablado.some(function(h){ return ahora-h.ts<25000 && limpio(h.n).indexOf(q)>=0; }); }
+  function intencionNav(t){
+    const n=norm(t);
+    if(!/(muestr|ensen|\bver\b|\bveo\b|abr[ae]\b|llev|\bir\b|ve a |vamos|pasa a|cambia a|quiero ver|ponme)/.test(n)) return null;
+    if(/alerta|alarma/.test(n)) return ['Detalle','Alertas'];
+    if(/historial|\bnotas?\b|ficha medica|expediente/.test(n)) return ['Detalle','Historial médico'];
+    if(/monitor|grafic|signos|en vivo|tiempo real/.test(n)) return ['Detalle','Monitoreo en vivo'];
+    if(/estado actual|reloj|pantalla principal/.test(n)) return ['Estado actual'];
+    if(/asistente|\bchat\b|conversacion/.test(n)) return ['Detalle','Asistente IA'];
+    return null;
+  }
+  function procesar(t){
+    const n=norm(t); oido=t; log('Oí: '+t);
+    const llamado=LLAMADO.test(n), abierto=(LS.get('voz_modo','llamado')==='siempre')||Date.now()<ventanaHasta;
+    if(!llamado && !abierto){ aviso('👂 Oí «'+t.slice(0,40)+'». Diga «médico» para hablarme'); return; }
+    const texto=t.replace(/^\s*(oye|hey|ok|okay|hola|buenas)?[\s,.:;!¡¿?]*(m[eé]dic[oa]( virtual)?|doctor[a]?)(?![a-záéíóúñ])[\s,.:;!¡¿?]*/i,'').trim();
+    ventanaHasta=Date.now()+25000;
+    const palabras=texto.split(/\s+/).filter(Boolean).length;
+    if(Date.now()-interrumpidoEn<5000 && palabras<=2){ log('Ya me callé'); return; }
+    if(!texto || norm(texto).length<2){ cola.unshift('Dígame.'); siguiente(); return; }
+    enviar(texto);
+  }
   function iniciar(){
-    if(!on||!desbloqueado||busy||speaking||rec||manual) return;
-    pararBarge();
+    if(!on||!desbloqueado||rec||manual) return;
     if(!SR){estado('Use Chrome o Edge para hablar');return;}
-    rec=new SR(); rec.lang='es-MX'; rec.interimResults=false; rec.continuous=false; rec.maxAlternatives=1;
+    rec=new SR(); rec.lang='es-MX'; rec.interimResults=true; rec.continuous=true; rec.maxAlternatives=1;
+    const miRec=rec, t0=Date.now();
     rec.onaudiostart=function(){ log('Micrófono abierto'); };
-    rec.onspeechstart=function(){ log('Detecto voz…'); };
-    rec.onnomatch=function(){ log('No entendí lo que dijo'); };
+    rec.onspeechstart=function(){ if(!speaking) log('Detecto voz…'); };
     rec.onresult=function(e){
-      const t=(e.results[0][0].transcript||'').trim(); oido=t; log('Oí: '+t); if(!t) return;
-      const llamado=LLAMADO.test(norm(t)), abierto=(LS.get('voz_modo','llamado')==='siempre')||Date.now()<ventanaHasta;
-      if(!llamado && !abierto){ aviso('👂 Oí «'+t.slice(0,40)+'». Diga «médico» para hablarme'); return; }
-      const texto=t.replace(/^\s*(oye|hey|ok|okay|hola|buenas)?[\s,.:;!¡¿?]*(m[eé]dic[oa]( virtual)?|doctor[a]?)(?![a-záéíóúñ])[\s,.:;!¡¿?]*/i,'').trim();
-      ventanaHasta=Date.now()+25000;
-      if(!texto || norm(texto).length<2){ cola.unshift('Dígame.'); rec=null; siguiente(); return; }
-      enviar(texto);
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const res=e.results[i], t=(res[0].transcript||'').trim(); if(!t) continue;
+        const n=norm(t);
+        if(speaking){                                    // mientras habla, solo atiende la interrupción
+          if(LS.get('voz_barge','1')==='1' && LLAMADO.test(n) && !eco(n)) interrumpir();
+          continue;
+        }
+        if(busy || Date.now()<ignorarHasta) continue;
+        if(!res.isFinal){ estado('🎙️ '+t.slice(0,50)); continue; }
+        if(n.split(/\s+/).length>=3 && Date.now()-finHabla<4000 && eco(n)){ log('Ignoro el eco de mi voz'); continue; }
+        procesar(t);
+      }
     };
-    const t0=Date.now();
-    rec.onend=function(){ const ms=Date.now()-t0; if(ms<1200) log('El micrófono se cerró enseguida ('+ms+' ms)'); rec=null; setTimeout(iniciar,ms<1200?1500:300); };
+    rec.onend=function(){ if(rec===miRec) rec=null; const ms=Date.now()-t0; if(ms<1200) log('El micrófono se cerró enseguida ('+ms+' ms)'); setTimeout(iniciar,ms<1200?1500:300); };
     rec.onerror=function(e){
       if(e.error==='no-speech'||e.error==='aborted') return;
       log('Micrófono: '+e.error);
       if(e.error==='not-allowed'||e.error==='service-not-allowed'){ on=false; rec=null; estado('Permiso de micrófono denegado'); }
     };
-    try{ rec.start(); estado('🎙️ Escuchando…'); }catch(e){ rec=null; log('Mic start: '+e); }
+    try{ rec.start(); if(!speaking&&!busy) estado('🎙️ Escuchando…'); }catch(e){ rec=null; log('Mic start: '+e); }
   }
   function probarMicrofono(){
     manual=true; parar(); cortarVoz();
@@ -178,27 +203,10 @@ window.__voz = (function(){
       },60);
     }).catch(function(e){ log('No pude abrir el micrófono: '+(e.name||e)); manual=false; estado(''); });
   }
-  function pararBarge(){ if(bargeRec){ const r=bargeRec; bargeRec=null; r.onend=null; try{r.abort();}catch(_){} } }
+  function pararBarge(){}
   function interrumpir(){
-    pararBarge(); cortarVoz(); cola.length=0; busy=false; ventanaHasta=Date.now()+25000;
-    log('Interrumpido al decir «médico»'); estado('🎙️ Lo escucho…'); setTimeout(iniciar, 500);
-  }
-  function iniciarBarge(tk, texto){
-    if(bargeRec||!SR||manual||LS.get('voz_barge','1')!=='1') return;
-    const hablado=norm(texto);
-    const r=new SR(); bargeRec=r; r.lang='es-MX'; r.continuous=true; r.interimResults=true;
-    r.onresult=function(e){
-      for(let i=e.resultIndex;i<e.results.length;i++){
-        const tr=norm(e.results[i][0].transcript).trim();
-        if(!LLAMADO.test(tr)) continue;
-        if(hablado.indexOf(tr)>=0) continue;               // es el eco de su propia voz
-        if(tk!==vozToken||!speaking) return;
-        interrumpir(); return;
-      }
-    };
-    r.onend=function(){ if(bargeRec===r){ bargeRec=null; if(speaking&&tk===vozToken) setTimeout(function(){ iniciarBarge(tk,texto); },300); } };
-    r.onerror=function(e){ if(e.error!=='no-speech'&&e.error!=='aborted') log('Escucha mientras habla: '+e.error); };
-    try{ r.start(); }catch(_){ bargeRec=null; }
+    cortarVoz(); cola.length=0; busy=false; ventanaHasta=Date.now()+25000; interrumpidoEn=Date.now(); ignorarHasta=0;
+    log('Interrumpido al decir «médico»'); estado('🎙️ Lo escucho…');
   }
   function hablarAhora(){
     asegurarAudio();
@@ -226,6 +234,7 @@ window.__voz = (function(){
       if(!reintento){ navegar(['Detalle','Asistente IA']); setTimeout(function(){enviar(t,true);},900); }
       return;
     }
+    const dest=intencionNav(t); if(dest){ navegar(dest); log('Abro: '+dest[dest.length-1]); }
     const set=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set;
     set.call(ta,t); ta.dispatchEvent(new Event('input',{bubbles:true}));
     busy=true; clearTimeout(busyTimer);

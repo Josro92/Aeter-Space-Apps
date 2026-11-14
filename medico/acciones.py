@@ -36,6 +36,28 @@ def _norm(t: str) -> str:
     return "".join(c for c in t if unicodedata.category(c) != "Mn")
 
 
+VISUALES = ("ver_signos", "ver_notas", "ver_procedimiento", "ver_medicamento", "ver_fuente", "proponer_nota",
+            "sos", "normalizar_emergencia")
+
+
+def intencion_navegacion(texto: str) -> str | None:
+    """Si la persona pide ir a una pantalla («muéstrame las alertas»), devuelve la sección."""
+    n = _norm(texto)
+    if not re.search(r"(muestr|ensen|\bver\b|\bveo\b|abr[ae]\b|llev|\bir\b|ve a |vamos|pasa a|cambia a|quiero ver|ponme)", n):
+        return None
+    if re.search(r"alerta|alarma", n):
+        return "alertas"
+    if re.search(r"historial|\bnotas?\b|ficha medica|expediente", n):
+        return "historial"
+    if re.search(r"monitor|grafic|signos|en vivo|tiempo real", n):
+        return "monitoreo"
+    if re.search(r"estado actual|reloj|pantalla principal", n):
+        return "estado"
+    if re.search(r"asistente|\bchat\b|conversacion", n):
+        return "asistente"
+    return None
+
+
 def _claves_validas() -> dict:
     import protocolos
     return {**{k: "emergencia" for k in protocolos.EMERGENCIAS},
@@ -143,6 +165,11 @@ def aplicar_inmediatas(acciones: list[dict], astro_id: int, yo_nombre: str) -> N
     """Acciones seguras que se ejecutan al llegar la respuesta (una sola vez)."""
     import streamlit as st
     from . import recordatorios
+    # Si hay algo que ver en el chat y la persona no pidió otra pantalla, se la lleva al asistente.
+    if (any(a["accion"] in VISUALES for a in acciones)
+            and not any(a["accion"] == "ir_a" for a in acciones)
+            and not st.session_state.get("nav_intent")):
+        st.session_state["nav_cmd"] = {"id": f"{time.time()}", "pasos": SECCIONES["asistente"]}
     for a in acciones:
         k, arg = a["accion"], a["arg"]
         if k == "ir_a":

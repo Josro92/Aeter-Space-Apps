@@ -445,6 +445,11 @@ def tab_asistente(astro_id: int, api_key: str, yo_nombre: str) -> None:
         historial.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
+        # Si pidió ir a una pantalla («muéstrame las alertas»), se navega sin depender del modelo.
+        destino = med_acciones.intencion_navegacion(prompt)
+        st.session_state["nav_intent"] = destino
+        if destino:
+            st.session_state["nav_cmd"] = {"id": f"{time.time()}", "pasos": med_acciones.SECCIONES[destino]}
         # Confirmación por voz de SOS / detener emergencia: la decide la página, no el modelo.
         pend = st.session_state.get("pendiente")
         palabras = protocolos.normalizar(prompt).split()
