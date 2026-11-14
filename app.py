@@ -134,7 +134,30 @@ button[data-baseweb="tab"]{height:56px}
 .reloj.con-svg{position:relative;border:none;background:none;box-shadow:none}
 .reloj-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 18px var(--glow))}
 .reloj.con-svg > div{position:relative}
+
+
+.corazon-svg {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+#corazon-path {
+  fill: var(--c-corazon, #047f00);
+  stroke: var(--c-corazon, #047f00);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: latir var(--duracion, 0.85s) infinite ease-in-out;
+}
+@keyframes latir {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.25); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.18); }
+  60% { transform: scale(1); }
+}
 </style>"""
+
 RUTA_SVG = Path(__file__).with_name("dinosa.svg")
 SVG_B64 = base64.b64encode(RUTA_SVG.read_bytes()).decode() if RUTA_SVG.exists() else ""
 TEXTO_ESTADO = {"normal": "Todo en orden", "advertencia": "Atención", "critica": "Emergencia"}
@@ -144,18 +167,17 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
     def v(clave: str, formato: str = "{:.0f}") -> str:
         return formato.format(med[clave]) if med else "--"
 
-    extra = " con-svg" if SVG_B64 else ""
-    imagen = f'<img class="reloj-img" src="data:image/svg+xml;base64,{SVG_B64}">' if SVG_B64 else ""
-    return (
-        f'<div class="reloj-wrap"><div class="reloj nivel-{nivel}{extra}">'
-        f'{imagen}'
-        f'<div class="reloj-hora">{datetime.now():%H:%M}</div>'
-        f'<div class="reloj-nombre">{html.escape(nombre)}</div>'
-        f'<div class="reloj-estado">{html.escape(estado)}</div>'
-        f'<div class="reloj-vitales"><span>♥ <b>{v("fc")}</b></span>'
-        f'<span>SpO₂ <b>{v("spo2")}</b></span>'
-        f'<span><b>{v("temp", "{:.1f}")}</b> °C</span></div>'
-        f'</div></div>'
+    # Cálculo dinámico de velocidad y color según la frecuencia cardíaca (fc)
+    fc = med["fc"] if (med and med.get("fc")) else 70
+    duracion = 60.0 / max(fc, 30)  # Evita división por cero si hay fallo de sensor
+    color_corazon = "#ff3b30" if fc > 100 else "#2ecc71"
+   
+    svg_corazon = (
+        f'<svg class="corazon-svg" viewBox="100 50 200 180" xmlns="http://w3.org">'
+        f'<path id="corazon-path" stroke-width="8" '
+        f'style="--c-corazon:{color_corazon}; --duracion:{duracion:.2f}s;" '
+        f'd="m200.04,112.01c24.5,-70.29 120.49,0 0,90.37c-120.49,-90.37 -24.5,-160.66 0,-90.37z"/>'
+        f'</svg>'
     )
 
 
