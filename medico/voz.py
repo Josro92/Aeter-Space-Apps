@@ -24,7 +24,9 @@ window.__voz = (function(){
     if(el) return el;
     el=document.createElement('div'); el.id='voz-panel';
     el.style.cssText='position:fixed;bottom:16px;right:16px;z-index:9999;font:13px sans-serif;color:#fff;max-width:300px';
-    el.innerHTML='<div id="vp-barra" style="display:flex;gap:6px;align-items:center;justify-content:flex-end">'+
+    el.innerHTML='<div id="vp-ultimo" style="text-align:right;font-size:11px;opacity:.7;margin-bottom:4px;max-width:300px"></div>'+
+      '<div id="vp-barra" style="display:flex;gap:6px;align-items:center;justify-content:flex-end">'+
+      '<button id="vp-hablar" title="Hablar ahora (sin decir médico)" style="border:1px solid #E4405F;background:#E4405F;color:#fff;border-radius:50%;width:38px;height:38px;cursor:pointer;font-size:18px">🎤</button>'+
       '<span id="vp-estado" style="padding:6px 12px;border-radius:16px;background:#1B2128;border:1px solid #E4405F"></span>'+
       '<button id="vp-ajustes" title="Voz y diagnóstico" style="border:1px solid #E4405F;background:#1B2128;color:#fff;border-radius:50%;width:32px;height:32px;cursor:pointer">⚙️</button></div>'+
       '<div id="vp-det" style="display:none;margin-top:8px;padding:12px;border-radius:12px;background:#1B2128;border:1px solid #444">'+
@@ -36,6 +38,7 @@ window.__voz = (function(){
       '<div style="display:flex;gap:6px;margin-bottom:8px"><button id="vp-probar" style="flex:1;padding:5px;cursor:pointer">🔊 Probar voz</button><button id="vp-pitido" style="flex:1;padding:5px;cursor:pointer">🔔 Probar pitido</button></div>'+
       '<div id="vp-diag" style="opacity:.75;font-size:11px;white-space:pre-wrap"></div></div>';
     document.body.appendChild(el);
+    el.querySelector('#vp-hablar').onclick=function(){ hablarAhora(); };
     el.querySelector('#vp-ajustes').onclick=function(){const d=el.querySelector('#vp-det'); d.style.display=d.style.display==='none'?'block':'none'; llenarVoces(); pintaDiag();};
     const modo=el.querySelector('#vp-modo'); modo.value=LS.get('voz_modo','llamado'); modo.onchange=function(e){LS.set('voz_modo',e.target.value);};
     el.querySelector('#vp-voz').onchange=function(e){LS.set('voz_nombre',e.target.value);};
@@ -50,7 +53,12 @@ window.__voz = (function(){
     const actual=LS.get('voz_nombre','');
     sel.innerHTML='<option value="">(automática)</option>'+vs.map(function(v){return '<option value="'+v.name+'"'+(v.name===actual?' selected':'')+'>'+v.name+' · '+v.lang+'</option>';}).join('');
   }
-  function log(m){ diag.push(m); if(diag.length>6) diag.shift(); pintaDiag(); }
+  function log(m){
+    if(diag.length && diag[diag.length-1].slice(10)===m) return;
+    const h=new Date().toLocaleTimeString('es',{hour12:false});
+    diag.push(h+'  '+m); if(diag.length>8) diag.shift(); pintaDiag();
+    const u=document.getElementById('vp-ultimo'); if(u) u.textContent=m;
+  }
   function pintaDiag(){
     const d=document.getElementById('vp-diag'); if(!d) return;
     d.textContent='Audio: '+(ctx?ctx.state:'sin iniciar')+' · Voces es: '+speechSynthesis.getVoices().filter(function(v){return v.lang.toLowerCase().indexOf('es')===0;}).length+
@@ -120,6 +128,9 @@ window.__voz = (function(){
     if(!on||!desbloqueado||busy||speaking||rec) return;
     if(!SR){estado('Use Chrome o Edge para hablar');return;}
     rec=new SR(); rec.lang='es-MX'; rec.interimResults=false; rec.continuous=false; rec.maxAlternatives=1;
+    rec.onaudiostart=function(){ log('Micrófono abierto'); };
+    rec.onspeechstart=function(){ log('Detecto voz…'); };
+    rec.onnomatch=function(){ log('No entendí lo que dijo'); };
     rec.onresult=function(e){
       const t=(e.results[0][0].transcript||'').trim(); oido=t; log('Oí: '+t); if(!t) return;
       const llamado=LLAMADO.test(norm(t)), abierto=(LS.get('voz_modo','llamado')==='siempre')||Date.now()<ventanaHasta;
@@ -136,6 +147,24 @@ window.__voz = (function(){
       if(e.error==='not-allowed'||e.error==='service-not-allowed'){ on=false; rec=null; estado('Permiso de micrófono denegado'); }
     };
     try{ rec.start(); estado('🎙️ Escuchando…'); }catch(e){ rec=null; log('Mic start: '+e); }
+  }
+  function hablarAhora(){
+    asegurarAudio();
+    if(!desbloqueado){ desbloqueado=true; overlay(false); llenarVoces(); }
+    if(!SR){ estado('Use Chrome o Edge para hablar'); log('Este navegador no tiene reconocimiento de voz'); return; }
+    try{ speechSynthesis.cancel(); }catch(_){}
+    speaking=false; busy=false; parar();
+    const r=new SR(); r.lang='es-MX'; r.interimResults=true; r.continuous=false; let final='';
+    r.onstart=function(){ estado('🎤 Hable ahora…'); log('Hable ahora'); };
+    r.onaudiostart=function(){ log('Micrófono abierto'); };
+    r.onspeechstart=function(){ log('Detecto voz…'); };
+    r.onresult=function(e){
+      let parcial=''; for(let i=e.resultIndex;i<e.results.length;i++){ if(e.results[i].isFinal) final+=e.results[i][0].transcript; else parcial+=e.results[i][0].transcript; }
+      estado('🎤 '+(final+parcial).slice(0,60));
+    };
+    r.onerror=function(e){ log('Micrófono: '+e.error); estado('Micrófono: '+e.error); };
+    r.onend=function(){ const txt=final.trim(); if(txt){ log('Oí: '+txt); ventanaHasta=Date.now()+25000; enviar(txt); } else { estado(''); log('No oí nada'); iniciar(); } };
+    try{ r.start(); }catch(e){ log('Mic start: '+e); }
   }
   function parar(){ if(rec){const r=rec; rec=null; r.onend=null; try{r.abort();}catch(_){}} }
   function enviar(t, reintento){
