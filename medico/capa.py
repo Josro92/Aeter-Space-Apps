@@ -21,7 +21,7 @@ def _saludo(yo_nombre: str) -> str:
             vistos.add((e["astronauta_id"], e["parametro"]))
             msgs.append(f"{e['astronauta']}: {e['mensaje']}")
     estado = ("Hay alertas activas. " + ". ".join(msgs[:3]) + ".") if msgs else "Todos los signos están estables."
-    return (f"{momento}, {yo_nombre}. Soy el médico virtual y estoy escuchando: hábleme cuando me necesite. "
+    return (f"{momento}, {yo_nombre}. Soy el médico virtual. Estoy escuchando: diga «médico» cuando me necesite. "
             f"{estado}")
 
 

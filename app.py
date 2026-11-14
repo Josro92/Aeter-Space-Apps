@@ -61,7 +61,7 @@ def pantalla_inicio() -> None:
                     unsafe_allow_html=True)
         st.button("▶  Iniciar", type="primary", width="stretch", key="btn_iniciar",
                   on_click=lambda: st.session_state.update(iniciado=True))
-        st.caption("Al iniciar, el médico virtual saluda y queda escuchando. Permita el micrófono si el navegador lo pide.")
+        st.caption("Al iniciar, el médico virtual saluda y queda escuchando: diga «médico» para hablarle. Permita el micrófono si el navegador lo pide.")
 
 
 if not st.session_state.get("iniciado"):
