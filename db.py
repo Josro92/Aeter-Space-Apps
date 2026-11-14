@@ -84,6 +84,10 @@ TRIPULACION = [
     dict(nombre="Marco Jiménez", rol="Especialista de misión", edad=45, peso_kg=84,
          tipo_sangre="AB-", alergias="Ninguna conocida", medicamentos="Ninguno",
          condiciones="Hipertensión leve controlada"),
+    dict(nombre="Jason", rol="Astronauta (caso de prueba del médico virtual)", edad=42, peso_kg=78,
+         tipo_sangre="O+", alergias="Penicilina",
+         medicamentos="Losartán 50 mg al día",
+         condiciones="Hipertensión leve"),
 ]
 
 CAMPOS_EDITABLES = ("peso_kg", "tipo_sangre", "alergias", "medicamentos", "condiciones")
