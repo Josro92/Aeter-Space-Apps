@@ -188,25 +188,48 @@ button[data-baseweb="tab"]{height:56px}
 </style>"""
 RUTA_SVG = Path(__file__).with_name("dinosa.svg")
 SVG_B64 = base64.b64encode(RUTA_SVG.read_bytes()).decode() if RUTA_SVG.exists() else ""
-TEXTO_ESTADO = {"normal": "Todo en orden", "advertencia": "Atención", "critica": "Emergencia"}
 
+# CORAZON DE PAZ
+RUTA_CORAZON = Path(__file__).with_name("corazon.svg")
+CORAZON_RAW = RUTA_CORAZON.read_text(encoding="utf-8") if RUTA_CORAZON.exists() else ""
+
+TEXTO_ESTADO = {"normal": "Todo en orden", "advertencia": "Atención", "critica": "Emergencia"}
 
 def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
     def v(clave: str, formato: str = "{:.0f}") -> str:
         return formato.format(med[clave]) if med else "--"
 
-    # Cálculo dinámico de velocidad y color según la frecuencia cardíaca (fc)
-    fc = med["fc"] if (med and med.get("fc")) else 70
-    duracion = 60.0 / max(fc, 30)  # Evita división por cero si hay fallo de sensor
-    color_corazon = "#ff3b30" if fc > 100 else "#2ecc71"
-   
-    svg_corazon = (
-        f'<svg class="corazon-svg" viewBox="100 50 200 180" xmlns="http://www.w3.org/2000/svg">'
-        f'<path id="corazon-path" stroke-width="8" '
-        f'style="--c-corazon:{color_corazon}; --duracion:{duracion:.2f}s;" '
-        f'd="m200.04,112.01c24.5,-70.29 120.49,0 0,90.37c-120.49,-90.37 -24.5,-160.66 0,-90.37z"/>'
-        f'</svg>'
+    # Generar corazón dinámico desde corazon.svg
+    if CORAZON_RAW:
+        fc = med["fc"] if (med and med.get("fc")) else 70
+        duracion = 60.0 / max(fc, 30)
+        color = "#ff3b30" if fc > 100 else "#2ecc71"
+        
+        svg_modificado = (
+            CORAZON_RAW
+            .replace("#047f00", color)
+            .replace("0.85s", f"{duracion:.2f}s")
+        )
+        corazon_b64 = base64.b64encode(svg_modificado.encode("utf-8")).decode()
+        icono_fc = f'<img src="data:image/svg+xml;base64,{corazon_b64}" style="width:18px;height:18px;vertical-align:middle;margin-right:4px;">'
+    else:
+        icono_fc = "♥ "
+
+    extra = " con-svg" if SVG_B64 else ""
+    imagen = f'<img class="reloj-img" src="data:image/svg+xml;base64,{SVG_B64}">' if SVG_B64 else ""
+    
+    return (
+        f'<div class="reloj-wrap"><div class="reloj nivel-{nivel}{extra}">'
+        f'{imagen}'
+        f'<div class="reloj-hora">{datetime.now():%H:%M}</div>'
+        f'<div class="reloj-nombre">{html.escape(nombre)}</div>'
+        f'<div class="reloj-estado">{html.escape(estado)}</div>'
+        f'<div class="reloj-vitales"><span>{icono_fc}<b>{v("fc")}</b></span>'
+        f'<span>SpO₂ <b>{v("spo2")}</b></span>'
+        f'<span><b>{v("temp", "{:.1f}")}</b> °C</span></div>'
+        f'</div></div>'
     )
+
 
 
 
