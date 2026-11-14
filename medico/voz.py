@@ -50,7 +50,7 @@ window.__voz = (function(){
     const bg=el.querySelector('#vp-barge'); bg.checked=LS.get('voz_barge','1')==='1'; bg.onchange=function(e){LS.set('voz_barge',e.target.checked?'1':'0'); if(!e.target.checked) pararBarge();};
     el.querySelector('#vp-voz').onchange=function(e){LS.set('voz_nombre',e.target.value);};
     const vel=el.querySelector('#vp-vel'); vel.value=LS.get('voz_vel','1'); vel.onchange=function(e){LS.set('voz_vel',e.target.value);};
-    el.querySelector('#vp-probar').onclick=function(){ asegurarAudio(); decir('Hola, soy su médico virtual. Así suena mi voz.', true); };
+    el.querySelector('#vp-probar').onclick=function(){ asegurarAudio(); decir('Hola, soy su asistente virtual. Así suena mi voz.', true); };
     el.querySelector('#vp-pitido').onclick=function(){ asegurarAudio(); for(let i=0;i<3;i++) setTimeout(beep,i*500); };
     return el;
   }
@@ -113,7 +113,7 @@ window.__voz = (function(){
     const tk=++vozToken;
     function uno(){
       if(tk!==vozToken) return;
-      if(i>=lista.length){ clearTimeout(vozTimer); speaking=false; finHabla=Date.now(); ignorarHasta=Date.now()+900; if(!inmediato) siguiente(); else iniciar(); return; }
+      if(i>=lista.length){ clearTimeout(vozTimer); speaking=false; finHabla=Date.now(); ignorarHasta=Date.now()+1200; if(!inmediato) siguiente(); else iniciar(); return; }
       const u=new SpeechSynthesisUtterance(lista[i++]); uref=u;      // referencia: evita que Chrome la descarte
       u.lang='es-MX'; u.rate=parseFloat(LS.get('voz_vel','1'))||1;
       const v=elegirVoz(); if(v){ u.voice=v; u.lang=v.lang; }
@@ -134,6 +134,13 @@ window.__voz = (function(){
 
   /* ---------- micrófono ---------- */
   function limpio(s){ return ' '+s.replace(/[^a-z0-9ñ ]/g,' ').replace(/\s+/g,' ').trim()+' '; }
+  function ecoBolsa(n){
+    const w=limpio(n).trim().split(' ').filter(function(x){return x.length>2;});
+    if(w.length<3) return false;
+    const ahora=Date.now(), conocidas={};
+    hablado.forEach(function(h){ if(ahora-h.ts<40000) limpio(h.n).trim().split(' ').forEach(function(x){conocidas[x]=1;}); });
+    return w.filter(function(x){return conocidas[x];}).length/w.length>=0.6;
+  }
   function eco(n){ const ahora=Date.now(), q=limpio(n); return hablado.some(function(h){ return ahora-h.ts<25000 && limpio(h.n).indexOf(q)>=0; }); }
   function intencionNav(t){
     const n=norm(t);
@@ -168,14 +175,14 @@ window.__voz = (function(){
         const res=e.results[i], t=(res[0].transcript||'').trim(); if(!t) continue;
         const n=norm(t);
         if(speaking){                                    // mientras habla, solo atiende la interrupción
-          if(LS.get('voz_barge','1')==='1' && LLAMADO.test(n) && !eco(n)) interrumpir();
+          if(LS.get('voz_barge','1')==='1' && LLAMADO.test(n)) interrumpir();
           continue;
         }
         if(busy || Date.now()<ignorarHasta) continue;
         if(!res.isFinal){
           estado('🎙️ '+t.slice(0,50)); clearTimeout(interimTimer);
           const soloLlamado=/^(oye |hey |hola |ok )?(medico|medica|doctor|doctora)( virtual)?$/.test(limpio(n).trim());
-          interimTimer=setTimeout(function(){ if(speaking||busy) return; marcaProc={n:n,wake:soloLlamado,ts:Date.now()}; procesar(t); }, soloLlamado?600:1100);
+          interimTimer=setTimeout(function(){ if(speaking||busy) return; if(Date.now()-finHabla<5000 && ecoBolsa(n)) return; marcaProc={n:n,wake:soloLlamado,ts:Date.now()}; procesar(t); }, soloLlamado?600:1100);
           continue;
         }
         clearTimeout(interimTimer);
@@ -183,7 +190,7 @@ window.__voz = (function(){
           const m=marcaProc; marcaProc=null;
           if(n===m.n || (!m.wake && n.indexOf(m.n)===0)) continue;     // ya lo atendí con el texto parcial
         }
-        if(n.split(/\s+/).length>=3 && Date.now()-finHabla<4000 && eco(n)){ log('Ignoro el eco de mi voz'); continue; }
+        if(Date.now()-finHabla<5000 && ecoBolsa(n)){ log('Ignoro el eco de mi voz'); continue; }
         procesar(t);
       }
     };
@@ -305,7 +312,17 @@ window.__voz = (function(){
 """
 
 
+def sin_palabra_de_llamado(texto: str) -> str:
+    """La voz no debe decir «médico» (es la palabra de llamado): el micrófono la oiría."""
+    t = re.sub(r"(?i)\bm[eé]dic[oa]s? virtual(es)?\b", "asistente virtual", texto)
+    t = re.sub(r"(?i)\bm[eé]dic[oa]s\b", "profesionales de salud", t)
+    t = re.sub(r"(?i)\bm[eé]dic[oa]\b", "profesional de salud", t)
+    t = re.sub(r"(?i)\bdoctor(es)?\b|\bdoctora(s)?\b", "profesional de salud", t)
+    return t
+
+
 def limpiar_para_voz(texto: str) -> str:
+    texto = sin_palabra_de_llamado(texto)
     t = re.sub(r"\([A-Z]{2,4}\d{2,}\)", "", texto)      # códigos (MED014) no se leen
     t = re.sub(r"\[\[.*?\]\]", "", t)
     t = re.sub(r"[*_#>`|]+", "", t)
