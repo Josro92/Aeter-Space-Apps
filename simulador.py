@@ -58,7 +58,7 @@ LIMITES = {"fc": (30, 220), "pas": (50, 260), "pad": (30, 150),
 
 
 class SimuladorAstronauta:
-    def __init__(self, astro_id: int = 0, velocidad: float = 0.12):
+    def __init__(self, astro_id: int = 0, velocidad: float = 0.12, base_fija: dict | None = None):
         """velocidad: 0-1, qué tan rápido se acerca al objetivo (0.12 ≈ 15-20 s)."""
         # Valores base distintos (pero repetibles) para cada astronauta.
         r = random.Random(1000 + astro_id)
@@ -70,6 +70,8 @@ class SimuladorAstronauta:
             "temp": r.uniform(36.5, 36.9),
             "fr": r.uniform(14, 17),
         }
+        if base_fija:
+            self.base.update({k: float(v) for k, v in base_fija.items()})
         self.estado = dict(self.base)
         self.escenario = "normal"
         self.velocidad = velocidad

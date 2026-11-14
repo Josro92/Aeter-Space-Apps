@@ -31,7 +31,9 @@ class ServicioSensores:
     # -- control del simulador (lo usa la interfaz) ---------------------------------
     def _sim(self, astro_id: int) -> SimuladorAstronauta:
         if astro_id not in self._sims:
-            self._sims[astro_id] = SimuladorAstronauta(astro_id)
+            ficha = db.obtener_astronauta(astro_id) or {}
+            self._sims[astro_id] = SimuladorAstronauta(
+                astro_id, base_fija=db.BASES_FIJAS.get(ficha.get("nombre", "")))
         return self._sims[astro_id]
 
     def escenario(self, astro_id: int) -> str:

@@ -40,7 +40,7 @@ También puedes pegar la API key en la barra lateral de la app. Si usas otro mod
 3. En unos segundos la SpO₂ cae: aparece el aviso emergente y el banner rojo **"ALERTA A TODA LA TRIPULACIÓN"**.
 4. Cambia "Sesión iniciada como" a otro tripulante (o abre otra pestaña del navegador): también ve la alerta. Pulsa **Reconocer**.
 5. Ve a **Asistente IA** → **"Guíame en la emergencia actual"**: da pasos personalizados con los datos del paciente.
-6. Pregunta por medicamentos: el asistente revisa las **alergias** de la ficha (prueba con Sofía Chaves, alérgica al ibuprofeno).
+6. Pregunta por medicamentos: el asistente revisa las **alergias** de la ficha (prueba con Jason o con María, ambos alérgicos a la penicilina).
 7. Pulsa **Normalizar**, muestra el **Historial médico** (estadísticas, bitácora, CSV).
 
 ## Arquitectura

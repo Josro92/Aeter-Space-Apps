@@ -12,7 +12,9 @@ SINONIMOS = {
     "bradicardia": "frecuencia cardiaca", "presion": "presion arterial", "tension": "presion arterial",
     "oxigeno": "saturacion spo2", "respirar": "frecuencia respiratoria", "fiebre": "temperatura corporal",
     "azucar": "glucosa", "dormir": "sueno", "peso": "masa corporal", "radiacion": "dosis radiacion",
-    "alergia": "antialergico antihistaminico", "infeccion": "antibiotico", "dolor": "analgesico",
+    "alergia": "antialergico antihistaminico",
+    "basal": "basales valores reposo", "basales": "basal valores reposo", "amoxicilina": "penicilina antibiotico",
+    "escoliosis": "columna espalda", "espalda": "columna escoliosis dolor", "infeccion": "antibiotico", "dolor": "analgesico",
 }
 VACIAS = set("de la el los las un una y o que en a por para con del al se me mi es lo su si no como puedo tengo".split())
 
@@ -60,7 +62,7 @@ def inventario_compacto() -> str:
 
 def buscar(consulta: str, k: int = 4, max_chars: int = 1400) -> list[dict]:
     q = tokens(consulta)
-    for w in list(q):
+    for w in re.findall(r"[a-z0-9]{3,}", norm(consulta)):   # sinónimos sobre la palabra completa
         if w in SINONIMOS:
             q |= tokens(SINONIMOS[w])
     puntuados = []

@@ -75,20 +75,22 @@ TRIPULACION = [
     dict(nombre="Ana Rojas", rol="Comandante", edad=41, peso_kg=63, tipo_sangre="O+",
          alergias="Ninguna conocida", medicamentos="Ninguno",
          condiciones="Sin antecedentes relevantes"),
-    dict(nombre="Luis Vargas", rol="Ingeniero de vuelo", edad=36, peso_kg=78, tipo_sangre="A+",
-         alergias="Penicilina", medicamentos="Ninguno",
-         condiciones="Asma leve en la infancia"),
-    dict(nombre="Sofía Chaves", rol="Oficial médico", edad=38, peso_kg=58, tipo_sangre="B+",
-         alergias="Ibuprofeno (molestias gástricas)", medicamentos="Antihistamínico estacional",
-         condiciones="Rinitis alérgica"),
-    dict(nombre="Marco Jiménez", rol="Especialista de misión", edad=45, peso_kg=84,
-         tipo_sangre="AB-", alergias="Ninguna conocida", medicamentos="Ninguno",
-         condiciones="Hipertensión leve controlada"),
     dict(nombre="Jason", rol="Astronauta (caso de prueba del médico virtual)", edad=42, peso_kg=78,
          tipo_sangre="O+", alergias="Penicilina",
          medicamentos="Losartán 50 mg al día",
          condiciones="Hipertensión leve"),
+    dict(nombre="María Quesada Antonelli", rol="Especialista de misión (2.ª misión)", edad=38, peso_kg=62,
+         tipo_sangre="No registrado", alergias="Penicilina (erupción leve)",
+         medicamentos="Ibuprofeno 400 mg ocasional",
+         condiciones="Escoliosis idiopática (curva torácica derecha T7-T12, ángulo de Cobb 14°, estable); "
+                     "fractura de muñeca a los 16 años; sin enfermedades crónicas"),
 ]
+
+# Valores de reposo propios de cada persona (los demás se generan al azar y de forma repetible).
+BASES_FIJAS = {
+    "Jason": dict(fc=64, pas=122, pad=78, spo2=98, temp=36.6, fr=15),
+    "María Quesada Antonelli": dict(fc=56, pas=112, pad=70, spo2=98, temp=36.6, fr=14),
+}
 
 CAMPOS_EDITABLES = ("peso_kg", "tipo_sangre", "alergias", "medicamentos", "condiciones")
 
@@ -119,17 +121,27 @@ def init_db() -> None:
 
 
 def sembrar_astronautas() -> None:
-    """Inserta la tripulación de ejemplo si la tabla está vacía."""
+    """Deja la tabla igual a TRIPULACION: agrega a quien falte y borra a quien ya no esté."""
+    nombres = [a["nombre"] for a in TRIPULACION]
     with conexion() as con:
-        if con.execute("SELECT COUNT(*) FROM astronautas").fetchone()[0] > 0:
-            return
+        existentes = {f["nombre"]: f["id"] for f in con.execute("SELECT id, nombre FROM astronautas")}
+        for nombre, astro_id in existentes.items():
+            if nombre in nombres:
+                continue
+            for tabla in ("mediciones", "eventos", "notas", "recordatorios"):
+                try:
+                    con.execute(f"DELETE FROM {tabla} WHERE astronauta_id=?", (astro_id,))
+                except sqlite3.OperationalError:
+                    pass  # la tabla aún no existe
+            con.execute("DELETE FROM astronautas WHERE id=?", (astro_id,))
         for a in TRIPULACION:
-            con.execute(
-                "INSERT INTO astronautas (nombre, rol, edad, peso_kg, tipo_sangre, alergias,"
-                " medicamentos, condiciones) VALUES (:nombre, :rol, :edad, :peso_kg,"
-                " :tipo_sangre, :alergias, :medicamentos, :condiciones)",
-                a,
-            )
+            if a["nombre"] not in existentes:
+                con.execute(
+                    "INSERT INTO astronautas (nombre, rol, edad, peso_kg, tipo_sangre, alergias,"
+                    " medicamentos, condiciones) VALUES (:nombre, :rol, :edad, :peso_kg,"
+                    " :tipo_sangre, :alergias, :medicamentos, :condiciones)",
+                    a,
+                )
 
 
 # --------------------------------------------------------------------------- astronautas
