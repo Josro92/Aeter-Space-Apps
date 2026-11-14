@@ -149,22 +149,26 @@ def banner_alertas(yo_nombre: str) -> None:
 
 
 # --------------------------------------------------------------------------- pestaña principal: estado actual
-ESTILO_RELOJ = """<style>
-.reloj-wrap{display:flex;justify-content:center;padding:4px 0 16px}
-.reloj{--c:#2ecc71;--glow:rgba(46,204,113,.40);width:min(320px,100%);aspect-ratio:1/1;box-sizing:border-box;
-border-radius:50%;border:10px solid var(--c);background:#0f1729;color:#e8eefc;box-shadow:0 0 30px var(--glow);
-display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:28px;text-align:center}
-.reloj.nivel-advertencia{--c:#f5b301;--glow:rgba(245,179,1,.40)}
-.reloj.nivel-critica{--c:#ff3b30;--glow:rgba(255,59,48,.60)}
-.reloj-hora{font-size:44px;font-weight:700;line-height:1}
-.reloj-nombre{font-size:14px;color:#8fa0c4}
-.reloj-estado{font-size:20px;font-weight:600;color:var(--c)}
-.reloj-vitales{display:flex;gap:14px;font-size:15px;flex-wrap:wrap;justify-content:center}
-button[data-baseweb="tab"] p{font-size:22px}
-button[data-baseweb="tab"]{height:56px}
-.reloj.con-svg{position:relative;border:none;background:none;box-shadow:none}
-.reloj-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 18px var(--glow))}
-.reloj.con-svg > div{position:relative}
+.corazon-svg {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+#corazon-path {
+  fill: var(--c-corazon, #047f00);
+  stroke: var(--c-corazon, #047f00);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: latir var(--duracion, 0.85s) infinite ease-in-out;
+}
+@keyframes latir {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.25); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.18); }
+  60% { transform: scale(1); }
+}
 </style>"""
 RUTA_SVG = Path(__file__).with_name("dinosa.svg")
 SVG_B64 = base64.b64encode(RUTA_SVG.read_bytes()).decode() if RUTA_SVG.exists() else ""
@@ -175,19 +179,19 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
     def v(clave: str, formato: str = "{:.0f}") -> str:
         return formato.format(med[clave]) if med else "--"
 
-    extra = " con-svg" if SVG_B64 else ""
-    imagen = f'<img class="reloj-img" src="data:image/svg+xml;base64,{SVG_B64}">' if SVG_B64 else ""
-    return (
-        f'<div class="reloj-wrap"><div class="reloj nivel-{nivel}{extra}">'
-        f'{imagen}'
-        f'<div class="reloj-hora">{datetime.now():%H:%M}</div>'
-        f'<div class="reloj-nombre">{html.escape(nombre)}</div>'
-        f'<div class="reloj-estado">{html.escape(estado)}</div>'
-        f'<div class="reloj-vitales"><span>♥ <b>{v("fc")}</b></span>'
-        f'<span>SpO₂ <b>{v("spo2")}</b></span>'
-        f'<span><b>{v("temp", "{:.1f}")}</b> °C</span></div>'
-        f'</div></div>'
+    # Cálculo dinámico de velocidad y color según la frecuencia cardíaca (fc)
+    fc = med["fc"] if (med and med.get("fc")) else 70
+    duracion = 60.0 / max(fc, 30)  # Evita división por cero si hay fallo de sensor
+    color_corazon = "#ff3b30" if fc > 100 else "#2ecc71"
+   
+    svg_corazon = (
+        f'<svg class="corazon-svg" viewBox="100 50 200 180" xmlns="http://w3.org">'
+        f'<path id="corazon-path" stroke-width="8" '
+        f'style="--c-corazon:{color_corazon}; --duracion:{duracion:.2f}s;" '
+        f'd="m200.04,112.01c24.5,-70.29 120.49,0 0,90.37c-120.49,-90.37 -24.5,-160.66 0,-90.37z"/>'
+        f'</svg>'
     )
+
 
 
 def enviar_sos(astro_id: int) -> None:
