@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Prueba de Latido SVG</title>
+  <style>
+    #corazon {
+      fill: var(--color, #047f00);
+      stroke: var(--color, #047f00);
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: latir 0.85s infinite ease-in-out;
+      transition: fill 0.3s, stroke 0.3s;
+    }
+
+    @keyframes latir {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.25); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.18); }
+      60% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <svg viewBox="100 50 200 180" xmlns="http://w3.org" width="250">
+    <g class="layer">
+      <path id="corazon" stroke-width="5"
+        d="m200.04,112.01c24.5,-70.29 120.49,0 0,90.37c-120.49,-90.37 -24.5,-160.66 0,-90.37z"/>
+    </g>
+  </svg>
+
+  <p>Frecuencia: <span id="valor">70</span> BPM</p>
+  <input id="slider" type="range" min="40" max="200" value="70">
+
+  <script>
+    const corazon = document.getElementById('corazon');
+    const UMBRAL = 100;
+
+    function setFrecuencia(bpm) {
+      const alta = bpm > UMBRAL;
+      corazon.style.setProperty('--color', alta ? '#ff0000' : '#047f00');
+      corazon.style.animationDuration = (60 / bpm) + 's';
+      document.getElementById('valor').textContent = bpm;
+    }
+
+    document.getElementById('slider').addEventListener('input', e => {
+      setFrecuencia(Number(e.target.value));
+    });
+
+    setFrecuencia(70);
+  </script>
+
+</body>
+</html>
