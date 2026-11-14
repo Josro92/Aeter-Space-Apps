@@ -178,7 +178,8 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
 
     fc = med["fc"] if (med and med.get("fc")) else 70
     duracion = 60.0 / max(fc, 30)
-    color = "#ff3b30" if fc > 100 else "#2ecc71"
+    colores = {"normal": "#2ecc71", "advertencia": "#f5b301", "critica": "#ff3b30"}
+    color = colores.get(nivel, "#2ecc71")
     ns = "http:" + chr(47)*2 + "www.w3.org" + chr(47) + "2000" + chr(47) + "svg"
 
     svg_corazon = (
@@ -205,6 +206,7 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
         f'<span><b>{v("temp", "{:.1f}")}</b> °C</span></div>'
         f'</div></div>'
     )
+
 
 
 
