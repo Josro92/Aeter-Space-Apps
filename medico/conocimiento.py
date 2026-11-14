@@ -8,6 +8,9 @@ RAIZ = Path(__file__).resolve().parent.parent
 CARPETA = RAIZ / "knowledge"
 
 SINONIMOS = {
+    "sangrado": "hemorragia herida grave", "sangra": "hemorragia herida grave", "sangrando": "hemorragia herida grave", "sangre": "hemorragia herida grave",
+    "infarto": "dolor agudo pecho", "desmayo": "perdida conciencia neurologica", "convulsiones": "convulsion", "ahogo": "dificultad respiratoria hipoxia",
+    "incendio": "incendio humo cabina", "humo": "incendio humo cabina", "quemado": "quemaduras", "vomito": "nauseas vomito mareo",
     "pulso": "frecuencia cardiaca", "latidos": "frecuencia cardiaca", "taquicardia": "frecuencia cardiaca",
     "bradicardia": "frecuencia cardiaca", "presion": "presion arterial", "tension": "presion arterial",
     "oxigeno": "saturacion spo2", "respirar": "frecuencia respiratoria", "fiebre": "temperatura corporal",
@@ -94,7 +97,7 @@ def inventario_compacto() -> str:
     return "\n".join(lineas) if lineas else "(sin inventario cargado)"
 
 
-def buscar(consulta: str, k: int = 4, max_chars: int = 1400) -> list[dict]:
+def buscar(consulta: str, k: int = 4, max_chars: int = 2500) -> list[dict]:
     q = tokens(consulta)
     for w in re.findall(r"[a-z0-9]{3,}", norm(consulta)):   # sinónimos sobre la palabra completa
         if w in SINONIMOS:
