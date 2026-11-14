@@ -195,17 +195,14 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
     def v(clave: str, formato: str = "{:.0f}") -> str:
         return formato.format(med[clave]) if med else "--"
 
-    # Generar el corazón gigante animado de fondo
     if CORAZON_RAW:
         fc = med["fc"] if (med and med.get("fc")) else 70
         duracion = 60.0 / max(fc, 30)
         color = "#ff3b30" if fc > 100 else "#2ecc71"
-        
         svg_modificado = (
             CORAZON_RAW
             .replace("#047f00", color)
             .replace("0.85s", f"{duracion:.2f}s")
-            # Añade transparencia al relleno para que los textos blancos se lean bien encima
             .replace('id="corazon"', 'id="corazon" fill-opacity="0.28"')
         )
         corazon_b64 = base64.b64encode(svg_modificado.encode("utf-8")).decode()
@@ -214,7 +211,7 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
     else:
         imagen = ""
         extra = ""
-    
+
     return (
         f'<div class="reloj-wrap"><div class="reloj nivel-{nivel}{extra}">'
         f'{imagen}'
@@ -227,7 +224,8 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
         f'</div></div>'
     )
 
-        corazon_b64 = base64.b64encode(svg_modificado.encode("utf-8")).decode()
+
+    corazon_b64 = base64.b64encode(svg_modificado.encode("utf-8")).decode()
         icono_fc = f'<img src="data:image/svg+xml;base64,{corazon_b64}" style="width:18px;height:18px;vertical-align:middle;margin-right:4px;">'
     else:
         icono_fc = "♥ "
