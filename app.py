@@ -165,27 +165,8 @@ button[data-baseweb="tab"]{height:56px}
 .reloj.con-svg{position:relative;border:none;background:none;box-shadow:none}
 .reloj-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 18px var(--glow))}
 .reloj.con-svg > div{position:relative}
-.corazon-svg {
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
-  margin-right: 4px;
-}
-#corazon-path {
-  fill: var(--c-corazon, #047f00);
-  stroke: var(--c-corazon, #047f00);
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: latir var(--duracion, 0.85s) infinite ease-in-out;
-}
-@keyframes latir {
-  0%, 100% { transform: scale(1); }
-  15% { transform: scale(1.25); }
-  30% { transform: scale(1); }
-  45% { transform: scale(1.18); }
-  60% { transform: scale(1); }
-}
 </style>"""
+
 RUTA_CORAZON = Path(__file__).with_name("corazon.svg")
 CORAZON_RAW = RUTA_CORAZON.read_text(encoding="utf-8") if RUTA_CORAZON.exists() else ""
 TEXTO_ESTADO = {"normal": "Todo en orden", "advertencia": "Atención", "critica": "Emergencia"}
@@ -199,12 +180,7 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
         fc = med["fc"] if (med and med.get("fc")) else 70
         duracion = 60.0 / max(fc, 30)
         color = "#ff3b30" if fc > 100 else "#2ecc71"
-        svg_modificado = (
-            CORAZON_RAW
-            .replace("#047f00", color)
-            .replace("0.85s", f"{duracion:.2f}s")
-            .replace('id="corazon"', 'id="corazon" fill-opacity="0.28"')
-        )
+        svg_modificado = CORAZON_RAW.replace("#047f00", color).replace("0.85s", f"{duracion:.2f}s").replace('id="corazon"', 'id="corazon" fill-opacity="0.28"')
         corazon_b64 = base64.b64encode(svg_modificado.encode("utf-8")).decode()
         imagen = f'<img class="reloj-img" src="data:image/svg+xml;base64,{corazon_b64}">'
         extra = " con-svg"
@@ -219,28 +195,6 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
         f'<div class="reloj-nombre">{html.escape(nombre)}</div>'
         f'<div class="reloj-estado">{html.escape(estado)}</div>'
         f'<div class="reloj-vitales"><span>♥ <b>{v("fc")}</b></span>'
-        f'<span>SpO₂ <b>{v("spo2")}</b></span>'
-        f'<span><b>{v("temp", "{:.1f}")}</b> °C</span></div>'
-        f'</div></div>'
-    )
-
-
-
-    corazon_b64 = base64.b64encode(svg_modificado.encode("utf-8")).decode()
-        icono_fc = f'<img src="data:image/svg+xml;base64,{corazon_b64}" style="width:18px;height:18px;vertical-align:middle;margin-right:4px;">'
-    else:
-        icono_fc = "♥ "
-
-    extra = " con-svg" if SVG_B64 else ""
-    imagen = f'<img class="reloj-img" src="data:image/svg+xml;base64,{SVG_B64}">' if SVG_B64 else ""
-    
-    return (
-        f'<div class="reloj-wrap"><div class="reloj nivel-{nivel}{extra}">'
-        f'{imagen}'
-        f'<div class="reloj-hora">{datetime.now():%H:%M}</div>'
-        f'<div class="reloj-nombre">{html.escape(nombre)}</div>'
-        f'<div class="reloj-estado">{html.escape(estado)}</div>'
-        f'<div class="reloj-vitales"><span>{icono_fc}<b>{v("fc")}</b></span>'
         f'<span>SpO₂ <b>{v("spo2")}</b></span>'
         f'<span><b>{v("temp", "{:.1f}")}</b> °C</span></div>'
         f'</div></div>'
