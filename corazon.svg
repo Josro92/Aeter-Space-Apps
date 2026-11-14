@@ -1,0 +1,25 @@
+<svg viewBox="100 50 200 180" xmlns="http://w3.org" width="250">
+  <style>
+    #corazon {
+      fill: var(--color, #047f00);
+      stroke: var(--color, #047f00);
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: latir 0.85s infinite ease-in-out;
+      transition: fill 0.3s, stroke 0.3s;
+    }
+
+    @keyframes latir {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.25); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.18); }
+      60% { transform: scale(1); }
+    }
+  </style>
+
+  <g class="layer">
+    <path id="corazon" stroke-width="5"
+      d="m200.04,112.01c24.5,-70.29 120.49,0 0,90.37c-120.49,-90.37 -24.5,-160.66 0,-90.37z"/>
+  </g>
+</svg>
