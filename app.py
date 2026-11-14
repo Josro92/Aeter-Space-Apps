@@ -225,6 +225,7 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
     )
 
 
+
     corazon_b64 = base64.b64encode(svg_modificado.encode("utf-8")).decode()
         icono_fc = f'<img src="data:image/svg+xml;base64,{corazon_b64}" style="width:18px;height:18px;vertical-align:middle;margin-right:4px;">'
     else:
