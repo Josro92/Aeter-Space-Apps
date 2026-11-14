@@ -30,6 +30,12 @@ def _registrar(evento: dict) -> None:
         pass  # el registro nunca debe romper la app
 
 
+def _norm(t: str) -> str:
+    import unicodedata
+    t = unicodedata.normalize("NFD", t.lower().strip())
+    return "".join(c for c in t if unicodedata.category(c) != "Mn")
+
+
 def _claves_validas() -> dict:
     import protocolos
     return {**{k: "emergencia" for k in protocolos.EMERGENCIAS},
@@ -59,6 +65,14 @@ def validar(nombre: str, arg: str) -> dict | None:
         m = re.fullmatch(r"(\d{1,2}):(\d{2})\|(.{3,150})", arg)
         if m and int(m.group(1)) < 24 and int(m.group(2)) < 60:
             return {"accion": nombre, "arg": f"{int(m.group(1)):02d}:{m.group(2)}|{m.group(3).strip()}"}
+    if nombre == "cambiar_astronauta" and 2 <= len(arg) <= 40:
+        import db
+        q = _norm(arg)
+        for a in db.listar_astronautas():
+            n = _norm(a["nombre"])
+            if q == n or q in n.split() or n.split()[0] == q.split()[0]:
+                return {"accion": nombre, "arg": a["nombre"], "id": a["id"]}
+        return None
     if nombre == "sos" and 3 <= len(arg) <= 200:
         return {"accion": nombre, "arg": arg, "ts": time.time()}
     if nombre == "normalizar_emergencia" and not arg:
@@ -135,6 +149,8 @@ def aplicar_inmediatas(acciones: list[dict], astro_id: int, yo_nombre: str) -> N
             st.session_state["nav_cmd"] = {"id": f"{time.time()}", "pasos": SECCIONES[arg]}
         elif k == "pitido":
             st.session_state["sirena"] = (arg == "activar")
+        elif k == "cambiar_astronauta":
+            st.session_state["astro_cambiar"] = a["id"]
         elif k == "recordar":
             hora, _, texto = arg.partition("|")
             try:
@@ -142,7 +158,7 @@ def aplicar_inmediatas(acciones: list[dict], astro_id: int, yo_nombre: str) -> N
                 _registrar({"evento": "recordatorio", "hora": hora})
             except Exception:
                 pass
-        if k in ("ir_a", "pitido", "recordar"):
+        if k in ("ir_a", "pitido", "recordar", "cambiar_astronauta"):
             _registrar({"evento": "ejecutada", "accion": k, "arg": arg[:80], "por": yo_nombre})
 
 
@@ -185,6 +201,8 @@ def mostrar(acciones: list[dict], astro_id: int, yo_nombre: str, clave: str, ser
                 st.markdown(frag["texto"].replace("## ", "### ", 1) if frag else "No encontrado.")
         elif k == "ir_a":
             st.caption(f"🧭 Abriendo: {SECCIONES[arg][-1]}")
+        elif k == "cambiar_astronauta":
+            st.caption(f"👤 Cambiando al astronauta: {arg}")
         elif k == "pitido":
             st.caption("🔔 Pitido de emergencia " + ("activado" if arg == "activar" else "desactivado"))
         elif k == "recordar":

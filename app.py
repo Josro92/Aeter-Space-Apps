@@ -450,6 +450,8 @@ def tab_asistente(astro_id: int, api_key: str, yo_nombre: str) -> None:
             st.session_state["pendiente"] = nueva_pend
         historial.append({"role": "assistant", "content": respuesta, "acciones": filtro.acciones})
         st.session_state["voz_texto"] = (respuesta, f"{astro_id}_{len(historial)}")
+        if "astro_cambiar" in st.session_state:
+            st.rerun()  # redibuja ya con el otro astronauta seleccionado
 
     if historial and st.button("🧹 Limpiar conversación", key=f"limpiar_{astro_id}"):
         historial.clear()
@@ -457,6 +459,10 @@ def tab_asistente(astro_id: int, api_key: str, yo_nombre: str) -> None:
 
 
 # --------------------------------------------------------------------------- barra lateral
+# El médico pide cambiar de astronauta: se aplica antes de crear el selector.
+if "astro_cambiar" in st.session_state:
+    st.session_state["astro"] = st.session_state.pop("astro_cambiar")
+
 with st.sidebar:
     st.title("🚀 AstroMonitor")
     st.caption("Monitoreo de signos vitales y asistente médico de a bordo")

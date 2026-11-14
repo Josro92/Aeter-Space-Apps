@@ -25,9 +25,10 @@ window.__voz = (function(){
     if(!mostrar){ if(b) b.remove(); return; }
     if(b) return;
     b=document.createElement('button'); b.id='voz-overlay';
-    b.textContent='🎙️ Toque aquí para activar al médico virtual';
+    b.textContent='🎙️ Toque en cualquier parte para activar al médico virtual';
     b.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:10000;padding:14px 26px;border-radius:30px;border:2px solid #E4405F;background:#E4405F;color:#fff;font:600 16px sans-serif;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.5)';
     b.onclick=desbloquear; document.body.appendChild(b);
+    document.addEventListener('pointerdown', function f(){ document.removeEventListener('pointerdown', f); if(!desbloqueado) desbloquear(); }, true);
   }
   function hayActivacion(){ return !!(navigator.userActivation && navigator.userActivation.hasBeenActive); }
   function desbloquear(){
