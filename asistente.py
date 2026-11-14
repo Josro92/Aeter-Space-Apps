@@ -137,6 +137,16 @@ def responder_stream(historial: list[dict], astronauta: dict, recientes: list[di
     pregunta = historial[-1]["content"] if historial else ""
     clave = (api_key or os.environ.get("ANTHROPIC_API_KEY") or "").strip()
 
+    # 1) Médico virtual (Gemini + conocimiento). Si falla, se cae al camino anterior.
+    try:
+        import medico
+        if medico.hay_llave():
+            contexto = construir_contexto(astronauta, recientes, alertas_activas, notas)
+            yield from medico.responder_stream(_mensajes_validos(historial), contexto)
+            return
+    except Exception as e:
+        yield f"No pude contactar al médico virtual ({type(e).__name__}). Uso el respaldo.\n\n"
+
     if clave:
         try:
             import anthropic

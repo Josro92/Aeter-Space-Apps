@@ -379,8 +379,13 @@ ATAJOS = {
 def tab_asistente(astro_id: int, api_key: str, yo_nombre: str) -> None:
     astro = db.obtener_astronauta(astro_id)
     st.subheader(f"Asistente de a bordo · paciente: {astro['nombre']}")
-    st.caption("🟢 Conectado a Claude" if api_key else
-               "🟠 Modo offline: responde con los protocolos locales (agrega una API key en la barra lateral para usar la IA)")
+    import medico
+    if medico.hay_llave():
+        st.caption("🟢 Médico virtual conectado (Gemini + base de conocimiento)")
+    elif api_key:
+        st.caption("🟢 Conectado a Claude")
+    else:
+        st.caption("🟠 Modo offline: responde con los protocolos locales (falta la llave GEMINI_API_KEY)")
 
     historial = st.session_state.setdefault(f"chat_{astro_id}", [])
 
