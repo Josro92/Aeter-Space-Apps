@@ -149,6 +149,22 @@ def banner_alertas(yo_nombre: str) -> None:
 
 
 # --------------------------------------------------------------------------- pestaña principal: estado actual
+ESTILO_RELOJ = """<style>
+.reloj-wrap{display:flex;justify-content:center;padding:4px 0 16px}
+.reloj{--c:#2ecc71;--glow:rgba(46,204,113,.40);width:min(320px,100%);aspect-ratio:1/1;box-sizing:border-box;
+border-radius:50%;border:10px solid var(--c);background:#0f1729;color:#e8eefc;box-shadow:0 0 30px var(--glow);
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:28px;text-align:center}
+.reloj.nivel-advertencia{--c:#f5b301;--glow:rgba(245,179,1,.40)}
+.reloj.nivel-critica{--c:#ff3b30;--glow:rgba(255,59,48,.60)}
+.reloj-hora{font-size:44px;font-weight:700;line-height:1}
+.reloj-nombre{font-size:14px;color:#8fa0c4}
+.reloj-estado{font-size:20px;font-weight:600;color:var(--c)}
+.reloj-vitales{display:flex;gap:14px;font-size:15px;flex-wrap:wrap;justify-content:center}
+button[data-baseweb="tab"] p{font-size:22px}
+button[data-baseweb="tab"]{height:56px}
+.reloj.con-svg{position:relative;border:none;background:none;box-shadow:none}
+.reloj-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 18px var(--glow))}
+.reloj.con-svg > div{position:relative}
 .corazon-svg {
   width: 18px;
   height: 18px;
