@@ -158,7 +158,7 @@ button[data-baseweb="tab"]{height:56px}
 }
 </style>"""
 
-RUTA_SVG = Path(__file__).with_name("dinosa.svg")
+RUTA_SVG = Path(__file__).with_name("corazon.svg")
 SVG_B64 = base64.b64encode(RUTA_SVG.read_bytes()).decode() if RUTA_SVG.exists() else ""
 TEXTO_ESTADO = {"normal": "Todo en orden", "advertencia": "Atención", "critica": "Emergencia"}
 
