@@ -11,7 +11,8 @@ import streamlit.components.v1 as components
 JS = r"""
 window.__voz = (function(){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let rec=null, on=false, busy=false, speaking=false, lastId=null, busyTimer=null;
+  let rec=null, on=false, busy=false, speaking=false, busyTimer=null, desbloqueado=false;
+  let vistos={}, cola=[], navVisto=null, sirenaOn=false, sirenaTimer=null, ctx=null, nbeep=0;
   function estado(t){
     let el=document.getElementById('voz-estado');
     if(!el){el=document.createElement('div');el.id='voz-estado';
@@ -19,8 +20,23 @@ window.__voz = (function(){
       document.body.appendChild(el);}
     el.style.display=t?'block':'none'; el.textContent=t||'';
   }
+  function overlay(mostrar){
+    let b=document.getElementById('voz-overlay');
+    if(!mostrar){ if(b) b.remove(); return; }
+    if(b) return;
+    b=document.createElement('button'); b.id='voz-overlay';
+    b.textContent='🎙️ Toque aquí para activar al médico virtual';
+    b.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:10000;padding:14px 26px;border-radius:30px;border:2px solid #E4405F;background:#E4405F;color:#fff;font:600 16px sans-serif;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.5)';
+    b.onclick=desbloquear; document.body.appendChild(b);
+  }
+  function hayActivacion(){ return !!(navigator.userActivation && navigator.userActivation.hasBeenActive); }
+  function desbloquear(){
+    desbloqueado=true; overlay(false);
+    try{ ctx=ctx||new (window.AudioContext||window.webkitAudioContext)(); ctx.resume(); }catch(_){}
+    sirena(sirenaOn); siguiente();
+  }
   function iniciar(){
-    if(!on||busy||speaking||rec) return;
+    if(!on||!desbloqueado||busy||speaking||rec) return;
     if(!SR){estado('Este navegador no tiene reconocimiento de voz: use Chrome o Edge');return;}
     rec=new SR(); rec.lang='es-MX'; rec.interimResults=false; rec.continuous=false;
     rec.onresult=function(e){const t=(e.results[0][0].transcript||'').trim(); if(t) enviar(t);};
@@ -39,18 +55,42 @@ window.__voz = (function(){
     estado('🧠 Pensando…');
     setTimeout(function(){const b=document.querySelector('[data-testid="stChatInputSubmitButton"]'); if(b) b.click();},200);
   }
-  function hablar(texto){
+  function siguiente(){
+    if(speaking||!desbloqueado) return;
+    if(!cola.length){ busy=false; clearTimeout(busyTimer); estado(''); iniciar(); return; }
+    const texto=cola.shift();
     speechSynthesis.cancel(); parar(); speaking=true; estado('🔊 Hablando…');
     const u=new SpeechSynthesisUtterance(texto); u.lang='es-MX';
     const v=speechSynthesis.getVoices().find(function(v){return v.lang.toLowerCase().indexOf('es')===0;});
     if(v) u.voice=v;
-    u.onend=u.onerror=function(){speaking=false;busy=false;clearTimeout(busyTimer);estado('');iniciar();};
+    u.onend=u.onerror=function(){speaking=false; siguiente();};
     speechSynthesis.speak(u);
   }
+  function sirena(activa){
+    clearInterval(sirenaTimer); sirenaTimer=null;
+    if(!activa||!ctx) return;
+    sirenaTimer=setInterval(function(){
+      try{ const o=ctx.createOscillator(), g=ctx.createGain();
+        o.type='square'; o.frequency.value=(nbeep++%2)?660:880; g.gain.value=0.08;
+        o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.35); }catch(_){}
+    },600);
+  }
+  function navegar(pasos){
+    (function clic(i){
+      const b=[].slice.call(document.querySelectorAll('button[role="tab"]')).find(function(x){return x.textContent.indexOf(pasos[i])>=0;});
+      if(b) b.click();
+      if(i+1<pasos.length) setTimeout(function(){clic(i+1);},350);
+    })(0);
+  }
   return {config:function(o){
-    on=!!o.on;
-    if(!on){parar();speechSynthesis.cancel();speaking=false;busy=false;estado('');return;}
-    if(o.speak && o.id!==lastId){lastId=o.id;hablar(o.speak);} else {iniciar();}
+    on=!!o.on; sirenaOn=!!o.sirena;
+    if(!desbloqueado && hayActivacion()) desbloquear();
+    if(desbloqueado) sirena(sirenaOn);
+    (o.speak||[]).forEach(function(it){ if(!vistos[it.id]){vistos[it.id]=1; cola.push(it.text);} });
+    if(o.nav && o.nav.id!==navVisto){ navVisto=o.nav.id; navegar(o.nav.pasos); }
+    if(!on){ parar(); speechSynthesis.cancel(); speaking=false; cola.length=0; estado(''); overlay(false); return; }
+    if(!desbloqueado){ overlay(true); return; }
+    siguiente();
   }};
 })();
 """
@@ -64,10 +104,12 @@ def limpiar_para_voz(texto: str) -> str:
     return t.strip()
 
 
-def componente(activo: bool, hablar: str | None = None, id_mensaje: str | None = None) -> None:
-    """Se llama en cada ejecución. hablar solo viene con texto cuando hay respuesta nueva."""
-    cfg = {"on": activo, "speak": limpiar_para_voz(hablar) if hablar else None, "id": id_mensaje}
-    components.html(f"""<script>
+def componente(activo: bool, hablar: list[dict] | None = None, sirena: bool = False,
+               nav: dict | None = None) -> None:
+    """Se llama en cada ejecución. hablar: [{'id','text'}]; nav: {'id','pasos'}."""
+    cfg = {"on": activo, "sirena": sirena, "nav": nav,
+           "speak": [{"id": h["id"], "text": limpiar_para_voz(h["text"])} for h in (hablar or [])]}
+    html = f"""<script>
     (function(){{
       try {{
         const P = window.parent, D = P.document;
@@ -75,4 +117,9 @@ def componente(activo: bool, hablar: str | None = None, id_mensaje: str | None =
         P.__voz.config({json.dumps(cfg)});
       }} catch (e) {{ console.log('voz no disponible', e); }}
     }})();
-    </script>""", height=0)
+    </script>"""
+    import streamlit as st
+    if hasattr(st, "iframe"):          # versiones nuevas de Streamlit
+        st.iframe(html, height=1)
+    else:
+        components.html(html, height=0)

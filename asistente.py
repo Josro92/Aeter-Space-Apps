@@ -142,6 +142,11 @@ def responder_stream(historial: list[dict], astronauta: dict, recientes: list[di
         import medico
         if medico.hay_llave():
             contexto = construir_contexto(astronauta, recientes, alertas_activas, notas)
+            try:
+                from medico.capa import contexto_extra
+                contexto += contexto_extra(astronauta["id"])
+            except Exception:
+                pass
             yield from medico.responder_stream(_mensajes_validos(historial), contexto)
             return
     except Exception as e:

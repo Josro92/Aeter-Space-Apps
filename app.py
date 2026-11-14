@@ -7,6 +7,7 @@ import base64
 import html
 import os
 from datetime import datetime, timedelta
+import time
 from pathlib import Path
 import pandas as pd
 import plotly.graph_objects as go
@@ -388,9 +389,7 @@ def tab_asistente(astro_id: int, api_key: str, yo_nombre: str) -> None:
         st.caption("🟠 Modo offline: responde con los protocolos locales (falta la llave GEMINI_API_KEY)")
 
     historial = st.session_state.setdefault(f"chat_{astro_id}", [])
-    from medico import acciones as med_acciones, voz as med_voz
-    voz_activa = st.toggle("🎙️ Modo voz (manos libres, usar Chrome o Edge)", key="voz_on",
-                           help="Habla y el médico responde en voz alta. Permita el micrófono cuando el navegador lo pida.")
+    from medico import acciones as med_acciones
 
     with st.expander("🔎 Contexto que recibe el asistente en este momento"):
         recientes = db.ultimas_mediciones(astro_id, 30)
@@ -407,7 +406,7 @@ def tab_asistente(astro_id: int, api_key: str, yo_nombre: str) -> None:
         with st.chat_message(m["role"]):
             st.markdown(m["content"])
             if m.get("acciones"):
-                med_acciones.mostrar(m["acciones"], astro_id, yo_nombre, f"{astro_id}_{i}")
+                med_acciones.mostrar(m["acciones"], astro_id, yo_nombre, f"{astro_id}_{i}", servicio)
 
     prompt = st.chat_input("Describe la emergencia o haz una pregunta...", key=f"chat_in_{astro_id}")
     if not prompt:
@@ -416,23 +415,45 @@ def tab_asistente(astro_id: int, api_key: str, yo_nombre: str) -> None:
         historial.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
+        # Confirmación por voz de SOS / detener emergencia: la decide la página, no el modelo.
+        pend = st.session_state.get("pendiente")
+        palabras = protocolos.normalizar(prompt).split()
+        if pend and len(palabras) <= 6:
+            if time.time() - pend.get("ts", 0) > med_acciones.CONFIRMAR_SEG:
+                st.session_state.pop("pendiente", None)
+            elif any(p in ("confirmo", "confirmado", "adelante", "envialo", "hazlo") for p in palabras):
+                resultado = med_acciones.ejecutar_pendiente(pend, astro_id, yo_nombre, servicio)
+                st.session_state.pop("pendiente", None)
+                with st.chat_message("assistant"):
+                    st.markdown(resultado)
+                historial.append({"role": "assistant", "content": resultado, "acciones": []})
+                st.session_state["voz_texto"] = (resultado, f"{astro_id}_{len(historial)}")
+                prompt = None
+            elif any(p in ("cancela", "cancelar", "cancelalo", "olvidalo") for p in palabras):
+                st.session_state.pop("pendiente", None)
+                with st.chat_message("assistant"):
+                    st.markdown("Cancelado.")
+                historial.append({"role": "assistant", "content": "Cancelado.", "acciones": []})
+                st.session_state["voz_texto"] = ("Cancelado.", f"{astro_id}_{len(historial)}")
+                prompt = None
+    if prompt:
         recientes = db.ultimas_mediciones(astro_id, 30)  # datos frescos al momento de preguntar
         _, lista = estado_de(recientes[-1] if recientes else None)
         filtro = med_acciones.Filtro()
         with st.chat_message("assistant"):
             respuesta = st.write_stream(filtro.filtrar(asistente.responder_stream(
                 historial, astro, recientes, lista, db.listar_notas(astro_id, 3), api_key)))
-            med_acciones.mostrar(filtro.acciones, astro_id, yo_nombre, f"{astro_id}_{len(historial)}")
+            med_acciones.aplicar_inmediatas(filtro.acciones, astro_id, yo_nombre)
+            med_acciones.mostrar(filtro.acciones, astro_id, yo_nombre, f"{astro_id}_{len(historial)}", servicio)
+        nueva_pend = med_acciones.pendiente_de(filtro.acciones)
+        if nueva_pend:
+            st.session_state["pendiente"] = nueva_pend
         historial.append({"role": "assistant", "content": respuesta, "acciones": filtro.acciones})
         st.session_state["voz_texto"] = (respuesta, f"{astro_id}_{len(historial)}")
 
     if historial and st.button("🧹 Limpiar conversación", key=f"limpiar_{astro_id}"):
         historial.clear()
         st.rerun()
-
-    # Voz: se habla solo la respuesta nueva (se consume una vez); si no hay, solo se sigue escuchando.
-    nueva = st.session_state.pop("voz_texto", None)
-    med_voz.componente(voz_activa, nueva[0] if nueva else None, nueva[1] if nueva else None)
 
 
 # --------------------------------------------------------------------------- barra lateral
@@ -456,6 +477,18 @@ with st.sidebar:
         if b2.button("↺ Normalizar"):
             servicio.set_escenario(astro_id, "normal")
         st.caption(f"Escenario actual: **{ETIQUETAS_ESCENARIO[servicio.escenario(astro_id)]}**")
+
+    with st.expander("🩺 Médico virtual", expanded=True):
+        st.toggle("🎙️ Siempre activo (voz)", value=True, key="voz_on",
+                  help="El médico saluda, escucha sin botones y responde en voz alta. Use Chrome o Edge y permita el micrófono.")
+        s1, s2 = st.columns(2)
+        s1.button("🔔 Pitido", on_click=lambda: st.session_state.update(sirena=True), use_container_width=True)
+        s2.button("🔕 Silenciar", on_click=lambda: st.session_state.update(sirena=False), use_container_width=True)
+        if st.session_state.get("sirena"):
+            st.error("Pitido de emergencia ACTIVO", icon="🔔")
+        from medico import recordatorios as med_rec
+        for r in med_rec.pendientes(astro_id)[:4]:
+            st.caption(f"⏰ {r['vence'][11:16]} · {r['texto']}")
 
     with st.expander("🤖 Asistente con IA"):
         api_key = st.text_input("API key de Anthropic (opcional)", type="password",
@@ -481,3 +514,6 @@ with tab_detalle:
         tab_historial(astro_id, yo_nombre)
     with sub4:
         tab_asistente(astro_id, api_key, yo_nombre)
+
+from medico.capa import capa_global
+capa_global(astro_id, yo_nombre)

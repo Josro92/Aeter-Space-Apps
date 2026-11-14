@@ -1,0 +1,4 @@
+[
+  {"_ejemplo": "Quite el guion bajo para activar. 'fecha' es opcional (AAAA-MM-DD); sin fecha suena hoy a esa hora.",
+   "hora": "08:00", "texto": "Tome sus signos vitales de la mañana", "activo": false}
+]
