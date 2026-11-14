@@ -1,0 +1,15 @@
+# Llaves y secretos: NUNCA se suben (el repositorio es público)
+.env
+.streamlit/secrets.toml
+
+# Entornos y caché de Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Bases de datos y registros locales
+*.db
+*.sqlite
+*.sqlite3
+logs/
