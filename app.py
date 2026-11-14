@@ -165,6 +165,12 @@ button[data-baseweb="tab"]{height:56px}
 .reloj.con-svg{position:relative;border:none;background:none;box-shadow:none}
 .reloj-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 18px var(--glow))}
 .reloj.con-svg > div{position:relative}
+
+.aeter-avatar{width:44px;height:44px;border-radius:50%;border:2px solid #8fa0c4;display:flex;align-items:center;justify-content:center;font-size:24px}
+.hora-grande{font-size:44px;font-weight:700;line-height:1.1;padding-top:40px}
+.st-key-btn_sos button{width:150px;height:150px;border-radius:50%;background:#e53935;border:4px solid #ff8a80;color:#fff;box-shadow:0 0 24px rgba(255,59,48,.55)}
+.st-key-btn_sos button:hover{background:#c62828;border-color:#ff8a80;color:#fff}
+.st-key-btn_sos button p{font-size:30px;font-weight:800}
 </style>"""
 
 RUTA_CORAZON = Path(__file__).with_name("corazon.svg")
@@ -230,20 +236,36 @@ def panel_estado_actual(astro_id: int) -> None:
     if sos:  # un SOS pendiente pone el reloj en rojo aunque los signos estén normales
         nivel, estado = "critica", "SOS enviado"
 
-    col_reloj, col_info = st.columns([1, 1.3], gap="large")
+    col_reloj, col_der = st.columns([1, 1.2], gap="large")
+
     with col_reloj:
         st.markdown(reloj_html(nivel, a["nombre"], estado, med), unsafe_allow_html=True)
-        st.button("🆘 SOS: avisar a la tripulación", key="btn_sos", type="primary",
-                  on_click=enviar_sos, args=(astro_id,))
 
-    with col_info:
+    with col_der:
+        historial = st.session_state.get(f"chat_{astro_id}", [])
+        respuestas = [m for m in historial if m["role"] == "assistant"]
+        mensaje = respuestas[-1]["content"] if respuestas else \
+            "Soy Aéter, su asistente médico. Diga «médico» y dígame qué necesita."
+        if len(mensaje) > 280:
+            mensaje = mensaje[:280].rstrip() + "…"
+        audio = "🔊 Audio activo" if st.session_state.get("voz_on", True) else "🔇 Audio apagado"
+        with st.container(border=True):
+            c_av, c_txt = st.columns([1, 6])
+            c_av.markdown("<div class='aeter-avatar'>🤖</div>", unsafe_allow_html=True)
+            c_txt.markdown("**Hola**")
+            st.markdown(mensaje)
+            st.caption(f"💬 Chat · 🧠 IA · {audio}")
+
+        c_hora, c_sos = st.columns([1.2, 1])
+        hora = datetime.now().strftime("%I:%M %p").lstrip("0").lower()
+        c_hora.markdown(f"<div class='hora-grande'>{hora}</div>", unsafe_allow_html=True)
+        c_sos.button("SOS", key="btn_sos", on_click=enviar_sos, args=(astro_id,))
+
+    if sos or lista:
         st.subheader("Qué hacer ahora")
         if sos:
             st.error(f"SOS enviado a la tripulación a las {sos[0]['ts'][11:19]}. "
                      "Esperando que alguien lo reconozca.", icon="🆘")
-        if not lista:
-            st.success("Todos los signos vitales están dentro del rango normal. "
-                       "Sigue con tu rutina.", icon="✅")
         for al in lista:
             if al["severidad"] == "critica":
                 st.error(al["mensaje"], icon="🚨")
@@ -256,46 +278,31 @@ def panel_estado_actual(astro_id: int) -> None:
                 st.markdown(protocolos.lista_numerada(e["pasos"][:3]))
                 st.caption(f"Escalar si: {e['escalar']}")
 
-    if med:
-        por_param = {al["parametro"]: al["severidad"] for al in lista}
-
-        def sev(*params: str) -> str:
-            niveles = [por_param.get(p, "normal") for p in params]
-            return ("critica" if "critica" in niveles
-                    else "advertencia" if "advertencia" in niveles else "normal")
-
-        datos = [
-            ("Pulso", alertas.formatear("fc", med["fc"]), sev("fc")),
-            ("Presión", f"{med['pas']:.0f}/{med['pad']:.0f} mmHg", sev("pas", "pad")),
-            ("SpO₂", alertas.formatear("spo2", med["spo2"]), sev("spo2")),
-            ("Temperatura", alertas.formatear("temp", med["temp"]), sev("temp")),
-            ("Respiración", alertas.formatear("fr", med["fr"]), sev("fr")),
-        ]
-        for col, (titulo, valor, s) in zip(st.columns(5), datos):
-            col.metric(f"{ICONO[s]} {titulo}", valor)
-
     st.caption("Tripulación")
     for col, x in zip(st.columns(len(astronautas)), astronautas):
         n, _ = estado_de(db.ultima_medicion(x["id"]))
-        col.markdown(f"{ICONO[n]} **{x['nombre']}**  \n{x['rol']} · {ETIQUETA_NIVEL[n]}")
-   
+        with col, st.container(border=True):
+            st.markdown(f"{ICONO[n]} **{x['nombre']}**  \n{x['rol']} · {ETIQUETA_NIVEL[n]}")
+            if st.button("Ver", key=f"ver_{x['id']}", disabled=(x["id"] == astro_id), width="stretch"):
+                st.session_state["astro_cambiar"] = x["id"]
+                st.rerun()
 
 
 # --------------------------------------------------------------------------- pestaña 1
+ICONOS_VITAL = {"fc": "❤️", "pas": "🩸", "pad": "🩸", "spo2": "💧", "temp": "🌡️", "fr": "🫁"}
+COLOR_NIVEL = {"normal": "#2ecc71", "advertencia": "#f5b301", "critica": "#ff3b30"}
+POR_FILA = 6  # pon 3 si quieres dos filas más grandes
+
+
+def mini_grafica(df: pd.DataFrame, param: str, color: str, key: str) -> None:
+    fig = go.Figure(go.Scatter(x=df["ts"], y=df[param], mode="lines", line=dict(width=2, color=color)))
+    fig.update_layout(height=110, margin=dict(l=0, r=0, t=0, b=0), showlegend=False,
+                      xaxis=dict(visible=False), yaxis=dict(visible=False))
+    st.plotly_chart(fig, key=key, config={"displayModeBar": False})
+
+
 @st.fragment(run_every=2)
 def panel_monitoreo(astro_id: int, n_puntos: int) -> None:
-    st.subheader("Tripulación")
-    columnas = st.columns(len(astronautas))
-    for col, a in zip(columnas, astronautas):
-        med = db.ultima_medicion(a["id"])
-        with col, st.container(border=True):
-            nivel, _ = estado_de(med)
-            st.markdown(f"**{ICONO[nivel]} {a['nombre']}**")
-            st.caption(f"{a['rol']} · {ETIQUETA_NIVEL[nivel]}")
-            if med:
-                st.markdown(f"❤️ {med['fc']:.0f} lpm  \n🫁 SpO₂ {med['spo2']:.0f} %  \n"
-                            f"🩸 {med['pas']:.0f}/{med['pad']:.0f} mmHg")
-
     recientes = db.ultimas_mediciones(astro_id, n_puntos)
     if not recientes:
         st.info("Esperando datos de los sensores...")
@@ -304,23 +311,31 @@ def panel_monitoreo(astro_id: int, n_puntos: int) -> None:
     df["ts"] = pd.to_datetime(df["ts"])
     actual = recientes[-1]
     _, lista = estado_de(actual)
-    por_param = {a["parametro"]: a for a in lista}
+    por_param = {al["parametro"]: al["severidad"] for al in lista}
 
-    st.subheader(f"Signos vitales · {por_id[astro_id]['nombre']}")
-    st.caption(f"Última medición: {actual['ts'][11:19]} · escenario del simulador: "
-               f"{ETIQUETAS_ESCENARIO[servicio.escenario(astro_id)]}")
-    for fila in (alertas.ORDEN[:3], alertas.ORDEN[3:]):
-        cols = st.columns(3)
-        for col, p in zip(cols, fila):
-            sev = por_param.get(p, {}).get("severidad", "normal")
-            col.metric(f"{ICONO[sev]} {alertas.UMBRALES[p]['nombre']}",
-                       alertas.formatear(p, actual[p]))
-        cols = st.columns(3)
-        for col, p in zip(cols, fila):
-            with col:
-                grafica_vital(df, p, key=f"graf_{astro_id}_{p}")
+    izq, der = st.columns([4, 1])
+    with izq:
+        st.subheader(f"Signos vitales · {por_id[astro_id]['nombre']}")
+        st.caption(f"Última medición: {actual['ts'][11:19]} · escenario del simulador: "
+                   f"{ETIQUETAS_ESCENARIO[servicio.escenario(astro_id)]}")
+    ver_grande = der.toggle("📈 Gráfico", key=f"ver_grande_{astro_id}")
 
+    for ini in range(0, len(alertas.ORDEN), POR_FILA):
+        cols = st.columns(POR_FILA)
+        for col, p in zip(cols, alertas.ORDEN[ini:ini + POR_FILA]):
+            color = COLOR_NIVEL[por_param.get(p, "normal")]
+            with col, st.container(border=True):
+                st.markdown(f"<div style='text-align:center;font-size:40px'>{ICONOS_VITAL[p]}</div>"
+                            f"<div style='text-align:center;opacity:.8'>{alertas.UMBRALES[p]['nombre']}</div>"
+                            f"<div style='text-align:center;font-size:28px;font-weight:700;color:{color}'>"
+                            f"{alertas.formatear(p, actual[p])}</div>", unsafe_allow_html=True)
+                mini_grafica(df, p, color, key=f"mini_{astro_id}_{p}")
 
+    if ver_grande:
+        var = st.selectbox("Signo vital", list(alertas.ORDEN),
+                           format_func=lambda p: alertas.UMBRALES[p]["nombre"],
+                           key=f"var_grande_{astro_id}")
+        grafica_vital(df, var, key=f"grande_{astro_id}_{var}")
 # --------------------------------------------------------------------------- pestaña 2
 @st.fragment(run_every=3)
 def panel_alertas(astro_id: int) -> None:
