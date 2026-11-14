@@ -176,20 +176,26 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
     def v(clave: str, formato: str = "{:.0f}") -> str:
         return formato.format(med[clave]) if med else "--"
 
-    if CORAZON_RAW:
-        fc = med["fc"] if (med and med.get("fc")) else 70
-        duracion = 60.0 / max(fc, 30)
-        color = "#ff3b30" if fc > 100 else "#2ecc71"
-        svg_modificado = CORAZON_RAW.replace("#047f00", color).replace("0.85s", f"{duracion:.2f}s").replace('id="corazon"', 'id="corazon" fill-opacity="0.28"')
-        corazon_b64 = base64.b64encode(svg_modificado.encode("utf-8")).decode()
-        imagen = f'<img class="reloj-img" src="data:image/svg+xml;base64,{corazon_b64}">'
-        extra = " con-svg"
-    else:
-        imagen = ""
-        extra = ""
+    fc = med["fc"] if (med and med.get("fc")) else 70
+    duracion = 60.0 / max(fc, 30)
+    color = "#ff3b30" if fc > 100 else "#2ecc71"
+    ns = "http:" + chr(47)*2 + "www.w3.org" + chr(47) + "2000" + chr(47) + "svg"
+
+    svg_corazon = (
+        f'<svg viewBox="100 50 200 180" xmlns="{ns}" width="250">'
+        f'<style>'
+        f'#corazon{{fill:{color};stroke:{color};fill-opacity:0.28;transform-box:fill-box;transform-origin:center;animation:latir {duracion:.2f}s infinite ease-in-out}}'
+        f'@keyframes latir{{0%,100%{{transform:scale(1)}}15%{{transform:scale(1.25)}}30%{{transform:scale(1)}}45%{{transform:scale(1.18)}}60%{{transform:scale(1)}}}}'
+        f'</style>'
+        f'<path id="corazon" stroke-width="5" d="m200.04,112.01c24.5,-70.29 120.49,0 0,90.37c-120.49,-90.37 -24.5,-160.66 0,-90.37z"/>'
+        f'</svg>'
+    )
+
+    corazon_b64 = base64.b64encode(svg_corazon.encode("utf-8")).decode()
+    imagen = f'<img class="reloj-img" src="data:image/svg+xml;base64,{corazon_b64}">'
 
     return (
-        f'<div class="reloj-wrap"><div class="reloj nivel-{nivel}{extra}">'
+        f'<div class="reloj-wrap"><div class="reloj nivel-{nivel} con-svg">'
         f'{imagen}'
         f'<div class="reloj-hora">{datetime.now():%H:%M}</div>'
         f'<div class="reloj-nombre">{html.escape(nombre)}</div>'
@@ -199,6 +205,7 @@ def reloj_html(nivel: str, nombre: str, estado: str, med: dict | None) -> str:
         f'<span><b>{v("temp", "{:.1f}")}</b> °C</span></div>'
         f'</div></div>'
     )
+
 
 
 
