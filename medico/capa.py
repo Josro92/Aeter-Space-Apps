@@ -1,4 +1,4 @@
-"""Capa global del médico: siempre activo mientras la app esté abierta.
+"""Capa global de Aéter: siempre activo mientras la app esté abierta.
 
 Cada pocos segundos: anuncia recordatorios y alertas críticas nuevas, lee en voz alta las
 respuestas del chat, aplica pitido y navegación, y saluda una vez al inicio.
@@ -11,17 +11,17 @@ import db
 from . import recordatorios, voz
 
 
-def _saludo(yo_nombre: str) -> str:
+def _saludo(yo_nombre: str, astro_id: int) -> str:
     h = recordatorios.ahora().hour
     momento = "Buenos días" if h < 12 else "Buenas tardes" if h < 19 else "Buenas noches"
-    pendientes = db.listar_eventos(solo_pendientes=True, limite=40)
+    pendientes = db.listar_eventos(astro_id, solo_pendientes=True, limite=40)
     vistos, msgs = set(), []
     for e in pendientes:
         if (e["astronauta_id"], e["parametro"]) not in vistos:
             vistos.add((e["astronauta_id"], e["parametro"]))
-            msgs.append(f"{e['astronauta']}: {e['mensaje']}")
-    estado = ("Hay alertas activas. " + ". ".join(msgs[:3]) + ".") if msgs else "Todos los signos están estables."
-    return (f"{momento}, {yo_nombre}. Soy su asistente virtual de salud y estoy escuchando. "
+            msgs.append(e["mensaje"])
+    estado = ("Hay alertas activas. " + ". ".join(msgs[:3]) + ".") if msgs else "Sus signos vitales están estables."
+    return (f"{momento}, {yo_nombre.split()[0]}. Soy su asistente virtual de salud y estoy escuchando. "
             f"{estado}")
 
 
@@ -35,25 +35,25 @@ def capa_global(astro_id: int, yo_nombre: str) -> None:
     if activo and not ss.get("saludado"):
         ss["saludado"] = True
         ss["ultimo_ev_voz"] = db.ultimo_evento_id()
-        cola.append({"id": "saludo", "text": _saludo(yo_nombre)})
+        cola.append({"id": f"saludo{astro_id}", "text": _saludo(yo_nombre, astro_id)})
 
-    # Alertas críticas nuevas (de cualquier astronauta)
+    # Alertas críticas nuevas (solo de quien tiene la sesión iniciada)
     if "ultimo_ev_voz" not in ss:
         ss["ultimo_ev_voz"] = db.ultimo_evento_id()
     for e in db.eventos_desde(ss["ultimo_ev_voz"]):
         ss["ultimo_ev_voz"] = max(ss["ultimo_ev_voz"], e["id"])
-        if e["severidad"] == "critica":
-            cola.append({"id": f"ev{e['id']}", "text": f"Alerta crítica. {e['astronauta']}: {e['mensaje']}"})
+        if e["severidad"] == "critica" and e["astronauta_id"] == astro_id:
+            cola.append({"id": f"ev{e['id']}", "text": f"Alerta crítica. {e['mensaje']}"})
 
     # Recordatorios que llegaron a su hora
-    for r in recordatorios.vencidos():
-        st.toast(f"⏰ {r['texto']}")
+    for r in [x for x in recordatorios.vencidos() if x.get("astronauta_id") in (None, astro_id)]:
+        st.toast(f"Recordatorio: {r['texto']}")
         cola.append({"id": f"rec{r['id']}", "text": f"Recordatorio: {r['texto']}"})
     hechos = ss.setdefault("recordatorios_archivo_hechos", set())
     for r in recordatorios.del_archivo():
         if r["id"] not in hechos:
             hechos.add(r["id"])
-            st.toast(f"⏰ {r['texto']}")
+            st.toast(f"Recordatorio: {r['texto']}")
             cola.append({"id": r["id"], "text": f"Recordatorio: {r['texto']}"})
 
     # Respuesta del chat para leer en voz alta
@@ -65,7 +65,7 @@ def capa_global(astro_id: int, yo_nombre: str) -> None:
 
 
 def contexto_extra(astro_id: int) -> str:
-    """Líneas que se añaden al contexto del médico en cada pregunta."""
+    """Líneas que se añaden al contexto de Aéter en cada pregunta."""
     ss = st.session_state
     lineas = [f"\n## Estado de la pantalla\n- Hora actual: {recordatorios.ahora().strftime('%H:%M')}",
               f"- Pitido de emergencia: {'ACTIVO' if ss.get('sirena') else 'apagado'}"]

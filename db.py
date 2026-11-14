@@ -16,6 +16,7 @@ import sqlite3
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 VITALES = ("fc", "pas", "pad", "spo2", "temp", "fr")
 
@@ -75,7 +76,7 @@ TRIPULACION = [
     dict(nombre="Ana Rojas", rol="Comandante", edad=41, peso_kg=63, tipo_sangre="O+",
          alergias="Ninguna conocida", medicamentos="Ninguno",
          condiciones="Sin antecedentes relevantes"),
-    dict(nombre="Jason", rol="Astronauta (caso de prueba del médico virtual)", edad=42, peso_kg=78,
+    dict(nombre="Jason", rol="Astronauta (caso de prueba de Aéter)", edad=42, peso_kg=78,
          tipo_sangre="O+", alergias="Penicilina",
          medicamentos="Losartán 50 mg al día",
          condiciones="Hipertensión leve"),
@@ -100,7 +101,8 @@ def _ruta_db() -> Path:
 
 
 def ahora() -> str:
-    return datetime.now().isoformat(timespec="seconds")
+    """Hora de Costa Rica (el servidor en la nube suele estar en UTC)."""
+    return datetime.now(ZoneInfo("America/Costa_Rica")).replace(tzinfo=None).isoformat(timespec="seconds")
 
 
 @contextmanager
@@ -135,6 +137,8 @@ def sembrar_astronautas() -> None:
                     pass  # la tabla aún no existe
             con.execute("DELETE FROM astronautas WHERE id=?", (astro_id,))
         for a in TRIPULACION:
+            if a["nombre"] in existentes:
+                con.execute("UPDATE astronautas SET rol=? WHERE nombre=?", (a["rol"], a["nombre"]))
             if a["nombre"] not in existentes:
                 con.execute(
                     "INSERT INTO astronautas (nombre, rol, edad, peso_kg, tipo_sangre, alergias,"
@@ -290,6 +294,11 @@ def insertar_nota(astro_id: int, autor: str, nota: str) -> None:
             "INSERT INTO notas (astronauta_id, ts, autor, nota) VALUES (?, ?, ?, ?)",
             (astro_id, ahora(), autor, nota),
         )
+    try:  # cada nota clínica también queda en la bitácora y en el historial
+        import registros
+        registros.agregar_bitacora(astro_id, nota)
+    except Exception:
+        pass
 
 
 def listar_notas(astro_id: int, limite: int = 50) -> list[dict]:

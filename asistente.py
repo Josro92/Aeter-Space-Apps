@@ -11,7 +11,7 @@ import protocolos
 
 MODELO = os.environ.get("ASTRO_MODELO", "claude-sonnet-5-5")
 
-SYSTEM_BASE = """Eres ASTRA, el asistente médico de a bordo de una tripulación de astronautas.
+SYSTEM_BASE = """Eres Aéter, el asistente de salud de a bordo de una tripulación de astronautas.
 Apoyas al oficial médico y a la tripulación.
 Reglas:
 - Responde siempre en español, claro y breve. En emergencias: pasos cortos y faciles de entender, empezando por la acción más urgente.
@@ -150,7 +150,7 @@ def responder_stream(historial: list[dict], astronauta: dict, recientes: list[di
             yield from medico.responder_stream(_mensajes_validos(historial), contexto)
             return
     except Exception as e:
-        yield f"No pude contactar al médico virtual ({type(e).__name__}). Uso el respaldo.\n\n"
+        yield f"No pude contactar a Aéter ({type(e).__name__}). Uso el respaldo.\n\n"
 
     if clave:
         try:

@@ -13,9 +13,8 @@ MAX_ACCIONES = 3
 CONFIRMAR_SEG = 120          # tiempo para confirmar SOS / normalizar
 PENDIENTES = ("sos", "normalizar_emergencia")   # piden confirmación explícita
 # sección -> pestañas que hay que pulsar (en orden)
-SECCIONES = {"estado": ["Estado actual"], "monitoreo": ["Detalle", "Monitoreo en vivo"],
-             "alertas": ["Detalle", "Alertas"], "historial": ["Detalle", "Historial médico"],
-             "asistente": ["Detalle", "Asistente IA"]}
+SECCIONES = {"estado": ["Estado"], "alertas": ["Estado"], "monitoreo": ["Signos Vitales"], "signos": ["Signos Vitales"],
+             "asistente": ["Aéter"], "bitacora": ["Bitácora"], "historial": ["Historial"]}
 RAIZ = Path(__file__).resolve().parent.parent
 LOG = RAIZ / "logs" / "acciones.jsonl"
 
@@ -45,15 +44,17 @@ def intencion_navegacion(texto: str) -> str | None:
     n = _norm(texto)
     if not re.search(r"(muestr|ensen|\bver\b|\bveo\b|abr[ae]\b|llev|\bir\b|ve a |vamos|pasa a|cambia a|quiero ver|ponme)", n):
         return None
-    if re.search(r"alerta|alarma", n):
+    if re.search(r"alerta|alarma|recordatorio", n):
         return "alertas"
-    if re.search(r"historial|\bnotas?\b|ficha medica|expediente", n):
+    if re.search(r"bitacora|diario|\bnotas?\b|anotacion", n):
+        return "bitacora"
+    if re.search(r"historial|registros?|expediente", n):
         return "historial"
-    if re.search(r"monitor|grafic|signos|en vivo|tiempo real", n):
+    if re.search(r"monitor|grafic|signos|vitales|en vivo|tiempo real", n):
         return "monitoreo"
-    if re.search(r"estado actual|reloj|pantalla principal", n):
+    if re.search(r"estado|reloj|pantalla principal|inicio", n):
         return "estado"
-    if re.search(r"asistente|\bchat\b|conversacion", n):
+    if re.search(r"asistente|\bchat\b|conversacion|aeter", n):
         return "asistente"
     return None
 
@@ -150,7 +151,7 @@ def ejecutar_pendiente(a: dict, astro_id: int, yo_nombre: str, servicio) -> str:
     if time.time() - a.get("ts", 0) > CONFIRMAR_SEG:
         return "Ya pasó demasiado tiempo: pídamelo de nuevo."
     if a["accion"] == "sos":
-        db.insertar_evento(astro_id, "critica", "sos", 1, f"🆘 SOS de {nombre}: {a['arg']}")
+        db.insertar_evento(astro_id, "critica", "sos", 1, f"SOS de {nombre}: {a['arg']}")
         _registrar({"evento": "sos_enviado", "por": yo_nombre, "astro": astro_id})
         return "SOS enviado a toda la tripulación."
     if a["accion"] == "normalizar_emergencia":
@@ -203,7 +204,7 @@ def mostrar(acciones: list[dict], astro_id: int, yo_nombre: str, clave: str, ser
     for i, a in enumerate(acciones):
         k, arg = a["accion"], a["arg"]
         if k == "ver_signos":
-            with st.expander("📈 Últimas mediciones", expanded=True):
+            with st.expander("Últimas mediciones", expanded=True):
                 filas = db.ultimas_mediciones(astro_id, 6)
                 if filas:
                     st.table([{"hora": f["ts"][11:19], "FC": f["fc"], "PAS": f["pas"], "PAD": f["pad"],
@@ -211,7 +212,7 @@ def mostrar(acciones: list[dict], astro_id: int, yo_nombre: str, clave: str, ser
                 else:
                     st.caption("Sin mediciones todavía.")
         elif k == "ver_notas":
-            with st.expander("📝 Últimas notas clínicas", expanded=True):
+            with st.expander("Últimas notas clínicas", expanded=True):
                 notas = db.listar_notas(astro_id, 5)
                 for n in notas:
                     st.markdown(f"**{n['ts'][:16]}** · {n['autor']}: {n['nota']}")
@@ -220,24 +221,24 @@ def mostrar(acciones: list[dict], astro_id: int, yo_nombre: str, clave: str, ser
         elif k == "ver_procedimiento":
             tipo = _claves_validas()[arg]
             md = protocolos.emergencia_md(arg) if tipo == "emergencia" else protocolos.medicion_md(arg)
-            with st.expander(f"📋 Procedimiento: {arg}", expanded=True):
+            with st.expander(f"Procedimiento: {arg}", expanded=True):
                 st.markdown(md)
         elif k == "ver_medicamento":
             frag = next((f for f in conocimiento.fragmentos() if f["id"] == arg), None)
-            with st.expander(f"💊 {arg}", expanded=True):
+            with st.expander(f"{arg}", expanded=True):
                 st.markdown(frag["texto"].replace("## ", "### ", 1) if frag else "No encontrado.")
         elif k == "ir_a":
-            st.caption(f"🧭 Abriendo: {SECCIONES[arg][-1]}")
+            st.caption(f"Abriendo: {SECCIONES[arg][-1]}")
         elif k == "cambiar_astronauta":
-            st.caption(f"👤 Cambiando al astronauta: {arg}")
+            st.caption(f"Cambiando al astronauta: {arg}")
         elif k == "pitido":
-            st.caption("🔔 Pitido de emergencia " + ("activado" if arg == "activar" else "desactivado"))
+            st.caption("Pitido de emergencia " + ("activado" if arg == "activar" else "desactivado"))
         elif k == "recordar":
             hora, _, texto = arg.partition("|")
-            st.caption(f"⏰ Recordatorio a las {hora}: {texto}")
+            st.caption(f"Recordatorio a las {hora}: {texto}")
         elif k == "ver_fuente":
             frag = next((f for f in conocimiento.fragmentos() if f["id"] == arg), None)
-            with st.expander(f"🔗 Fuente: {arg}", expanded=True):
+            with st.expander(f"Fuente: {arg}", expanded=True):
                 if not frag:
                     st.caption("No encontrada.")
                 else:
@@ -255,7 +256,7 @@ def mostrar(acciones: list[dict], astro_id: int, yo_nombre: str, clave: str, ser
                         st.markdown(f"[Abrir fuente original]({url.rstrip('|)')})")
         elif k in PENDIENTES:
             estado = f"pend_{clave}_{i}"
-            etiqueta = "🆘 SOS a la tripulación" if k == "sos" else "🛑 Detener el estado de emergencia"
+            etiqueta = "SOS a la tripulación" if k == "sos" else "Detener el estado de emergencia"
             with st.container(border=True):
                 st.markdown(f"**{etiqueta}**" + (f"\n\n> {arg}" if arg else ""))
                 actual = st.session_state.get(estado)
@@ -265,20 +266,20 @@ def mostrar(acciones: list[dict], astro_id: int, yo_nombre: str, clave: str, ser
                 elif not vigente:
                     st.caption("Venció sin confirmar.")
                 else:
-                    st.info("Para ejecutarlo diga «confirmo» o pulse el botón.", icon="🔐")
+                    st.info("Para ejecutarlo diga «confirmo» o pulse el botón.", icon="")
                     c1, c2 = st.columns(2)
-                    if c1.button("✅ Confirmar", key=f"c_{estado}", type="primary"):
-                        st.session_state[estado] = "✔ " + ejecutar_pendiente(a, astro_id, yo_nombre, servicio)
+                    if c1.button("Confirmar", key=f"c_{estado}", type="primary"):
+                        st.session_state[estado] = "" + ejecutar_pendiente(a, astro_id, yo_nombre, servicio)
                         st.session_state.pop("pendiente", None)
                         st.rerun()
-                    if c2.button("✖ Cancelar", key=f"x_{estado}"):
+                    if c2.button("Cancelar", key=f"x_{estado}"):
                         st.session_state[estado] = "Cancelado."
                         st.session_state.pop("pendiente", None)
                         st.rerun()
         elif k == "proponer_nota":
             estado = f"nota_{clave}_{i}"
             with st.container(border=True):
-                st.markdown(f"📝 **Nota propuesta por el médico virtual:**\n\n> {arg}")
+                st.markdown(f"**Nota propuesta por Aéter:**\n\n> {arg}")
                 actual = st.session_state.get(estado)
                 if actual == "guardada":
                     st.success("Guardada en las notas clínicas.")
@@ -286,11 +287,11 @@ def mostrar(acciones: list[dict], astro_id: int, yo_nombre: str, clave: str, ser
                     st.caption("Descartada.")
                 else:
                     c1, c2 = st.columns(2)
-                    if c1.button("✅ Guardar", key=f"g_{estado}"):
-                        db.insertar_nota(astro_id, f"Médico virtual (confirmado por {yo_nombre})", arg)
+                    if c1.button("Guardar", key=f"g_{estado}"):
+                        db.insertar_nota(astro_id, f"Aéter (confirmado por {yo_nombre})", arg)
                         st.session_state[estado] = "guardada"
                         _registrar({"evento": "nota_guardada", "por": yo_nombre})
                         st.rerun()
-                    if c2.button("✖ Descartar", key=f"d_{estado}"):
+                    if c2.button("Descartar", key=f"d_{estado}"):
                         st.session_state[estado] = "descartada"
                         st.rerun()

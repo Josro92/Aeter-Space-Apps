@@ -5,7 +5,7 @@ Cada signo vital tiene dos niveles:
   crit -> crítica (rojo): peligro, acción inmediata
 Un límite en None significa "sin límite por ese lado".
 
-⚠ Umbrales de ejemplo para el prototipo. Deben ajustarse con criterio médico
+Umbrales de ejemplo para el prototipo. Deben ajustarse con criterio médico
 (y según la persona y la actividad: ejercicio, EVA, reposo...).
 """
 from __future__ import annotations

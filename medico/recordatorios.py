@@ -38,6 +38,12 @@ def crear(astro_id: int, hora: str, texto: str, origen: str = "astronauta") -> s
     with db.conexion() as con:
         con.execute("INSERT INTO recordatorios (astronauta_id, vence, texto, origen) VALUES (?,?,?,?)",
                     (astro_id, t.isoformat(timespec="minutes"), texto, origen))
+    try:  # queda anotado en el historial de la persona
+        import registros
+        registros.agregar(astro_id, "Recordatorio", f"{h:02d}:{m:02d} · {texto}",
+                          f"Recordatorio creado para las {h:02d}:{m:02d} ({t:%d/%m/%Y}).\n\n{texto}")
+    except Exception:
+        pass
     return t.isoformat(timespec="minutes")
 
 
