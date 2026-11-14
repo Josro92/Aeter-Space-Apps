@@ -32,7 +32,6 @@
   </svg>
 
   <p>Frecuencia: <span id="valor">70</span> BPM</p>
-  <input id="slider" type="range" min="40" max="200" value="70">
 
   <script>
     const corazon = document.getElementById('corazon');
@@ -44,10 +43,6 @@
       corazon.style.animationDuration = (60 / bpm) + 's';
       document.getElementById('valor').textContent = bpm;
     }
-
-    document.getElementById('slider').addEventListener('input', e => {
-      setFrecuencia(Number(e.target.value));
-    });
 
     setFrecuencia(70);
   </script>
