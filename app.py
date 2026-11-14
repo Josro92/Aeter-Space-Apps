@@ -388,6 +388,9 @@ def tab_asistente(astro_id: int, api_key: str, yo_nombre: str) -> None:
         st.caption("🟠 Modo offline: responde con los protocolos locales (falta la llave GEMINI_API_KEY)")
 
     historial = st.session_state.setdefault(f"chat_{astro_id}", [])
+    from medico import acciones as med_acciones, voz as med_voz
+    voz_activa = st.toggle("🎙️ Modo voz (manos libres, usar Chrome o Edge)", key="voz_on",
+                           help="Habla y el médico responde en voz alta. Permita el micrófono cuando el navegador lo pida.")
 
     with st.expander("🔎 Contexto que recibe el asistente en este momento"):
         recientes = db.ultimas_mediciones(astro_id, 30)
@@ -400,9 +403,11 @@ def tab_asistente(astro_id: int, api_key: str, yo_nombre: str) -> None:
         if col.button(etiqueta, key=f"atajo_{astro_id}_{etiqueta}"):
             st.session_state["pregunta_pendiente"] = texto
 
-    for m in historial:
+    for i, m in enumerate(historial):
         with st.chat_message(m["role"]):
             st.markdown(m["content"])
+            if m.get("acciones"):
+                med_acciones.mostrar(m["acciones"], astro_id, yo_nombre, f"{astro_id}_{i}")
 
     prompt = st.chat_input("Describe la emergencia o haz una pregunta...", key=f"chat_in_{astro_id}")
     if not prompt:
@@ -413,14 +418,21 @@ def tab_asistente(astro_id: int, api_key: str, yo_nombre: str) -> None:
             st.markdown(prompt)
         recientes = db.ultimas_mediciones(astro_id, 30)  # datos frescos al momento de preguntar
         _, lista = estado_de(recientes[-1] if recientes else None)
+        filtro = med_acciones.Filtro()
         with st.chat_message("assistant"):
-            respuesta = st.write_stream(asistente.responder_stream(
-                historial, astro, recientes, lista, db.listar_notas(astro_id, 3), api_key))
-        historial.append({"role": "assistant", "content": respuesta})
+            respuesta = st.write_stream(filtro.filtrar(asistente.responder_stream(
+                historial, astro, recientes, lista, db.listar_notas(astro_id, 3), api_key)))
+            med_acciones.mostrar(filtro.acciones, astro_id, yo_nombre, f"{astro_id}_{len(historial)}")
+        historial.append({"role": "assistant", "content": respuesta, "acciones": filtro.acciones})
+        st.session_state["voz_texto"] = (respuesta, f"{astro_id}_{len(historial)}")
 
     if historial and st.button("🧹 Limpiar conversación", key=f"limpiar_{astro_id}"):
         historial.clear()
         st.rerun()
+
+    # Voz: se habla solo la respuesta nueva (se consume una vez); si no hay, solo se sigue escuchando.
+    nueva = st.session_state.pop("voz_texto", None)
+    med_voz.componente(voz_activa, nueva[0] if nueva else None, nueva[1] if nueva else None)
 
 
 # --------------------------------------------------------------------------- barra lateral
