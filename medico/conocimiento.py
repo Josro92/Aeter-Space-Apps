@@ -136,7 +136,7 @@ def inventario_compacto() -> str:
     return "\n".join(lineas) if lineas else "(sin inventario cargado)"
 
 
-def buscar(consulta: str, k: int = 4, max_chars: int = 2500) -> list[dict]:
+def buscar(consulta: str, k: int = 4, max_chars: int = 3500) -> list[dict]:
     q = tokens(consulta)
     for w in re.findall(r"[a-z0-9]{3,}", norm(consulta)):   # sinónimos sobre la palabra completa
         if w in SINONIMOS:

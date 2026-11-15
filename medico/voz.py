@@ -366,7 +366,8 @@ def componente(activo: bool, hablar: list[dict] | None = None, sirena: bool = Fa
     for h in (hablar or []):
         resp = bool(h.get("resp"))
         habla.append({"id": h["id"], "resp": resp,
-                      "text": resumen_hablado(h["text"]) if resp else limpiar_para_voz(h["text"])})
+                      "text": (limpiar_para_voz(h["text"]) if re.search(r"\bPRO\d{3}\b", h["text"])
+                               else resumen_hablado(h["text"])) if resp else limpiar_para_voz(h["text"])})
     cfg = {"on": activo, "sirena": sirena, "nav": nav, "speak": habla}
     html = f"""<script>
     (function(){{
