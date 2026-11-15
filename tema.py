@@ -5,6 +5,7 @@ final de Canva, bastará con reemplazar este archivo (y la carpeta assets/).
 """
 from __future__ import annotations
 
+from pathlib import Path
 import base64
 import hashlib
 
@@ -40,26 +41,42 @@ def _uri(svg: str) -> str:
 
 
 # --------------------------------------------------------------------------- Marte con cara
+_CARAS: dict[int, tuple[str, int, int]] = {}
+
+
+def _cara(i: int) -> tuple[str, int, int]:
+    """Carita i de assets/caras (data URI, ancho, alto). Se cargan una sola vez."""
+    if i not in _CARAS:
+        import base64
+        ruta = Path(__file__).with_name("assets") / "caras" / f"cara{i}.png"
+        datos = ruta.read_bytes()
+        w, h = int.from_bytes(datos[16:20], "big"), int.from_bytes(datos[20:24], "big")
+        _CARAS[i] = ("data:image/png;base64," + base64.b64encode(datos).decode(), w, h)
+    return _CARAS[i]
+
+
+# Qué caritas muestra Marte en cada estado y cuánto dura cada una (segundos).
+# Números = posición en la lámina: 0 sorprendida, 1 feliz, 2 y 3 ojos cerrados, 4 somnolienta,
+# 5 asombrada, 6 neutra, 7 guiño, 8 ojos cerrados con boca en O.
+SECUENCIAS = {"calma": ([4, 2, 3, 1, 6, 7], 3.2), "alerta": ([6, 5, 6, 8], 2.0), "critica": ([0, 5], 0.9)}
+
+
 def marte_svg(expresion: str = "calma") -> str:
-    """Planeta Marte con cara. expresion: calma | alerta | critica."""
-    oscuro = "#3a2a2a"
-    if expresion == "critica":
-        cara = (f'<ellipse cx="140" cy="190" rx="19" ry="22" fill="#fff"/><circle cx="140" cy="194" r="8" fill="{oscuro}"/>'
-                f'<ellipse cx="260" cy="190" rx="19" ry="22" fill="#fff"/><circle cx="260" cy="194" r="8" fill="{oscuro}"/>'
-                f'<path d="M110 150 L165 165 M290 150 L235 165" stroke="{oscuro}" stroke-width="7" stroke-linecap="round"/>'
-                f'<ellipse cx="200" cy="268" rx="22" ry="26" fill="{oscuro}"/>')
-    elif expresion == "alerta":
-        cara = (f'<circle cx="140" cy="192" r="17" fill="#fff"/><circle cx="142" cy="194" r="7" fill="{oscuro}"/>'
-                f'<circle cx="260" cy="192" r="17" fill="#fff"/><circle cx="258" cy="194" r="7" fill="{oscuro}"/>'
-                f'<path d="M115 165 Q140 152 165 168 M285 165 Q260 152 235 168" stroke="{oscuro}" stroke-width="6" '
-                f'fill="none" stroke-linecap="round"/>'
-                f'<path d="M172 268 Q200 258 228 268" stroke="{oscuro}" stroke-width="7" fill="none" stroke-linecap="round"/>')
-    else:
-        cara = (f'<path d="M112 196 Q140 218 168 196" stroke="{oscuro}" stroke-width="7" fill="none" stroke-linecap="round"/>'
-                f'<path d="M232 196 Q260 218 288 196" stroke="{oscuro}" stroke-width="7" fill="none" stroke-linecap="round"/>'
-                f'<path d="M168 262 Q200 290 232 262" stroke="{oscuro}" stroke-width="7" fill="none" stroke-linecap="round"/>')
+    """Planeta Marte con carita animada. expresion: calma | alerta | critica."""
+    ids, dur = SECUENCIAS.get(expresion, SECUENCIAS["calma"])
+    n, total = len(ids), dur * len(ids)
+    caras = []
+    for k, i in enumerate(ids):
+        uri, w, h = _cara(i)
+        ancho = 215
+        alto = ancho * h / w
+        caras.append(f'<image class="cr" href="{uri}" x="{200 - ancho / 2:.1f}" y="{210 - alto / 2:.1f}" '
+                     f'width="{ancho}" height="{alto:.1f}" style="animation-delay:{k * dur:.2f}s"/>')
+    estilo = (f'<style>.cr{{opacity:0;animation:cara {total:.2f}s infinite;animation-fill-mode:backwards}}'
+              f'@keyframes cara{{0%{{opacity:0}}3%{{opacity:1}}{100 / n:.2f}%{{opacity:1}}'
+              f'{100 / n + 3:.2f}%{{opacity:0}}100%{{opacity:0}}}}</style>')   # una carita se funde con la siguiente
     return (
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">'
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">' + estilo +
         '<defs><radialGradient id="g" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#f8b998"/>'
         '<stop offset="0.6" stop-color="#ee8f6c"/><stop offset="1" stop-color="#d9694f"/></radialGradient>'
         '<clipPath id="c"><circle cx="200" cy="200" r="190"/></clipPath></defs>'
@@ -70,8 +87,7 @@ def marte_svg(expresion: str = "calma") -> str:
         '<ellipse cx="300" cy="300" rx="70" ry="48" fill="#c9553f" transform="rotate(-25 300 300)"/>'
         '<ellipse cx="90" cy="250" rx="38" ry="24" fill="#f5b392" transform="rotate(20 90 250)"/>'
         '<ellipse cx="320" cy="110" rx="46" ry="26" fill="#f7c0a0" transform="rotate(-18 320 110)"/></g>'
-        '<ellipse cx="200" cy="232" rx="14" ry="8" fill="#d9694f"/>'
-        f'{cara}</svg>'
+        + "".join(caras) + '</svg>'
     )
 
 
