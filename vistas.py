@@ -166,7 +166,7 @@ def ficha(astro_id: int) -> None:
 # --------------------------------------------------------------------------- estado
 def enviar_sos(astro_id: int, nombre: str) -> None:
     db.insertar_evento(astro_id, "critica", "sos", 0, f"{nombre}: solicita ayuda inmediata")
-    st.toast("SOS enviado a la tripulación")
+    st.session_state["sos_aviso"] = True  # el aviso se muestra fuera del callback
 
 
 @st.fragment(run_every=3)
@@ -185,6 +185,8 @@ def tarjeta_estado(astro_id: int, nombre: str) -> None:
         c1.markdown(f"<div class='hora'>{hora_texto(ahora)}</div><div class='fecha'>{fecha_texto(ahora)}</div>",
                     unsafe_allow_html=True)
         c2.button("SOS", key="btn_sos", on_click=enviar_sos, args=(astro_id, nombre))
+        if st.session_state.pop("sos_aviso", False):
+            st.toast("SOS enviado a la tripulación")
 
         pendientes = db.listar_eventos(astro_id, limite=60, solo_pendientes=True)
         vistos, unicos = set(), []
