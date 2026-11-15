@@ -76,20 +76,23 @@ def pantalla_inicio(astronautas: list[dict]) -> None:
     if logo.exists():
         st.image(str(logo), width=220)
     sel = st.session_state.get("sel_usuario")
-    _, centro, _ = st.columns([1, 4, 1])
+    _, centro, _ = st.columns([1, 5, 1])
     with centro:
         cols = st.columns(len(astronautas), gap="medium")
         for col, a in zip(cols, astronautas):
             with col, st.container(key=f"clic_usr_{a['id']}"):
+                es_sel = sel == a["id"]
                 st.markdown(
-                    f"<div class='tarjeta {'sel' if sel == a['id'] else ''}'>{tema.avatar_img(a['nombre'], 96)}"
-                    f"<div class='nom'>{E(a['nombre'])}</div><div class='rol'>{E(a['rol'].split('(')[0].strip())}</div></div>",
+                    f"<div class='tarjeta {'sel' if es_sel else ''}'>{tema.avatar_img(a['nombre'], 104)}"
+                    f"<div class='nom'>{E(a['nombre'])}</div><div class='rol'>{E(a['rol'].split('(')[0].strip())}</div>"
+                    f"<div class='marca'>{'Seleccionado' if es_sel else 'Toca para elegir'}</div></div>",
                     unsafe_allow_html=True)
                 st.button("Elegir", key=f"tapa_usr_{a['id']}", on_click=_elegir, args=(a["id"],))
         st.write("")
-        _, b, _ = st.columns([1, 1.4, 1])
-        b.button("Iniciar", key="btn_iniciar", type="primary", width="stretch", disabled=sel is None,
-                 on_click=_iniciar)
+        _, b, _ = st.columns([1, 1.6, 1])
+        quien = next((a["nombre"].split()[0] for a in astronautas if a["id"] == sel), None)
+        b.button(f"Iniciar como {quien}" if quien else "Elige un astronauta para iniciar", key="btn_iniciar",
+                 type="primary", width="stretch", disabled=sel is None, on_click=_iniciar)
         st.markdown("<p style='text-align:center;opacity:.8;font-size:.9rem;margin-top:.8rem'>"
                     "Al iniciar, Aéter te saluda y queda escuchando: di «Aéter» para hablarle. "
                     "Permite el micrófono si el navegador lo pide.</p>", unsafe_allow_html=True)
@@ -242,14 +245,6 @@ VITALES = (
 )
 
 
-def _alternar(clave: str) -> None:
-    sel = st.session_state.setdefault("vt_sel", [])
-    if clave in sel:
-        sel.remove(clave)
-    else:
-        sel.append(clave)
-
-
 def _valor(clave: str, med: dict) -> str:
     if clave == "fc":
         return f"{med['fc']:.0f} lpm"
@@ -276,12 +271,12 @@ def grafica_vital(df: pd.DataFrame, param: str, key: str, color: str) -> None:
         hi = max(hi, u["adv"][1])
     margen = (hi - lo) * 0.06 or 1
     fig.update_layout(
-        title=dict(text=f"{u['nombre']} ({u['unidad']})", font=dict(size=14, color="#fff")),
-        height=240, margin=dict(l=10, r=10, t=44, b=10), showlegend=False,
+        title=dict(text=f"{u['nombre']} ({u['unidad']})", font=dict(size=13, color="#fff")),
+        height=185, margin=dict(l=10, r=10, t=38, b=8), showlegend=False,
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#fff"),
         yaxis=dict(range=[lo - margen, hi + margen], gridcolor="rgba(255,255,255,.12)"),
         xaxis=dict(gridcolor="rgba(255,255,255,.08)"))
-    st.plotly_chart(fig, key=key)
+    st.plotly_chart(fig, key=key, config={"displayModeBar": False})
 
 
 @st.fragment(run_every=2)
@@ -297,24 +292,17 @@ def panel_signos(astro_id: int, n_puntos: int) -> None:
     cols = st.columns(5, gap="small")
     for col, (clave, titulo, sub, params, _graf) in zip(cols, VITALES):
         nivel = max((por_param.get(p, "normal") for p in params), key=orden.get)
-        with col, st.container(key=f"clic_vt_{clave}"):
+        with col:
             st.markdown(
-                f"<div class='vital {'sel' if clave in st.session_state.get('vt_sel', []) else ''}'><div class='nombre'>{titulo}" + (f"<small>{sub}</small>" if sub else "") + "</div>"
+                f"<div class='vital'><div class='nombre'>{titulo}" + (f"<small>{sub}</small>" if sub else "") + "</div>"
                 f"{tema.icono_vital(clave, nivel, actual['fc'], actual['fr'])}<br>"
                 f"<span class='dato n-{nivel}'>{_valor(clave, actual)}</span></div>", unsafe_allow_html=True)
-            st.button("Ver gráfica", key=f"tapa_vt_{clave}", on_click=_alternar, args=(clave,))
-    sel = st.session_state.get("vt_sel", [])
-    if not sel:
-        st.markdown("<p class='aviso-vital' style='text-align:center'>Toca un icono para ver su gráfica en tiempo real.</p>",
-                    unsafe_allow_html=True)
-        return
+    # Las seis gráficas siempre visibles: tres arriba y tres abajo.
     df = pd.DataFrame(recientes)
     df["ts"] = pd.to_datetime(df["ts"])
-    graf_de = {v[0]: v[4] for v in VITALES}
-    graficas = [(c, p) for c in sel for p in graf_de[c]]
+    graficas = [p for v in VITALES for p in v[4]]  # fc, pas, pad, spo2, temp, fr
     for i in range(0, len(graficas), 3):
-        fila = graficas[i:i + 3]
-        for col, (c, p) in zip(st.columns(3), fila):
+        for col, p in zip(st.columns(3, gap="small"), graficas[i:i + 3]):
             with col:
                 grafica_vital(df, p, f"graf_{astro_id}_{p}", tema.COLOR[
                     "critica" if por_param.get(p) == "critica" else "advertencia" if por_param.get(p) else "normal"])
@@ -361,7 +349,7 @@ def pantalla_bitacora(astro: dict, yo_nombre: str) -> None:
 
 
 def pantalla_historial(astro: dict) -> None:
-    st.markdown("<h2 style='text-align:center;margin:.2rem 0 1rem'>Historial General</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:left;margin:.2rem 0 1rem'>Historial General</h2>", unsafe_allow_html=True)
     lista_registros(registros.historial(astro["id"]), "his",
                     "Aquí quedará todo lo que Aéter registre: conversaciones, protocolos, emergencias, "
                     "recordatorios y la bitácora.", alto=470)

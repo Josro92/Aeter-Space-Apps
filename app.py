@@ -97,12 +97,12 @@ def pantalla_aeter() -> None:
     from medico import acciones as med_acciones
     historial = st.session_state.setdefault(f"chat_{astro_id}", [])
 
-    caja = st.container(height=430, border=False, key="chat_caja")
+    caja = st.container(height=545, border=False, key="chat_caja")
     with caja:
         bienvenida = st.empty()
         if not historial:
-            bienvenida.markdown("<p style='text-align:center;opacity:.85;padding:60px 10px'>Escribe o di «Aéter» y cuéntame qué necesitas. "
-                                "Solo respondo con la información de la base de conocimiento de la misión.</p>",
+            bienvenida.markdown("<p class='bienvenida'>Escribe o di «Aéter» y cuéntame qué necesitas. "
+                                "Puedo ayudarte con tu salud, la misión o lo que quieras conversar.</p>",
                                 unsafe_allow_html=True)
         for i, m in enumerate(historial):
             with st.chat_message(m["role"]):
