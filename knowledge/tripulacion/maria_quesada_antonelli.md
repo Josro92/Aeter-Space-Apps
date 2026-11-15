@@ -1,12 +1,12 @@
-# Ficha de la tripulante María Quesada Antonelli
+# Ficha de la tripulante María Antonelli
 
 > Fuente: documento «Persona de prueba: María» entregado por el equipo (Astronauta_María.docx).
 > Es una persona de prueba para la demostración. Los datos de simulación y los umbrales son **de ejemplo**, sin validar clínicamente.
 
-## PAC001 — Perfil general de María Quesada Antonelli
+## PAC001 — Perfil general de María Antonelli
 
 - ID: PAC001
-- Nombre: María Quesada Antonelli
+- Nombre: María Antonelli
 - Edad / sexo: 38 años / femenino
 - Rol: especialista de misión, 2.ª misión
 - Misión: estancia de 180 días en una estación espacial en órbita baja
@@ -14,7 +14,7 @@
 - Condición física: muy buena; entrena 5 días por semana (fuerza y core)
 - Fuente: documento del equipo (persona de prueba)
 
-## PAC002 — Escoliosis de María Quesada Antonelli
+## PAC002 — Escoliosis de María Antonelli
 
 - ID: PAC002
 - Tipo: escoliosis idiopática
@@ -27,7 +27,7 @@
 - Medicación: ibuprofeno 400 mg ocasional
 - Fuente: documento del equipo (persona de prueba)
 
-## PAC003 — Historial médico de María Quesada Antonelli
+## PAC003 — Historial médico de María Antonelli
 
 - ID: PAC003
 - Antecedentes: fractura de muñeca a los 16 años (caída en bicicleta). Sin cirugías. Sin enfermedades crónicas.
@@ -37,7 +37,7 @@
 - Vacunas: al día.
 - Fuente: documento del equipo (persona de prueba)
 
-## PAC004 — Valores basales de María Quesada Antonelli (pre-misión)
+## PAC004 — Valores basales de María Antonelli (pre-misión)
 
 - ID: PAC004
 - Frecuencia cardíaca en reposo: 56 lpm
@@ -49,7 +49,7 @@
 - Altura de columna: 168 cm (se esperan +3 a 5 cm en microgravedad)
 - Fuente: documento del equipo (persona de prueba)
 
-## PAC005 — Riesgos específicos de María Quesada Antonelli en el espacio
+## PAC005 — Riesgos específicos de María Antonelli en el espacio
 
 - ID: PAC005
 - Elongación de la columna: puede cambiar la curva de la escoliosis.
@@ -60,7 +60,7 @@
 - Radiación: efecto acumulado sobre hueso y tejidos.
 - Fuente: documento del equipo (persona de prueba)
 
-## PAC006 — Datos de ejemplo para simular alertas de María Quesada Antonelli
+## PAC006 — Datos de ejemplo para simular alertas de María Antonelli
 
 - ID: PAC006
 - Aviso: datos de ejemplo para simulación, no son mediciones reales.

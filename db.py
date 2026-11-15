@@ -74,12 +74,12 @@ CREATE INDEX IF NOT EXISTS idx_nota_astro ON notas (astronauta_id, id);
 # Tripulación FICTICIA para la demo.
 TRIPULACION = [
     dict(nombre="Ana Rojas", rol="Comandante", edad=41, peso_kg=63, tipo_sangre="O+",
-         alergias="Ninguna conocida", medicamentos="Ninguno",
-         condiciones="Sin antecedentes relevantes"),
+         alergias="Polen (rinitis estacional)", medicamentos="Loratadina 10 mg solo en temporada de alergia",
+         condiciones="Asma leve inducida por ejercicio; un cálculo renal a los 33 años (sin recurrencia)"),
     dict(nombre="Jason Durán", rol="Astronauta (caso de prueba de Aéter)", edad=42, peso_kg=78,
-         tipo_sangre="O+", alergias="Penicilina",
+         tipo_sangre="A+", alergias="Sulfonamidas (erupción cutánea)",
          medicamentos="Losartán 50 mg al día",
-         condiciones="Hipertensión leve"),
+         condiciones="Hipertensión leve; colesterol LDL levemente elevado; ligamento cruzado de la rodilla izquierda reparado a los 30 años"),
     dict(nombre="María Antonelli", rol="Especialista de misión (2.ª misión)", edad=38, peso_kg=62,
          tipo_sangre="No registrado", alergias="Penicilina (erupción leve)",
          medicamentos="Ibuprofeno 400 mg ocasional",
@@ -89,6 +89,7 @@ TRIPULACION = [
 
 # Valores de reposo propios de cada persona (los demás se generan al azar y de forma repetible).
 BASES_FIJAS = {
+    "Ana Rojas": dict(fc=52, pas=108, pad=68, spo2=99, temp=36.5, fr=14),
     "Jason Durán": dict(fc=64, pas=122, pad=78, spo2=98, temp=36.6, fr=15),
     "María Antonelli": dict(fc=56, pas=112, pad=70, spo2=98, temp=36.6, fr=14),
 }
@@ -141,6 +142,11 @@ def sembrar_astronautas() -> None:
         for a in TRIPULACION:
             if a["nombre"] in existentes:
                 con.execute("UPDATE astronautas SET rol=? WHERE nombre=?", (a["rol"], a["nombre"]))
+                if a["nombre"] in ("Ana Rojas", "Jason Durán"):  # fichas nuevas: solo si aún tienen los datos de fábrica anteriores
+                    con.execute(
+                        "UPDATE astronautas SET tipo_sangre=:tipo_sangre, alergias=:alergias, medicamentos=:medicamentos,"
+                        " condiciones=:condiciones WHERE nombre=:nombre AND condiciones IN"
+                        " ('Sin antecedentes relevantes','Hipertensión leve')", a)
             if a["nombre"] not in existentes:
                 con.execute(
                     "INSERT INTO astronautas (nombre, rol, edad, peso_kg, tipo_sangre, alergias,"
