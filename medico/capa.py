@@ -21,7 +21,7 @@ def _saludo(yo_nombre: str, astro_id: int) -> str:
             vistos.add((e["astronauta_id"], e["parametro"]))
             msgs.append(e["mensaje"])
     estado = ("Hay alertas activas. " + ". ".join(msgs[:3]) + ".") if msgs else "Sus signos vitales están estables."
-    return (f"{momento}, {yo_nombre.split()[0]}. Soy su asistente virtual de salud y estoy escuchando. "
+    return (f"{momento}, {yo_nombre.split()[0]}. Soy su asistente virtual de salud; pulse Hablar cuando me necesite. "
             f"{estado}")
 
 
@@ -59,7 +59,7 @@ def capa_global(astro_id: int, yo_nombre: str) -> None:
     # Respuesta del chat para leer en voz alta
     nueva = ss.pop("voz_texto", None)
     if nueva:
-        cola.append({"id": nueva[1], "text": nueva[0]})
+        cola.append({"id": nueva[1], "text": nueva[0], "resp": True})
 
     voz.componente(activo, cola, ss.get("sirena", False), ss.pop("nav_cmd", None) or ss.get("nav_ult"))
 
