@@ -7,6 +7,8 @@ import time
 
 import streamlit as st
 
+import vivo
+
 import db
 from . import recordatorios, voz
 
@@ -25,7 +27,7 @@ def _saludo(yo_nombre: str, astro_id: int) -> str:
             f"{estado}")
 
 
-@st.fragment(run_every=8)
+@vivo.fragmento(8)
 def capa_global(astro_id: int, yo_nombre: str) -> None:
     ss = st.session_state
     cola: list[dict] = []

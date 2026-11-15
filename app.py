@@ -23,6 +23,7 @@ import alertas
 import asistente
 import db
 import protocolos
+import vivo
 import registros
 import tema
 import vistas
@@ -82,6 +83,12 @@ def _registrar_intercambio(prompt: str, respuesta: str, acciones: list[dict]) ->
         titulos = {f["id"]: f["titulo"] for f in conocimiento.fragmentos() if f["id"] in cods}
         if cods:
             vistas.protocolo_desde_codigo(astro_id, cods[0])  # lo muestra en la pestaña Estado
+        elif "Offline mode" in respuesta and not any(a["accion"] == "ver_procedimiento" for a in acciones):
+            # Sin IA la respuesta sale de los protocolos locales: también se muestra la guía en Status.
+            claves = protocolos.detectar(protocolos.normalizar(prompt), protocolos.EMERGENCIAS)
+            if claves:
+                guia = protocolos.EMERGENCIAS[claves[0]]
+                vistas.fijar_protocolo(astro_id, claves[0], guia["titulo"], [(p, "") for p in guia.get("pasos", [])])
         for c in cods:
             nombre_pro = re.sub(r"^PRO\d{3}\s*[—-]\s*", "", titulos.get(c, c))
             registros.agregar(astro_id, "Protocol", f"{c} · {nombre_pro}",
@@ -114,11 +121,16 @@ def pantalla_aeter() -> None:
                 if m.get("acciones"):
                     med_acciones.mostrar(m["acciones"], astro_id, yo_nombre, f"{astro_id}_{i}", servicio)
 
-    prompt = st.chat_input(f"Hi, {nombre_corto}. How can I help you?", key=f"chat_in_{astro_id}")
+    prompt = st.chat_input(f"Hi, {nombre_corto}. How can I help you?", key=f"chat_in_{astro_id}",
+                           on_submit=vivo.marcar_ocupado)
     if prompt:
         bienvenida.empty()
-        with caja:
-            _atender(prompt, historial, med_acciones)
+        try:
+            with caja:
+                _atender(prompt, historial, med_acciones)
+        finally:
+            vivo.liberar()
+        st.rerun()  # redibuja con los fragmentos otra vez activos (el chat sale del historial)
     vistas.autoscroll("st-key-chat_caja")
 
 

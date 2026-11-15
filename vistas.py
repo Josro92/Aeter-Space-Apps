@@ -18,6 +18,7 @@ import alertas
 import db
 import registros
 import tema
+import vivo
 from medico import recordatorios as med_rec
 
 RAIZ = Path(__file__).resolve().parent
@@ -180,7 +181,7 @@ def enviar_sos(astro_id: int, nombre: str) -> None:
     st.session_state["sos_aviso"] = True  # el aviso se muestra fuera del callback
 
 
-@st.fragment(run_every=3)
+@vivo.fragmento(3)
 def marte_grande(astro_id: int) -> None:
     nivel, _ = estado_de(db.ultima_medicion(astro_id))
     sos = any(e["parametro"] == "sos" for e in db.listar_eventos(astro_id, limite=10, solo_pendientes=True))
@@ -188,7 +189,7 @@ def marte_grande(astro_id: int) -> None:
     st.markdown(f"<div class='marte-grande'>{tema.marte_img(expresion)}</div>", unsafe_allow_html=True)
 
 
-@st.fragment(run_every=5)
+@vivo.fragmento(5)
 def tarjeta_estado(astro_id: int, nombre: str) -> None:
     ahora = med_rec.ahora()
     with st.container(key="vidrio_estado"):
@@ -260,7 +261,7 @@ def _terminar_protocolo(astro_id: int) -> None:
     st.session_state.pop(f"proto_{astro_id}", None)
 
 
-@st.fragment(run_every=3)
+@vivo.fragmento(3)
 def panel_protocolo(astro_id: int) -> None:
     proto = st.session_state.get(f"proto_{astro_id}")
     if not proto:
@@ -337,7 +338,7 @@ def grafica_vital(df: pd.DataFrame, param: str, key: str, color: str) -> None:
     st.plotly_chart(fig, key=key, config={"displayModeBar": False})
 
 
-@st.fragment(run_every=2)
+@vivo.fragmento(2)
 def panel_signos(astro_id: int, n_puntos: int) -> None:
     recientes = db.ultimas_mediciones(astro_id, n_puntos)
     if not recientes:

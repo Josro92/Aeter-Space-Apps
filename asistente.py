@@ -76,7 +76,7 @@ def _mensajes_validos(historial: list[dict], maximo: int = 12) -> list[dict]:
     return msgs
 
 
-def _stream_texto(texto: str, pausa: float = 0.01) -> Iterator[str]:
+def _stream_texto(texto: str, pausa: float = float(os.environ.get("ASTRO_PAUSA", "0.01"))) -> Iterator[str]:
     for token in re.findall(r"\S+\s*", texto):
         yield token
         time.sleep(pausa)
