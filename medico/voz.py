@@ -12,11 +12,11 @@ import re
 
 import streamlit.components.v1 as components
 
-VERSION_JS = "6"
+VERSION_JS = "7"
 
 JS = r"""
 window.__voz = (function(){
-  const VER='6';
+  const VER='7';
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const LS = {get:function(k,d){try{return localStorage.getItem(k)||d;}catch(_){return d;}}, set:function(k,v){try{localStorage.setItem(k,v);}catch(_){}}};
   function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
@@ -46,7 +46,7 @@ window.__voz = (function(){
   let rec=null, recTipo='', silencioTimer=null, busy=false, busyTimer=null;
   let speaking=false, vozToken=0, vozTimer=null, finHabla=0, hablado=[], uref=null, esRespuesta=false, hablaRespuesta=false;
   let cola=[], vistos={}, navVisto=null, sirenaOn=false, sirenaTimer=null;
-  let diag=[], avisoTimer=null, ventanaHasta=0;
+  let diag=[], avisoTimer=null, ventanaHasta=0, intentosVoz=0, avisoSinVoz=false;
 
   function seguir(){ return true; }
 
@@ -157,6 +157,8 @@ window.__voz = (function(){
   }
   function cortarVoz(){ vozToken++; clearTimeout(vozTimer); try{speechSynthesis.cancel();}catch(_){} speaking=false; refrescar(); }
   function decir(texto){
+    if(!speechSynthesis.getVoices().length && intentosVoz<8){ intentosVoz++; setTimeout(function(){ decir(texto); }, 350); return; }   // el navegador aún está cargando las voces
+    intentosVoz=0;
     cortarVoz();
     parar();                                          // micrófono cerrado mientras habla: no se oye a sí mismo
     const lista=trozos(texto); let i=0; const tk=++vozToken;
@@ -167,6 +169,7 @@ window.__voz = (function(){
       const u=new SpeechSynthesisUtterance(lista[i++]); uref=u;
       u.lang='en-US'; u.rate=parseFloat(LS.get('voz_vel','1'))||1;
       const v=elegirVoz(); if(v){ u.voice=v; u.lang=v.lang; }
+      else if(!avisoSinVoz){ avisoSinVoz=true; log('No English voice found on this device'); aviso('No English voice on this device. Use Microsoft Edge, or install an English (US) voice in your system settings.', 12000); }
       u.onend=function(){ if(tk===vozToken) uno(); };
       u.onerror=function(e){ if(tk!==vozToken||e.error==='interrupted'||e.error==='canceled') return; log('Voice: '+(e.error||'error')); uno(); };
       try{ speechSynthesis.resume(); }catch(_){}
@@ -347,12 +350,67 @@ def sin_palabra_de_llamado(texto: str) -> str:
     return re.sub(r"(?i)\b(?:el\s+)?(?:a\s?)?[eé]t(?:h)?er\b", "your assistant", texto)
 
 
+_UNIDADES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
+             "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+_DECENAS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+
+def _entero_en_ingles(n: int) -> str:
+    if n < 20:
+        return _UNIDADES[n]
+    if n < 100:
+        d, u = divmod(n, 10)
+        return _DECENAS[d] + ("-" + _UNIDADES[u] if u else "")
+    if n < 1000:
+        c, r = divmod(n, 100)
+        return _UNIDADES[c] + " hundred" + (" " + _entero_en_ingles(r) if r else "")
+    if n < 1_000_000:
+        m, r = divmod(n, 1000)
+        return _entero_en_ingles(m) + " thousand" + (" " + _entero_en_ingles(r) if r else "")
+    return " ".join(_UNIDADES[int(c)] for c in str(n))      # números enormes: dígito a dígito
+
+
+def _numero_en_ingles(m: "re.Match") -> str:
+    t = m.group(0).replace(",", "")
+    entero, _, dec = t.partition(".")
+    palabras = _entero_en_ingles(int(entero)) if len(entero) <= 9 else " ".join(_UNIDADES[int(c)] for c in entero)
+    if dec:
+        palabras += " point " + " ".join(_UNIDADES[int(c)] for c in dec)
+    return palabras
+
+
+def numeros_a_ingles(t: str) -> str:
+    """Escribe en letras (en inglés) los números y unidades, para que ninguna voz los lea en otro idioma."""
+    t = re.sub(r"(\d+(?:\.\d+)?)\s*/\s*(\d+(?:\.\d+)?)", r"\1 over \2", t)                      # 120/80
+    t = re.sub(r"\b(\d{1,2}):(\d{2})\b", lambda m: _hora_en_ingles(int(m.group(1)), int(m.group(2))), t)  # 14:30
+    t = re.sub(r"(?<=\d)\s*[-–]\s*(?=\d)", " to ", t)                                           # 60-100
+    t = re.sub(r"\s*°\s*C\b", " degrees Celsius", t)
+    t = re.sub(r"\s*°\s*F\b", " degrees Fahrenheit", t)
+    t = re.sub(r"\s*°", " degrees", t)
+    t = re.sub(r"\s*%", " percent", t)
+    for patron, nombre in ((r"\bSpO\s*[2₂]\b", "S P O two"), (r"\bmmHg\b", "millimeters of mercury"),
+                           (r"\bbpm\b", "beats per minute"), (r"\bmg\b", "milligrams"), (r"\bkg\b", "kilograms"),
+                           (r"\bmL\b|\bml\b", "milliliters"), (r"\bmcg\b|\bµg\b", "micrograms"), (r"\bL/min\b", "liters per minute"),
+                           (r"\bO2\b|\bO₂\b", "oxygen"), (r"\bCO2\b|\bCO₂\b", "carbon dioxide")):
+        t = re.sub(patron, nombre, t)
+    return re.sub(r"\d[\d,]*(?:\.\d+)?", _numero_en_ingles, t)
+
+
+def _hora_en_ingles(h: int, mi: int) -> str:
+    if h > 23 or mi > 59:
+        return f"{h}:{mi:02d}"
+    minutos = "" if mi == 0 else (" oh " + _UNIDADES[mi] if mi < 10 else " " + _entero_en_ingles(mi))
+    return _entero_en_ingles(h) + minutos + ("" if mi else " hundred hours" if h >= 13 or h == 0 else " o'clock")
+
+
 def limpiar_para_voz(texto: str) -> str:
     texto = sin_palabra_de_llamado(texto)
     t = re.sub(r"\([A-Z]{2,4}\d{2,}\)", "", texto)      # códigos (MED014) no se leen
     t = re.sub(r"\[\[.*?\]\]", "", t)
     t = re.sub(r"[*_#>`|]+", "", t)
+    t = numeros_a_ingles(t)
     t = re.sub(r"\s+", " ", t)
+    t = re.sub(r"\s+([.,;:!?])", r"\1", t)
     return t.strip()
 
 
