@@ -67,7 +67,7 @@ window.__voz = (function(){
       '<div style="margin-bottom:6px"><b>Cómo hablar con Aéter</b></div>'+
       '<select id="vp-modo" style="width:100%;margin-bottom:8px;padding:4px"><option value="boton">Con botón (recomendado, sin eco)</option><option value="manos">Manos libres, di «Aéter» (usa audífonos)</option></select>'+
       '<label style="display:block;margin-bottom:6px"><input id="vp-seguir" type="checkbox"> Escuchar de nuevo cuando termine de responder</label>'+
-      '<label style="display:block;margin-bottom:10px"><input id="vp-todo" type="checkbox"> Manos libres: responder sin decir «Aéter»</label>'+
+      '<label style="display:block;margin-bottom:10px"><input id="vp-todo" type="checkbox"> Manos libres: responder sin decir «Aéter» (frases de 2+ palabras)</label>'+
       '<div style="margin-bottom:6px"><b>Voz de Aéter</b></div>'+
       '<select id="vp-voz" style="width:100%;margin-bottom:6px;padding:4px"></select>'+
       '<div style="margin-bottom:6px">Velocidad <input id="vp-vel" type="range" min="0.8" max="1.5" step="0.05" style="width:130px;vertical-align:middle"></div>'+
@@ -82,7 +82,7 @@ window.__voz = (function(){
     q('#vp-ajustes').onclick=function(){ const d=q('#vp-det'); d.style.display=d.style.display==='none'?'block':'none'; llenarVoces(); pintaDiag(); };
     q('#vp-modo').value=modo(); q('#vp-modo').onchange=function(e){ LS.set('v2_modo',e.target.value); reiniciar(true); };
     q('#vp-seguir').checked=seguir(); q('#vp-seguir').onchange=function(e){ LS.set('v2_seguir',e.target.checked?'1':'0'); };
-    q('#vp-todo').checked=LS.get('v2_todo','0')==='1'; q('#vp-todo').onchange=function(e){ LS.set('v2_todo',e.target.checked?'1':'0'); };
+    q('#vp-todo').checked=LS.get('v2_todo','1')==='1'; q('#vp-todo').onchange=function(e){ LS.set('v2_todo',e.target.checked?'1':'0'); };
     q('#vp-voz').onchange=function(e){ LS.set('voz_nombre',e.target.value); };
     q('#vp-vel').value=LS.get('voz_vel','1'); q('#vp-vel').onchange=function(e){ LS.set('voz_vel',e.target.value); };
     q('#vp-probar').onclick=function(){ asegurarAudio(); desbloqueado=true; overlay(false); cola.length=0; esRespuesta=false; decir('Hola, soy su asistente virtual. Así suena mi voz.'); };
@@ -257,7 +257,8 @@ window.__voz = (function(){
   }
   function eco(n){ const q=limpio(n), ahora=Date.now(); return hablado.some(function(h){ return ahora-h.ts<30000 && limpio(h.n).indexOf(q)>=0; }); }
   function procesar(t){
-    const n=norm(t), llamado=hayLlamado(t), abierto=Date.now()<ventanaHasta||LS.get('v2_todo','0')==='1';
+    const n=norm(t), llamado=hayLlamado(t), todo=LS.get('v2_todo','1')==='1' && n.trim().split(/\s+/).length>=2;
+    const abierto=Date.now()<ventanaHasta||todo;
     log('Oí: '+t);
     if(!llamado && !abierto){ aviso('Oí «'+t.slice(0,30)+'». Di «Aéter»', 4500); return; }
     const texto=sinLlamado(t);
