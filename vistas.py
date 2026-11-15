@@ -48,7 +48,11 @@ def autoscroll(clase: str) -> None:
         const todos=[c].concat([].slice.call(c.querySelectorAll('*')));
         const s=todos.find(function(x){{return x.scrollHeight>x.clientHeight+4 && /(auto|scroll)/.test(getComputedStyle(x).overflowY);}});
         if(s) s.scrollTop=s.scrollHeight; }}catch(e){{}} }}
-      setTimeout(ir,150); setTimeout(ir,600);
+      function ajustar(){{ try{{ const D=window.parent.document; const c=D.querySelector('.{clase}'); if(!c) return;
+        const h=Math.max(300, window.parent.innerHeight-262)+'px';   // el chat llega hasta cerca de la barra de tareas
+        [c, c.parentElement].forEach(function(e){{ if(e){{ e.style.setProperty('height',h,'important'); e.style.setProperty('max-height',h,'important'); }} }}); c.parentElement.style.setProperty('flex','0 0 '+h,'important'); }}catch(e){{}} }}
+      ajustar(); try{{ window.parent.addEventListener('resize', function(){{ ajustar(); ir(); }}); }}catch(e){{}}
+      setTimeout(ajustar,200); setTimeout(ir,150); setTimeout(ir,600);
     }})();</script>"""
     if hasattr(st, "iframe"):
         st.iframe(js, height=1)
@@ -115,7 +119,8 @@ def _datos_de_archivo(nombre: str) -> list[tuple[str, list[tuple[str, str]]]]:
         return []
     for ruta in carpeta.glob("*.md"):
         texto = ruta.read_text(encoding="utf-8")
-        if nombre.lower() not in texto.lower():
+        bajo = texto.lower()
+        if not all(parte in bajo for parte in nombre.lower().split()):
             continue
         secciones = []
         for bloque in re.split(r"(?m)^## ", texto)[1:]:
@@ -220,19 +225,67 @@ def tarjeta_estado(astro_id: int, nombre: str) -> None:
                       on_click=lambda: st.session_state.update(sirena=False))
 
 
+def _pasos_de(texto: str) -> list[tuple[str, str]]:
+    """Pasos numerados de un protocolo: (instrucción, advertencia)."""
+    pasos = []
+    for l in texto.splitlines():
+        m = re.match(r"\s*\d+\.\s*(?:\[[^\]]+\]\s*)?(.*)", l)
+        if m:
+            cuerpo, _, adv = m.group(1).partition("ADVERTENCIA:")
+            pasos.append((cuerpo.strip(), adv.strip()))
+    return pasos
+
+
+def fijar_protocolo(astro_id: int, codigo: str, titulo: str, pasos: list[tuple[str, str]]) -> None:
+    """Deja en la pestaña Estado el protocolo que Aéter está guiando."""
+    if pasos:
+        st.session_state[f"proto_{astro_id}"] = {"codigo": codigo, "titulo": titulo, "pasos": pasos}
+
+
+def protocolo_desde_codigo(astro_id: int, codigo: str) -> bool:
+    from medico import conocimiento
+    for f in conocimiento.fragmentos():
+        if f["id"] == codigo:
+            fijar_protocolo(astro_id, codigo, re.sub(r"^PRO\d{3}\s*[—-]\s*", "", f["titulo"]), _pasos_de(f["texto"]))
+            return True
+    return False
+
+
+def _terminar_protocolo(astro_id: int) -> None:
+    st.session_state.pop(f"proto_{astro_id}", None)
+
+
+@st.fragment(run_every=3)
+def panel_protocolo(astro_id: int) -> None:
+    proto = st.session_state.get(f"proto_{astro_id}")
+    if not proto:
+        st.markdown("<div class='proto'><h3>Protocolo a seguir</h3><p class='vacio'>Cuando Aéter te guíe con un "
+                    "protocolo, los pasos aparecerán aquí.</p></div>", unsafe_allow_html=True)
+        return
+    items = []
+    for i, (paso, adv) in enumerate(proto["pasos"], 1):
+        extra = f"<div class='adv'>Advertencia: {E(adv)}</div>" if adv else ""
+        items.append(f"<li><span class='n'>{i}</span><div>{E(paso)}{extra}</div></li>")
+    codigo = f"{E(proto['codigo'])} · " if re.match(r"PRO\d+", proto["codigo"]) else ""
+    st.markdown(f"<div class='proto'><h3>Protocolo a seguir</h3><div class='ptit'>{codigo}{E(proto['titulo'])}</div>"
+                f"<ol>{''.join(items)}</ol></div>", unsafe_allow_html=True)
+    st.button("Terminar protocolo", key="btn_fin_proto", on_click=_terminar_protocolo, args=(astro_id,))
+
+
 def pantalla_estado(astro: dict) -> None:
-    izq, der = st.columns([1, 1.15], gap="large", vertical_alignment="center")
+    izq, der = st.columns([1, 1.15], gap="large", vertical_alignment="top")
     with izq:
-        marte_grande(astro["id"])
-    with der:
         nombre_saludo = astro["nombre"] if len(astro["nombre"].split()) <= 2 else " ".join(astro["nombre"].split()[:2])
         with st.container(key="clic_perfil"):
-            st.markdown(f"<div class='saludo'>{tema.avatar_img(astro['nombre'], 112)}"
+            st.markdown(f"<div class='saludo'>{tema.avatar_img(astro['nombre'], 96)}"
                         f"<div class='txt'>¡Hola, {E(nombre_saludo)}!</div></div>", unsafe_allow_html=True)
             if st.button("Ver ficha médica", key="tapa_perfil"):
                 ficha(astro["id"])
-        st.write("")
+        marte_grande(astro["id"])
+    with der:
         tarjeta_estado(astro["id"], astro["nombre"])
+        st.write("")
+        panel_protocolo(astro["id"])
 
 
 # --------------------------------------------------------------------------- signos vitales

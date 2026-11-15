@@ -81,7 +81,7 @@ def marte_img(expresion: str = "calma", ancho: str | None = None, clase: str = "
 
 
 # --------------------------------------------------------------------------- avatares de la tripulación
-_AVATAR = {"Ana Rojas": "#e63946", "Jason": "#3b82f6", "María Quesada Antonelli": "#14b8a6"}
+_AVATAR = {"Ana Rojas": "#e63946", "Jason": "#3b82f6", "María Antonelli": "#14b8a6"}
 
 
 def avatar_svg(nombre: str) -> str:
@@ -223,9 +223,9 @@ body:has([data-testid="stSidebar"][aria-expanded="true"]) [data-baseweb="tab-lis
 
 /* ---- botón invisible encima de una tarjeta (tarjeta clicable) ---- */
 [class*="st-key-clic_"]{position:relative}
-[class*="st-key-tapa_"]{position:absolute!important;inset:0;z-index:5;margin:0!important}
-[class*="st-key-tapa_"] button{width:100%!important;height:100%!important;min-height:0;opacity:0;cursor:pointer;border-radius:30px}
-[class*="st-key-tapa_"] [data-testid="stButton"],[class*="st-key-tapa_"] [data-testid="stElementContainer"]{height:100%}
+[class*="st-key-tapa_"]{position:absolute!important;top:0;left:0;right:0;bottom:0;width:100%!important;height:100%!important;z-index:5;margin:0!important}
+[class*="st-key-tapa_"] button{width:100%!important;height:100%!important;min-height:0;padding:0;opacity:0;cursor:pointer;border-radius:30px}
+[class*="st-key-tapa_"] [data-testid="stButton"],[class*="st-key-tapa_"] [data-testid="stElementContainer"]{height:100%;width:100%}
 [class*="st-key-clic_"]:hover .tarjeta,[class*="st-key-clic_"]:hover .fila{filter:brightness(1.12)}
 
 /* ---- portada ---- */
@@ -249,12 +249,23 @@ body:has([data-testid="stSidebar"][aria-expanded="true"]) [data-baseweb="tab-lis
 @keyframes flota{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 
 /* ---- estado ---- */
+.proto{border-radius:26px;padding:22px 30px 24px;background:rgba(40,36,92,.93);border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 14px 34px rgba(0,0,0,.35);text-align:left}
+.proto h3{font-family:'Open Sans',sans-serif;font-weight:700;font-size:1.4rem;margin:0 0 .5rem;text-align:center}
+.proto .vacio{opacity:.85;text-align:center;margin:1rem 0 .6rem;font-size:1.05rem}
+.proto .ptit{font-weight:700;font-size:1.15rem;margin:.2rem 0 .8rem;color:#ffd7a8}
+.proto ol{list-style:none;margin:0;padding:0}
+.proto li{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-top:1px solid rgba(255,255,255,.12);font-size:1.02rem}
+.proto li .n{flex:none;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;
+  align-items:center;justify-content:center;font-weight:700;font-size:.9rem}
+.proto .adv{margin-top:4px;font-size:.9rem;color:#ffd166;font-style:italic}
+.st-key-btn_fin_proto button{margin-top:.6rem}
 .marte-grande{display:flex;align-items:center;justify-content:center;padding:1rem}
 .marte-grande .marte{width:min(470px,100%)!important;animation:flota 7s ease-in-out infinite;filter:drop-shadow(0 18px 34px rgba(0,0,0,.4))}
-.saludo{display:flex;align-items:center;gap:26px;padding:14px 40px 14px 16px;border-radius:70px;
+.saludo{display:flex;align-items:center;gap:20px;padding:12px 32px 12px 14px;border-radius:70px;
   background:var(--vidrio);border:1px solid var(--borde);backdrop-filter:blur(18px)}
-.saludo .avatar{width:112px;height:112px}
-.saludo .txt{font-family:'Poppins',sans-serif;font-weight:700;font-size:2.05rem;flex:1;text-align:center}
+.saludo .avatar{width:96px;height:96px}
+.saludo .txt{font-family:'Poppins',sans-serif;font-weight:700;font-size:1.75rem;flex:1;text-align:center}
 .hora{font-family:'Poppins',sans-serif;font-weight:800;font-size:4.2rem;line-height:1;letter-spacing:-.03em}
 .fecha{font-family:'Open Sans',sans-serif;font-weight:700;font-size:1.5rem;margin-top:.3rem;padding-left:.4rem}
 .zona-alertas h4{text-align:center;font-family:'Open Sans',sans-serif;font-weight:700;font-size:1.7rem;margin:.6rem 0 .8rem}
@@ -312,6 +323,7 @@ body:has([data-testid="stSidebar"][aria-expanded="true"]) [data-baseweb="tab-lis
 .vital.sel .dato{background:rgba(255,255,255,.30);border-color:#fff}
 
 /* ---- conversación ---- */
+[data-testid="stLayoutWrapper"]:has(>.st-key-chat_caja){flex:0 0 calc(100vh - 262px)!important;min-height:300px}
 .bienvenida{text-align:left;opacity:.9;padding:10px 6px;font-size:1.05rem}
 [data-testid="stChatMessage"],[data-testid="stChatMessage"] *{text-align:left!important}
 @media (min-width:1000px){[data-testid="stChatInput"]{margin-right:330px}}

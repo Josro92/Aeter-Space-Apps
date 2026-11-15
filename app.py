@@ -80,13 +80,17 @@ def _registrar_intercambio(prompt: str, respuesta: str, acciones: list[dict]) ->
         from medico import conocimiento
         cods = sorted(set(re.findall(r"PRO\d{3}", respuesta)))
         titulos = {f["id"]: f["titulo"] for f in conocimiento.fragmentos() if f["id"] in cods}
+        if cods:
+            vistas.protocolo_desde_codigo(astro_id, cods[0])  # lo muestra en la pestaña Estado
         for c in cods:
             nombre_pro = re.sub(r"^PRO\d{3}\s*[—-]\s*", "", titulos.get(c, c))
             registros.agregar(astro_id, "Protocolo", f"{c} · {nombre_pro}",
                               f"Aéter aplicó el protocolo {c} durante una conversación.\n\nPregunta: {prompt}")
         for a in acciones:
             if a["accion"] == "ver_procedimiento":
-                titulo = protocolos.EMERGENCIAS.get(a["arg"], {}).get("titulo", a["arg"])
+                guia = protocolos.EMERGENCIAS.get(a["arg"], {})
+                titulo = guia.get("titulo", a["arg"])
+                vistas.fijar_protocolo(astro_id, a["arg"], titulo, [(p, "") for p in guia.get("pasos", [])])
                 registros.agregar(astro_id, "Protocolo", f"Guía mostrada: {titulo}",
                                   f"Aéter mostró la guía «{titulo}».\n\nPregunta: {prompt}")
     except Exception:

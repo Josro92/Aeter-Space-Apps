@@ -14,10 +14,10 @@ window.__voz = (function(){
   let rec=null, on=false, busy=false, speaking=false, busyTimer=null, desbloqueado=false;
   let vistos={}, cola=[], navVisto=null, sirenaOn=false, sirenaTimer=null, ctx=null, nbeep=0, uref=null;
   let interimTimer=null, marcaProc=null;
-  let ultimoEstado='', oido='', diag=[], ventanaHasta=0, vozTimer=null, avisoTimer=null, vozToken=0, manual=false, bargeRec=null, hablado=[], ignorarHasta=0, interrumpidoEn=0, finHabla=0;
+  let ultimoSonido=0, esperaTimer=null, ultimoEstado='', oido='', diag=[], ventanaHasta=0, vozTimer=null, avisoTimer=null, vozToken=0, manual=false, bargeRec=null, hablado=[], ignorarHasta=0, interrumpidoEn=0, finHabla=0;
   function cortarVoz(){ pararBarge(); vozToken++; clearTimeout(vozTimer); try{speechSynthesis.cancel();}catch(_){} speaking=false; }
   function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
-  const LLAMADO=/(^|[^a-z])(aeter|a eter|aether|a ether|ayter|aiter|eter|ater)([^a-z]|$)/;
+  const LLAMADO=/(^|[^a-z])(aeter|a eter|ae ter|aether|a ether|ayter|aiter|aider|ayder|ether|eter|ater|ahter|el eter|el ether)([^a-z]|$)/;
   const LS = {get:function(k,d){try{return localStorage.getItem(k)||d;}catch(_){return d;}}, set:function(k,v){try{localStorage.setItem(k,v);}catch(_){}}};
 
   /* ---------- panel flotante ---------- */
@@ -128,7 +128,8 @@ window.__voz = (function(){
   }
   function siguiente(){
     if(speaking||!desbloqueado) return;
-    if(!cola.length){ busy=false; clearTimeout(busyTimer); ventanaHasta=Date.now()+25000; ignorarHasta=Math.max(ignorarHasta,Date.now()+500); estado(rec?'Escuchando…':''); iniciar(); return; }
+    if(!cola.length){ busy=false; clearTimeout(busyTimer); ventanaHasta=Date.now()+45000; ignorarHasta=Math.max(ignorarHasta,Date.now()+500); estado(rec?'Escuchando…':''); iniciar(); return; }
+    if(Date.now()-ultimoSonido<1800){ clearTimeout(esperaTimer); esperaTimer=setTimeout(siguiente,350); return; }   // no pisar al usuario
     decir(cola.shift(), false);
   }
 
@@ -157,8 +158,8 @@ window.__voz = (function(){
     const n=norm(t); oido=t; log('Oí: '+t);
     const llamado=LLAMADO.test(n), abierto=(LS.get('voz_modo','llamado')==='siempre')||Date.now()<ventanaHasta;
     if(!llamado && !abierto){ aviso('Oí «'+t.slice(0,40)+'». Diga «Aéter» para hablarme'); return; }
-    const texto=t.replace(/^\s*(oye|hey|ok|okay|hola|buenas)?[\s,.:;!¡¿?]*(a ?[eé]ther?|a[iy]ter|[eé]ter|ater)(?![a-záéíóúñ])[\s,.:;!¡¿?]*/i,'').trim();
-    ventanaHasta=Date.now()+25000;
+    const texto=t.replace(/^\s*(oye|hey|ok|okay|hola|buenas)?[\s,.:;!¡¿?]*(el )?(a ?[eé] ?ther?|a[iy][td]er|[eé]ther?|ater|ahter)(?![a-záéíóúñ])[\s,.:;!¡¿?]*/i,'').trim();
+    ventanaHasta=Date.now()+45000;
     const palabras=texto.split(/\s+/).filter(Boolean).length;
     if(Date.now()-interrumpidoEn<5000 && palabras<=2){ log('Ya me callé'); return; }
     if(!texto || norm(texto).length<2){ cola.unshift('Dígame.'); siguiente(); return; }
@@ -167,23 +168,26 @@ window.__voz = (function(){
   function iniciar(){
     if(!on||!desbloqueado||rec||manual) return;
     if(!SR){estado('Use Chrome o Edge para hablar');return;}
-    rec=new SR(); rec.lang='es-MX'; rec.interimResults=true; rec.continuous=true; rec.maxAlternatives=1;
+    rec=new SR(); rec.lang='es-MX'; rec.interimResults=true; rec.continuous=true; rec.maxAlternatives=3;
     const miRec=rec, t0=Date.now();
     rec.onaudiostart=function(){ log('Micrófono abierto'); };
-    rec.onspeechstart=function(){ if(!speaking) log('Detecto voz…'); };
+    rec.onspeechstart=function(){ if(!speaking){ ultimoSonido=Date.now(); log('Detecto voz…'); } };
     rec.onresult=function(e){
       for(let i=e.resultIndex;i<e.results.length;i++){
-        const res=e.results[i], t=(res[0].transcript||'').trim(); if(!t) continue;
+        const res=e.results[i]; let t=(res[0].transcript||'').trim(); if(!t) continue;
+        if(!LLAMADO.test(norm(t))){ for(let k=1;k<res.length;k++){ const alt=(res[k].transcript||'').trim(); if(alt && LLAMADO.test(norm(alt))){ t=alt; break; } } }  // otra lectura que sí trae «Aéter»
         const n=norm(t);
         if(speaking){                                    // mientras habla, solo atiende la interrupción
-          if(LS.get('voz_barge','1')==='1' && LLAMADO.test(n)) interrumpir();
+          const corta=/^(para|basta|alto|silencio|callate|calla|espera|esperame|un momento)\b/.test(limpio(n).trim()) && n.split(' ').length<=3;
+          if(LS.get('voz_barge','1')==='1' && (LLAMADO.test(n) || corta)){ ultimoSonido=Date.now(); interrumpir(); }
           continue;
         }
+        ultimoSonido=Date.now();                         // el usuario está hablando: Aéter espera a que termine
         if(busy || Date.now()<ignorarHasta) continue;
         if(!res.isFinal){
           estado(''+t.slice(0,50)); clearTimeout(interimTimer);
-          const soloLlamado=/^(oye |hey |hola |ok )?(aeter|a eter|aether|a ether|ayter|aiter|eter|ater)$/.test(limpio(n).trim());
-          interimTimer=setTimeout(function(){ if(speaking||busy) return; if(Date.now()-finHabla<5000 && ecoBolsa(n)) return; marcaProc={n:n,wake:soloLlamado,ts:Date.now()}; procesar(t); }, soloLlamado?600:1100);
+          const soloLlamado=/^(oye |hey |hola |ok )?(aeter|a eter|ae ter|aether|a ether|ayter|aiter|aider|ayder|ether|eter|ater|ahter|el eter|el ether)$/.test(limpio(n).trim());
+          interimTimer=setTimeout(function(){ if(speaking||busy) return; if(Date.now()-finHabla<5000 && ecoBolsa(n)) return; marcaProc={n:n,wake:soloLlamado,ts:Date.now()}; procesar(t); }, soloLlamado?400:750);
           continue;
         }
         clearTimeout(interimTimer);
@@ -224,7 +228,7 @@ window.__voz = (function(){
   }
   function pararBarge(){}
   function interrumpir(){
-    cortarVoz(); cola.length=0; busy=false; ventanaHasta=Date.now()+25000; interrumpidoEn=Date.now(); ignorarHasta=0;
+    cortarVoz(); cola.length=0; busy=false; ventanaHasta=Date.now()+45000; interrumpidoEn=Date.now(); ignorarHasta=0;
     log('Interrumpido al decir «Aéter»'); estado('Lo escucho…');
   }
   function hablarAhora(){
@@ -242,7 +246,7 @@ window.__voz = (function(){
     };
     r.onerror=function(e){ log('Micrófono: '+e.error); estado('Micrófono: '+e.error); manual=false; };
     const t1=Date.now();
-    r.onend=function(){ manual=false; const ms=Date.now()-t1; const txt=final.trim(); if(!txt) log('Fin de escucha tras '+ms+' ms sin texto'); if(txt){ log('Oí: '+txt); ventanaHasta=Date.now()+25000; enviar(txt); } else { estado(''); log('No oí nada'); iniciar(); } };
+    r.onend=function(){ manual=false; const ms=Date.now()-t1; const txt=final.trim(); if(!txt) log('Fin de escucha tras '+ms+' ms sin texto'); if(txt){ log('Oí: '+txt); ventanaHasta=Date.now()+45000; enviar(txt); } else { estado(''); log('No oí nada'); iniciar(); } };
     setTimeout(function(){ try{ r.start(); }catch(e){ manual=false; log('Mic start: '+e); estado(''); } }, 450);
   }
   function parar(){ if(rec){const r=rec; rec=null; r.onend=null; try{r.abort();}catch(_){}} }
