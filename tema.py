@@ -97,7 +97,7 @@ def marte_img(expresion: str = "calma", ancho: str | None = None, clase: str = "
 
 
 # --------------------------------------------------------------------------- avatares de la tripulación
-_AVATAR = {"Ana Rojas": "#e63946", "Jason": "#3b82f6", "María Antonelli": "#14b8a6"}
+_AVATAR = {"Ana Rojas": "#e63946", "Jason Durán": "#3b82f6", "María Antonelli": "#14b8a6"}
 
 
 def avatar_svg(nombre: str) -> str:

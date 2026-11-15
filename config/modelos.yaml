@@ -10,13 +10,13 @@ proveedores:
     modelo: gemini-3.5-flash-lite
     # Nombre de la variable de .env que guarda la llave (no la llave en sí).
     variable_llave: GEMINI_API_KEY
-    max_tokens: 1024
+    max_tokens: 700
     activo: true
 
   claude:
     modelo: claude-sonnet-5-5
     variable_llave: ANTHROPIC_API_KEY
-    max_tokens: 1024
+    max_tokens: 700
     # Inactivo hasta que exista la llave de Anthropic.
     activo: false
 

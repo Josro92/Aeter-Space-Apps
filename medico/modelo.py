@@ -53,12 +53,24 @@ def stream(mensajes: list[dict], sistema: str):
         cliente = genai.Client(api_key=llave)
         contenido = [types.Content(role="user" if m["role"] == "user" else "model",
                                    parts=[types.Part(text=m["content"])]) for m in mensajes]
-        conf = types.GenerateContentConfig(system_instruction=sistema,
-                                           max_output_tokens=prov["max_tokens"])
-        for trozo in cliente.models.generate_content_stream(model=prov["modelo"],
-                                                            contents=contenido, config=conf):
-            if trozo.text:
-                yield trozo.text
+        def _conf(rapido: bool):
+            extra = {}
+            if rapido and hasattr(types, "ThinkingConfig"):
+                extra["thinking_config"] = types.ThinkingConfig(thinking_budget=0)  # responde sin «pensar» largo
+            return types.GenerateContentConfig(system_instruction=sistema,
+                                               max_output_tokens=prov["max_tokens"], **extra)
+        enviado = False
+        for rapido in (True, False):                      # si el modelo no admite el modo rápido, reintenta normal
+            try:
+                for trozo in cliente.models.generate_content_stream(model=prov["modelo"],
+                                                                    contents=contenido, config=_conf(rapido)):
+                    if trozo.text:
+                        enviado = True
+                        yield trozo.text
+                return
+            except Exception:
+                if enviado or not rapido:
+                    raise
     elif nombre == "claude":
         import anthropic
         cliente = anthropic.Anthropic(api_key=llave)

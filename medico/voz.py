@@ -129,7 +129,7 @@ window.__voz = (function(){
   function siguiente(){
     if(speaking||!desbloqueado) return;
     if(!cola.length){ busy=false; clearTimeout(busyTimer); ventanaHasta=Date.now()+45000; ignorarHasta=Math.max(ignorarHasta,Date.now()+500); estado(rec?'Escuchando…':''); iniciar(); return; }
-    if(Date.now()-ultimoSonido<1800){ clearTimeout(esperaTimer); esperaTimer=setTimeout(siguiente,350); return; }   // no pisar al usuario
+    if(Date.now()-ultimoSonido<1200){ clearTimeout(esperaTimer); esperaTimer=setTimeout(siguiente,350); return; }   // no pisar al usuario
     decir(cola.shift(), false);
   }
 
@@ -189,7 +189,7 @@ window.__voz = (function(){
         if(!res.isFinal){
           estado(''+t.slice(0,50)); clearTimeout(interimTimer);
           const soloLlamado=/^(oye |hey |hola |ok )?(aeter|a eter|ae ter|aether|a ether|ayter|aiter|aider|ayder|ether|eter|ater|ahter|el eter|el ether)$/.test(limpio(n).trim());
-          interimTimer=setTimeout(function(){ if(speaking||busy) return; if(Date.now()-finHabla<5000 && ecoBolsa(n)) return; marcaProc={n:n,wake:soloLlamado,ts:Date.now()}; procesar(t); }, soloLlamado?400:750);
+          interimTimer=setTimeout(function(){ if(speaking||busy) return; if(Date.now()-finHabla<5000 && ecoBolsa(n)) return; marcaProc={n:n,wake:soloLlamado,ts:Date.now()}; procesar(t); }, soloLlamado?250:480);
           continue;
         }
         clearTimeout(interimTimer);

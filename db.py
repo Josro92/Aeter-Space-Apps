@@ -76,7 +76,7 @@ TRIPULACION = [
     dict(nombre="Ana Rojas", rol="Comandante", edad=41, peso_kg=63, tipo_sangre="O+",
          alergias="Ninguna conocida", medicamentos="Ninguno",
          condiciones="Sin antecedentes relevantes"),
-    dict(nombre="Jason", rol="Astronauta (caso de prueba de Aéter)", edad=42, peso_kg=78,
+    dict(nombre="Jason Durán", rol="Astronauta (caso de prueba de Aéter)", edad=42, peso_kg=78,
          tipo_sangre="O+", alergias="Penicilina",
          medicamentos="Losartán 50 mg al día",
          condiciones="Hipertensión leve"),
@@ -89,7 +89,7 @@ TRIPULACION = [
 
 # Valores de reposo propios de cada persona (los demás se generan al azar y de forma repetible).
 BASES_FIJAS = {
-    "Jason": dict(fc=64, pas=122, pad=78, spo2=98, temp=36.6, fr=15),
+    "Jason Durán": dict(fc=64, pas=122, pad=78, spo2=98, temp=36.6, fr=15),
     "María Antonelli": dict(fc=56, pas=112, pad=70, spo2=98, temp=36.6, fr=14),
 }
 
@@ -127,6 +127,7 @@ def sembrar_astronautas() -> None:
     nombres = [a["nombre"] for a in TRIPULACION]
     with conexion() as con:
         con.execute("UPDATE astronautas SET nombre='María Antonelli' WHERE nombre='María Quesada Antonelli'")  # conserva su historial
+        con.execute("UPDATE astronautas SET nombre='Jason Durán' WHERE nombre='Jason'")
         existentes = {f["nombre"]: f["id"] for f in con.execute("SELECT id, nombre FROM astronautas")}
         for nombre, astro_id in existentes.items():
             if nombre in nombres:
