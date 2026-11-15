@@ -12,11 +12,11 @@ import re
 
 import streamlit.components.v1 as components
 
-VERSION_JS = "5"
+VERSION_JS = "6"
 
 JS = r"""
 window.__voz = (function(){
-  const VER='5';
+  const VER='6';
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const LS = {get:function(k,d){try{return localStorage.getItem(k)||d;}catch(_){return d;}}, set:function(k,v){try{localStorage.setItem(k,v);}catch(_){}}};
   function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
@@ -85,7 +85,7 @@ window.__voz = (function(){
     const sel=panel().querySelector('#vp-voz'); if(!sel) return;
     const vs=speechSynthesis.getVoices().filter(function(v){return v.lang.toLowerCase().indexOf('en')===0;});
     const actual=LS.get('voz_nombre','');
-    sel.innerHTML='<option value="">(automatic)</option>'+vs.map(function(v){return '<option value="'+v.name+'"'+(v.name===actual?' selected':'')+'>'+v.name+' · '+v.lang+'</option>';}).join('');
+    sel.innerHTML='<option value="">(automatic: best US English voice)</option>'+vs.map(function(v){return '<option value="'+v.name+'"'+(v.name===actual?' selected':'')+'>'+v.name+' · '+v.lang+'</option>';}).join('');
   }
   function log(m){
     const h=new Date().toLocaleTimeString('en-US',{hour12:false});
@@ -130,11 +130,25 @@ window.__voz = (function(){
   }
 
   /* ---------- voz de salida (el micrófono se apaga mientras habla) ---------- */
+  function puntajeVoz(v){
+    const n=v.name, l=v.lang.toLowerCase().replace('_','-'); let p=0;
+    if(l==='en-us') p+=40; else if(l.indexOf('en')===0) p+=10; else return -1;
+    if(/natural|neural/i.test(n)) p+=50;                                   // Edge: voces neuronales
+    if(/\b(aria|jenny|guy|ava|andrew|emma|brian|michelle|steffan|ana)\b/i.test(n)) p+=25;
+    if(/online/i.test(n)) p+=20;
+    if(/google us english/i.test(n)) p+=45;                               // Chrome
+    if(/samantha|ava|allison|nicky|zoe|evan|nathan|siri/i.test(n)) p+=30; // Apple
+    if(/zira|david|mark/i.test(n)) p+=8;                                  // Windows clásicas
+    if(/espeak|compact/i.test(n)) p-=30;
+    if(v.localService===false) p+=5;
+    return p;
+  }
   function elegirVoz(){
     const vs=speechSynthesis.getVoices(), nombre=LS.get('voz_nombre','');
     if(nombre){ const v=vs.find(function(v){return v.name===nombre;}); if(v) return v; }
-    const es=vs.filter(function(v){return v.lang.toLowerCase().indexOf('en')===0;});
-    return es.find(function(v){return /natural|online|google/i.test(v.name);}) || es[0] || null;
+    let mejor=null, mp=-1;
+    vs.forEach(function(v){ const p=puntajeVoz(v); if(p>mp){ mp=p; mejor=v; } });   // la mejor voz en inglés de EE. UU.
+    return mejor;
   }
   function trozos(texto){
     const partes=texto.split(/(?<=[.!?:;])\s+/), res=[]; let acc='';
