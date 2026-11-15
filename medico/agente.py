@@ -21,7 +21,7 @@ def _umbrales() -> str:
 
 def construir_sistema(contexto_pagina: str, pregunta: str) -> tuple[str, list[dict]]:
     frags = conocimiento.buscar(pregunta)
-    bloque = "\n\n".join(f"[{f['id']}] ({f['archivo']})\n{f['texto']}" for f in frags) or "(nada relacionado encontrado)"
+    bloque = "\n\n".join(f"[{f['id']}] ({f['archivo']})\n{f['texto']}" for f in frags) or "(nothing related found)"
     sistema = (f"{_reglas()}\n\n# FICHA Y ESTADO ACTUAL (en vivo, de la pantalla)\n{contexto_pagina}\n\n"
                f"# UMBRALES DE EJEMPLO SIN VALIDAR (de la app)\n{_umbrales()}\n\n"
                f"# INVENTARIO DE MEDICAMENTOS A BORDO\n{conocimiento.inventario_compacto()}\n\n"

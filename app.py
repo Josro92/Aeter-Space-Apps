@@ -1,4 +1,4 @@
-"""Aéter · monitoreo de signos vitales y asistente de salud con IA para astronautas.
+"""Aéter · vital-signs monitoring and AI health assistant for astronauts.
 
 Ejecutar:   streamlit run app.py
 
@@ -75,8 +75,8 @@ background-repeat:no-repeat!important;background-size:46px!important;background-
 def _registrar_intercambio(prompt: str, respuesta: str, acciones: list[dict]) -> None:
     """Deja la conversación (y los protocolos que usó) en el historial de la persona."""
     try:
-        registros.agregar(astro_id, "Conversación", prompt,
-                          f"Pregunta: {prompt}\n\nRespuesta de Aéter: {respuesta}")
+        registros.agregar(astro_id, "Conversation", prompt,
+                          f"Question: {prompt}\n\nAéter's answer: {respuesta}")
         from medico import conocimiento
         cods = sorted(set(re.findall(r"PRO\d{3}", respuesta)))
         titulos = {f["id"]: f["titulo"] for f in conocimiento.fragmentos() if f["id"] in cods}
@@ -84,15 +84,15 @@ def _registrar_intercambio(prompt: str, respuesta: str, acciones: list[dict]) ->
             vistas.protocolo_desde_codigo(astro_id, cods[0])  # lo muestra en la pestaña Estado
         for c in cods:
             nombre_pro = re.sub(r"^PRO\d{3}\s*[—-]\s*", "", titulos.get(c, c))
-            registros.agregar(astro_id, "Protocolo", f"{c} · {nombre_pro}",
-                              f"Aéter aplicó el protocolo {c} durante una conversación.\n\nPregunta: {prompt}")
+            registros.agregar(astro_id, "Protocol", f"{c} · {nombre_pro}",
+                              f"Aéter applied protocol {c} during a conversation.\n\nQuestion: {prompt}")
         for a in acciones:
             if a["accion"] == "ver_procedimiento":
                 guia = protocolos.EMERGENCIAS.get(a["arg"], {})
                 titulo = guia.get("titulo", a["arg"])
                 vistas.fijar_protocolo(astro_id, a["arg"], titulo, [(p, "") for p in guia.get("pasos", [])])
-                registros.agregar(astro_id, "Protocolo", f"Guía mostrada: {titulo}",
-                                  f"Aéter mostró la guía «{titulo}».\n\nPregunta: {prompt}")
+                registros.agregar(astro_id, "Protocol", f"Guide shown: {titulo}",
+                                  f"Aéter showed the guide «{titulo}».\n\nQuestion: {prompt}")
     except Exception:
         pass  # el historial nunca debe romper el chat
 
@@ -105,8 +105,8 @@ def pantalla_aeter() -> None:
     with caja:
         bienvenida = st.empty()
         if not historial:
-            bienvenida.markdown("<p class='bienvenida'>Escribe o di «Aéter» y cuéntame qué necesitas. "
-                                "Puedo ayudarte con tu salud, la misión o lo que quieras conversar.</p>",
+            bienvenida.markdown("<p class='bienvenida'>Type or press «Talk» and tell me what you need. "
+                                "I can help with your health, the mission or anything you want to chat about.</p>",
                                 unsafe_allow_html=True)
         for i, m in enumerate(historial):
             with st.chat_message(m["role"]):
@@ -114,7 +114,7 @@ def pantalla_aeter() -> None:
                 if m.get("acciones"):
                     med_acciones.mostrar(m["acciones"], astro_id, yo_nombre, f"{astro_id}_{i}", servicio)
 
-    prompt = st.chat_input(f"Hola, {nombre_corto}. ¿En qué te puedo ayudar?", key=f"chat_in_{astro_id}")
+    prompt = st.chat_input(f"Hi, {nombre_corto}. How can I help you?", key=f"chat_in_{astro_id}")
     if prompt:
         bienvenida.empty()
         with caja:
@@ -137,7 +137,7 @@ def _atender(prompt: str, historial: list, med_acciones) -> None:
     if pend and len(palabras) <= 6:
         if time.time() - pend.get("ts", 0) > med_acciones.CONFIRMAR_SEG:
             st.session_state.pop("pendiente", None)
-        elif any(p in ("confirmo", "confirmado", "adelante", "envialo", "hazlo") for p in palabras):
+        elif any(p in ("confirm", "confirmed", "go", "send", "do", "yes", "confirmo", "confirmado", "adelante", "envialo", "hazlo") for p in palabras):
             resultado = med_acciones.ejecutar_pendiente(pend, astro_id, yo_nombre, servicio)
             st.session_state.pop("pendiente", None)
             with st.chat_message("assistant"):
@@ -145,12 +145,12 @@ def _atender(prompt: str, historial: list, med_acciones) -> None:
             historial.append({"role": "assistant", "content": resultado, "acciones": []})
             st.session_state["voz_texto"] = (resultado, f"{astro_id}_{len(historial)}")
             return
-        elif any(p in ("cancela", "cancelar", "cancelalo", "olvidalo") for p in palabras):
+        elif any(p in ("cancel", "stop", "no", "cancela", "cancelar", "cancelalo", "olvidalo") for p in palabras):
             st.session_state.pop("pendiente", None)
             with st.chat_message("assistant"):
-                st.markdown("Cancelado.")
-            historial.append({"role": "assistant", "content": "Cancelado.", "acciones": []})
-            st.session_state["voz_texto"] = ("Cancelado.", f"{astro_id}_{len(historial)}")
+                st.markdown("Cancelled.")
+            historial.append({"role": "assistant", "content": "Cancelled.", "acciones": []})
+            st.session_state["voz_texto"] = ("Cancelled.", f"{astro_id}_{len(historial)}")
             return
 
     recientes = db.ultimas_mediciones(astro_id, 30)  # datos frescos al momento de preguntar
@@ -173,30 +173,30 @@ def _atender(prompt: str, historial: list, med_acciones) -> None:
 
 # --------------------------------------------------------------------------- barra lateral: modo demostración
 with st.sidebar:
-    st.markdown("### Modo demostración")
-    st.caption("Panel para quien presenta. Aquí se activan emergencias simuladas y se ajusta la voz.")
-    escenario = st.selectbox("Escenario simulado", list(ESCENARIOS), format_func=ETIQUETAS_ESCENARIO.get, key="esc_sel")
+    st.markdown("### Demo mode")
+    st.caption("Panel for the presenter. Simulated emergencies are triggered here and the voice is adjusted.")
+    escenario = st.selectbox("Simulated scenario", list(ESCENARIOS), format_func=ETIQUETAS_ESCENARIO.get, key="esc_sel")
     b1, b2 = st.columns(2)
-    if b1.button("Activar", type="primary", width="stretch"):
+    if b1.button("Activate", type="primary", width="stretch"):
         servicio.set_escenario(astro_id, escenario)
-        st.toast(f"Escenario «{ETIQUETAS_ESCENARIO[escenario]}» activado")
-    if b2.button("Normalizar", width="stretch"):
+        st.toast(f"Scenario «{ETIQUETAS_ESCENARIO[escenario]}» activated")
+    if b2.button("Reset to normal", width="stretch"):
         servicio.set_escenario(astro_id, "normal")
-    st.caption(f"Escenario actual: {ETIQUETAS_ESCENARIO[servicio.escenario(astro_id)]}")
-    st.toggle("Voz siempre activa", value=True, key="voz_on",
-              help="Aéter saluda, escucha sin botones y responde en voz alta. Use Chrome o Edge y permita el micrófono.")
+    st.caption(f"Current scenario: {ETIQUETAS_ESCENARIO[servicio.escenario(astro_id)]}")
+    st.toggle("Voice on", value=True, key="voz_on",
+              help="Aéter greets you, listens when you press Talk and answers out loud. Use Chrome or Edge and allow the microphone.")
     s1, s2 = st.columns(2)
-    s1.button("Pitido", on_click=lambda: st.session_state.update(sirena=True), width="stretch")
-    s2.button("Silenciar", on_click=lambda: st.session_state.update(sirena=False), width="stretch")
-    ventana = st.slider("Ventana de las gráficas (segundos)", 30, 600, 120, step=30)
-    if st.button("Limpiar conversación", width="stretch"):
+    s1.button("Beep", on_click=lambda: st.session_state.update(sirena=True), width="stretch")
+    s2.button("Mute", on_click=lambda: st.session_state.update(sirena=False), width="stretch")
+    ventana = st.slider("Chart window (seconds)", 30, 600, 120, step=30)
+    if st.button("Clear conversation", width="stretch"):
         st.session_state.get(f"chat_{astro_id}", []).clear()
         st.rerun()
     st.caption(protocolos.DESCARGO)
 
 # --------------------------------------------------------------------------- pantalla principal
 tab_estado, tab_signos, tab_aeter, tab_bitacora, tab_historial = st.tabs(
-    ["Estado", "Signos Vitales", "Aéter", "Bitácora", "Historial"])
+    ["Status", "Vitals", "Aéter", "Journal", "History"])
 with tab_estado:
     vistas.pantalla_estado(astro)
 with tab_signos:

@@ -1,629 +1,629 @@
-# Protocolos de emergencia médica
+# Medical emergency protocols
 
-> **Fuente original:** `Protocolos.xlsx`, hojas `04_PROTOCOLOS` (30 protocolos) y `11_PASOS_PROTOCOLO` (124 pasos).  
-> Conversión literal de las columnas. Todo protocolo debe aplicarse solo como lo describe este archivo.
+> **Original source:** `Protocolos.xlsx`, sheets `04_PROTOCOLOS` (30 protocols) and `11_PASOS_PROTOCOLO` (124 steps).
+> English translation of the original (Spanish) columns. Every protocol must be applied only as this file describes it.
 
-Total: 30 protocolos.
+Total: 30 protocols.
 
-## Resumen por categoría
+## Summary by category
 
-- ambiental: 4
-- neurologico_cognitivo: 4
+- environmental: 4
+- neurological_cognitive: 4
 - cardiovascular: 2
-- infeccioso_inmune: 2
-- toxicologico: 2
-- dermatologico: 2
+- infectious_immune: 2
+- toxicological: 2
+- dermatological: 2
 - ocular: 2
-- digestivo: 2
-- respiratorio: 1
-- musculoesqueletico: 1
-- renal_urinario: 1
+- digestive: 2
+- respiratory: 1
+- musculoskeletal: 1
+- renal_urinary: 1
 - dental: 1
-- descompresion: 1
-- termorregulacion: 1
-- radiacion: 1
-- psicologico: 1
-- metabolico: 1
+- decompression: 1
+- thermoregulation: 1
+- radiation: 1
+- psychological: 1
+- metabolic: 1
 - general: 1
 
-## PRO001 — Paro cardiorrespiratorio / RCP
+## PRO001 — Cardiac arrest / CPR
 
 - ID: PRO001
-- Emergencia: Paro cardiorrespiratorio / RCP
-- Categoría: cardiovascular
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Inconsciencia, ausencia de respiración normal y ausencia de pulso.
-- Evaluación inicial: Evaluar respuesta, respiración y circulación; valorar uso del AED.
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Inmediatamente al identificar el paro.
-- Documento oficial: International Space Station
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Cardiac arrest / CPR
+- Category: cardiovascular
+- Attention level: critical_emergency
+- Recognizable symptoms: Unconsciousness, no normal breathing and no pulse.
+- Initial assessment: Assess response, breathing and circulation; consider using the AED.
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately on identifying the arrest.
+- Official document: International Space Station
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [accion_inmediata] Inmovilizar al paciente en el sistema CMRS mediante correas/bungees y desplegar el desfibrilador y el kit de soporte respiratorio ADVERTENCIA: Realizar RCP únicamente tras inmovilizar al paciente; un tripulante ejecuta compresiones mientras el segundo prepara la zona de tratamiento
-2. [evaluacion] Abrir la vía aérea (Head tilt / Chin lift) y verificar el pulso carotídeo durante 5 a 10 segundos. ADVERTENCIA: Si el paro fue un evento presenciado, administrar un golpe precordial inmediatamente
-3. [accion_inmediata] Iniciar compresiones esternales (frecuencia de 80–100/min, profundidad de 3.5–5 cm) con relación 15:2 (1 reanimador) o 5:1 (2 reanimadores) ADVERTENCIA: Si no recupera pulso tras 4 ciclos, colocar cánula orofaríngea/nasofaríngea y continuar ventilación con mecha/bolsa Ambu
-4. [accion_inmediata] Colocar electrodos del desfibrilador, seleccionar DEFIB ON/ANALYZE y administrar descarga (200J → 300J → 360J) si está indicada ADVERTENCIA: Anunciar "CLEAR" en voz alta y verificar que nadie toque al paciente antes de presionar los botones de descarga
-5. [seguimiento] Realizar intubación endotraqueal (ETT) o cricotirotomía si no es posible ventilar, e inyectar fármacos (Epinefrina/Lidocaína) vía ETT ADVERTENCIA: No interrumpir la ventilación por más de 15 segundos durante los intentos de intubación o cricotirotomía
-6. [comunicacion] Contactar al Cirujano de Vuelo para evaluar la respuesta o autorizar la suspensión de RCP (criterio: ≥45 min de RCP y ≥10 min post-última dosis sin respuesta) ADVERTENCIA: La finalización de la reanimación requiere confirmación de Tierra salvo pérdida total de comunicaciones y agotamiento de insumos (requiere confirmación)
+Steps:
+1. [immediate_action] Secure the patient in the CMRS system with straps/bungees and deploy the defibrillator and the respiratory support kit WARNING: Perform CPR only after securing the patient; one crew member does compressions while the second prepares the treatment area
+2. [assessment] Open the airway (head tilt / chin lift) and check the carotid pulse for 5 to 10 seconds. WARNING: If the arrest was witnessed, give a precordial thump immediately
+3. [immediate_action] Start chest compressions (rate 80–100/min, depth 3.5–5 cm) with a 15:2 ratio (1 rescuer) or 5:1 (2 rescuers) WARNING: If the pulse does not return after 4 cycles, place an oropharyngeal/nasopharyngeal airway and continue ventilation with the Ambu bag
+4. [immediate_action] Place the defibrillator electrodes, select DEFIB ON/ANALYZE and deliver a shock (200J → 300J → 360J) if indicated WARNING: Announce "CLEAR" out loud and check that nobody touches the patient before pressing the shock buttons
+5. [follow_up] Perform endotracheal intubation (ETT) or cricothyrotomy if ventilation is not possible, and inject drugs (Epinephrine/Lidocaine) via ETT WARNING: Do not interrupt ventilation for more than 15 seconds during intubation or cricothyrotomy attempts
+6. [communication] Contact the Flight Surgeon to assess the response or authorize stopping CPR (criterion: ≥45 min of CPR and ≥10 min after the last dose with no response) WARNING: Ending resuscitation requires confirmation from Earth unless communications are completely lost and supplies are exhausted (requires confirmation)
 
-## PRO002 — Dolor agudo en el pecho
+## PRO002 — Acute chest pain
 
 - ID: PRO002
-- Emergencia: Dolor agudo en el pecho
-- Categoría: cardiovascular
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Dolor retroesternal/izquierdo opresivo, irradiado a brazo/mandíbula, sudoración
-- Evaluación inicial: Medir signos vitales c/5 min, registrar ECG, auscultación cardíaca/pulmonar, administrar O2
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Ante sospecha de evento coronario / infarto
-- Documento oficial: Integrated Medical Group (IMG)
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Acute chest pain
+- Category: cardiovascular
+- Attention level: critical_emergency
+- Recognizable symptoms: Pressing retrosternal/left-sided pain radiating to the arm/jaw, sweating
+- Initial assessment: Measure vital signs every 5 min, record ECG, listen to heart and lungs, give O2
+- Immediate contact with Earth: yes
+- When to contact Earth: When a coronary event / heart attack is suspected
+- Official document: Integrated Medical Group (IMG)
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [accion_inmediata] Administrar Oxígeno al 100% utilizando la máscara de gas rusa o dispositivo de protección respiratoria PBA ADVERTENCIA: Colocar suministro de oxígeno de inmediato ante la sospecha de dolor isquémico o coronario
-2. [evaluacion] Describir el dolor (localización retroesternal/izquierda, irradiación, intensidad 1-10) y auscultar ruidos cardíacos y pulmonares ADVERTENCIA: Auscultar presencia de sibilancias, crepitantes o asimetría con estetoscopio
-3. [seguimiento] Registrar constantes vitales (PA, pulso, FR, temperatura, SpO2) cada 5 minutos y monitorear el trazado de ECG ADVERTENCIA: Asegurar correcta conexión del cable de 5 derivaciones del monitor al puerto CHeCS
-4. [comunicacion] Contactar al Cirujano de Vuelo prioritariamente para transmitir la evolución del dolor y los hallazgos electrocardiográficos ADVERTENCIA: Si no hay comunicación por varios minutos y el dolor sugiere infarto, proceder con la pauta farmacológica autónoma (requiere confirmación)
-5. [accion_inmediata] Hacer masticar 1 tableta de Ascriptin (aspirina) y administrar 1 tableta sublingual de nitroglicerina si la presión arterial es > 95/60 mmHg ADVERTENCIA: No administrar Nitroglicerina si la presión arterial sistólica/diastólica es menor a 95/60 mmHg
+Steps:
+1. [immediate_action] Give 100% oxygen using the Russian gas mask or the PBA respiratory protection device WARNING: Start the oxygen supply immediately if ischemic or coronary pain is suspected
+2. [assessment] Describe the pain (retrosternal/left location, radiation, intensity 1-10) and listen to heart and lung sounds WARNING: Listen for wheezing, crackles or asymmetry with the stethoscope
+3. [follow_up] Record vital signs (BP, pulse, RR, temperature, SpO2) every 5 minutes and monitor the ECG trace WARNING: Make sure the monitor's 5-lead cable is correctly connected to the CHeCS port
+4. [communication] Contact the Flight Surgeon as a priority to report how the pain is evolving and the electrocardiographic findings WARNING: If there is no communication for several minutes and the pain suggests a heart attack, proceed with the autonomous drug protocol (requires confirmation)
+5. [immediate_action] Have the patient chew 1 Ascriptin (aspirin) tablet and give 1 sublingual nitroglycerin tablet if blood pressure is > 95/60 mmHg WARNING: Do not give nitroglycerin if systolic/diastolic blood pressure is below 95/60 mmHg
 
-## PRO003 — Reacción alérgica / anafilaxia
+## PRO003 — Allergic reaction / anaphylaxis
 
 - ID: PRO003
-- Emergencia: Reacción alérgica / anafilaxia
-- Categoría: infeccioso_inmune
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Reacción alérgica grave
-- Evaluación inicial: Evaluar la reacción y el estado general del astronauta.
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Ante sospecha de anafilaxia; solicitar asistencia médica.
-- Documento oficial: Medical Checklist
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Allergic reaction / anaphylaxis
+- Category: infectious_immune
+- Attention level: critical_emergency
+- Recognizable symptoms: Severe allergic reaction
+- Initial assessment: Assess the reaction and the astronaut's general condition.
+- Immediate contact with Earth: yes
+- When to contact Earth: When anaphylaxis is suspected; request medical assistance.
+- Official document: Medical Checklist
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [evaluacion] Identificar signos de anafilaxia (dificultad respiratoria, palidez, hipotensión, pulso rápido, sibilancias) y evaluar vía aérea ADVERTENCIA: Los síntomas pueden desencadenarse por cualquier sustancia sin alergia previa conocida; riesgo de shock circulatorio
-2. [accion_inmediata] Cargar inyector Tubex con Epinefrina (Adrenalina) e inyectar 0.3 cc vía subcutánea (SC) o intramuscular (IM) ADVERTENCIA: No administrar Epinefrina ante exposición conocida a hidrocarburos; sensibiliza el miocardio y causa Fibrilación Ventricular
-3. [accion_inmediata] Administrar Prednisolona (1–2 cc IM) o Dexametasona (1–2 cc IM/IV), junto con Benadryl (1 cc IM) o Suprastin (1 cc IM) ADVERTENCIA: Los corticoides reducen el riesgo de recurrencia; vigilar hipotensión y malestar gastrointestinal
-4. [seguimiento] Monitorizar y registrar signos vitales y SpO2 cada 5 minutos; repetir Epinefrina a los 5–20 min si persiste la dificultad respiratoria ADVERTENCIA: Si los vitales están estables pero persisten las sibilancias, aplicar inhalador Proventil (2 pufs c/4 h) e iniciar vía IV
-5. [comunicacion] Notificar al Cirujano de Vuelo para informar el estado hemodinámico y coordinar medicamentos adicionales ADVERTENCIA: Contactar al cirujano de vuelo tan pronto como sea posible tras la estabilización inicial (requiere confirmación)
+Steps:
+1. [assessment] Identify signs of anaphylaxis (difficulty breathing, pallor, hypotension, fast pulse, wheezing) and assess the airway WARNING: Symptoms can be triggered by any substance without a known prior allergy; risk of circulatory shock
+2. [immediate_action] Load the Tubex injector with Epinephrine (Adrenaline) and inject 0.3 cc subcutaneously (SC) or intramuscularly (IM) WARNING: Do not give Epinephrine after known exposure to hydrocarbons; it sensitizes the myocardium and causes Ventricular Fibrillation
+3. [immediate_action] Give Prednisolone (1–2 cc IM) or Dexamethasone (1–2 cc IM/IV), together with Benadryl (1 cc IM) or Suprastin (1 cc IM) WARNING: Corticosteroids reduce the risk of recurrence; watch for hypotension and gastrointestinal discomfort
+4. [follow_up] Monitor and record vital signs and SpO2 every 5 minutes; repeat Epinephrine at 5–20 min if breathing difficulty persists WARNING: If vital signs are stable but wheezing persists, use the Proventil inhaler (2 puffs every 4 h) and start an IV line
+5. [communication] Notify the Flight Surgeon to report the hemodynamic state and coordinate additional medication WARNING: Contact the flight surgeon as soon as possible after initial stabilization (requires confirmation)
 
-## PRO004 — Dificultad respiratoria / hipoxia
+## PRO004 — Respiratory distress / hypoxia
 
 - ID: PRO004
-- Emergencia: Dificultad respiratoria / hipoxia
-- Categoría: respiratorio
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Dificultad respiratoria, respiración anormal y posible coloración azulada o grisácea.
-- Evaluación inicial: Evaluar pulso, frecuencia respiratoria, saturación de oxígeno y presión arterial.
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Ante dificultad respiratoria significativa o deterioro del estado del paciente.
-- Documento oficial: International Space Station
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Respiratory distress / hypoxia
+- Category: respiratory
+- Attention level: critical_emergency
+- Recognizable symptoms: Difficulty breathing, abnormal breathing and possible bluish or grayish color.
+- Initial assessment: Assess pulse, respiratory rate, oxygen saturation and blood pressure.
+- Immediate contact with Earth: yes
+- When to contact Earth: For significant breathing difficulty or deterioration of the patient's condition.
+- Official document: International Space Station
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [accion_inmediata] Desplegar el paquete Respiratory Support Pack (RSP) y conectar la manguera al suministro de O2 de CHeCS o bote portátil PBA. ADVERTENCIA: Comprobar la salida de flujo de O2 con la mano antes de ajustar la interfaz del paciente.
-2. [evaluacion] Clasificar la condición del paciente (Consciente, Inconsciente o Intubado) y seleccionar la máscara o bolsa ventilatoria adecuada. ADVERTENCIA: Para pacientes conscientes utilizar la máscara Low Flow (12 L/min); para inconscientes la bolsa Ambu; para intubados el respirador automático.
-3. [accion_inmediata] Ajustar el selector de flujo del regulador a 12 L/min alineando con la línea indicadora blanca. ADVERTENCIA: ¡ATENCIÓN! Utilizar la línea indicadora BLANCA del regulador, NO la espiga de la manguera.
-4. [seguimiento] Conectar el oximetro de pulso y registrar PA, pulso, FR y SpO2 cada 5 minutos. ADVERTENCIA: Si se usa máscara Low Flow por más de 15 minutos, desconectar la manguera Autovent en el conector rápido QD.
-5. [comunicacion] Comunicar los valores de saturación al MCC-H y coordinar el acople del filtro HME si se prepara evacuación a la nave de retorno. ADVERTENCIA: Contactar al MCC-H para autorizar el cambio a líneas de oxígeno portátiles para traslado a la Tierra. (requiere confirmación)
+Steps:
+1. [immediate_action] Deploy the Respiratory Support Pack (RSP) and connect the hose to the CHeCS O2 supply or the portable PBA bottle. WARNING: Check the O2 flow output with your hand before adjusting the patient interface.
+2. [assessment] Classify the patient's condition (Conscious, Unconscious or Intubated) and select the right mask or ventilation bag. WARNING: For conscious patients use the Low Flow mask (12 L/min); for unconscious ones the Ambu bag; for intubated ones the automatic ventilator.
+3. [immediate_action] Set the regulator flow selector to 12 L/min, aligning it with the white indicator line. WARNING: CAUTION! Use the WHITE indicator line of the regulator, NOT the hose spigot.
+4. [follow_up] Connect the pulse oximeter and record BP, pulse, RR and SpO2 every 5 minutes. WARNING: If a Low Flow mask is used for more than 15 minutes, disconnect the Autovent hose at the QD quick connector.
+5. [communication] Report the saturation values to MCC-H and coordinate fitting the HME filter if evacuation to the return vehicle is being prepared. WARNING: Contact MCC-H to authorize the switch to portable oxygen lines for transfer to Earth. (requires confirmation)
 
-## PRO005 — Hipercapnia / exceso de CO2 en cabina
+## PRO005 — Hypercapnia / excess CO2 in the cabin
 
 - ID: PRO005
-- Emergencia: Hipercapnia / exceso de CO2 en cabina
-- Categoría: ambiental
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Cefalea, mareo, confusión, disnea por acumulación de CO2
-- Evaluación inicial: Aislar o colocar máscara de gas, monitorizar vitale y SpO2
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: De inmediato al detectar elevación crítica de CO2 o síntomas en la tripulación
-- Documento oficial: Integrated Medical Group (IMG)
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Hypercapnia / excess CO2 in the cabin
+- Category: environmental
+- Attention level: critical_emergency
+- Recognizable symptoms: Headache, dizziness, confusion, shortness of breath from CO2 buildup
+- Initial assessment: Isolate or fit a gas mask, monitor vital signs and SpO2
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately on detecting a critical CO2 rise or symptoms in the crew
+- Official document: Integrated Medical Group (IMG)
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [accion_inmediata] Aislar al astronauta o colocar máscara respiratoria de protección de inmediato para suspender la inhalación de CO2. ADVERTENCIA: Aislar al astronauta o colocar máscara respiratoria de protección de inmediato para suspender la inhalación de CO2.
-2. [evaluacion] Evaluar signos vitales, frecuencia respiratoria, SpO2 y nivel de orientación mental del afectado. ADVERTENCIA: Evaluar signos vitales, frecuencia respiratoria, SpO2 y nivel de orientación mental del afectado.
-3. [seguimiento] Suministrar O2 suplementario y mantener al paciente en reposo mientras disminuyen los niveles tisulares de CO2. ADVERTENCIA: Suministrar O2 suplementario y mantener al paciente en reposo mientras disminuyen los niveles tisulares de CO2.
-4. [comunicacion] Notificar de inmediato al MCC-H sobre los síntomas de la tripulación y los valores ambientales detectados. ADVERTENCIA: Notificar de inmediato al MCC-H sobre los síntomas de la tripulación y los valores ambientales detectados. (requiere confirmación)
+Steps:
+1. [immediate_action] Isolate the astronaut or fit a protective respiratory mask immediately to stop inhaling CO2. WARNING: Isolate the astronaut or fit a protective respiratory mask immediately to stop inhaling CO2.
+2. [assessment] Assess vital signs, respiratory rate, SpO2 and the mental orientation of the affected person. WARNING: Assess vital signs, respiratory rate, SpO2 and the mental orientation of the affected person.
+3. [follow_up] Give supplemental O2 and keep the patient at rest while tissue CO2 levels fall. WARNING: Give supplemental O2 and keep the patient at rest while tissue CO2 levels fall.
+4. [communication] Notify MCC-H immediately about the crew's symptoms and the environmental values detected. WARNING: Notify MCC-H immediately about the crew's symptoms and the environmental values detected. (requires confirmation)
 
-## PRO006 — Exposición tóxica por inhalación
+## PRO006 — Toxic exposure by inhalation
 
 - ID: PRO006
-- Emergencia: Exposición tóxica por inhalación
-- Categoría: toxicologico
-- Nivel de atención: atencion_medica_remota
-- Síntomas reconocibles: Posible dificultad respiratoria y manifestaciones relacionadas con la sustancia inhalada.
-- Evaluación inicial: Identificar la sustancia, vía de exposición y síntomas; evaluar respiración.
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: Solicitar consulta médica privada con el MCC-H según el procedimiento.
-- Documento oficial: Medical Checklist
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Toxic exposure by inhalation
+- Category: toxicological
+- Attention level: remote_medical_care
+- Recognizable symptoms: Possible breathing difficulty and symptoms related to the inhaled substance.
+- Initial assessment: Identify the substance, route of exposure and symptoms; assess breathing.
+- Immediate contact with Earth: no
+- When to contact Earth: Request a private medical consultation with MCC-H following the procedure.
+- Official document: Medical Checklist
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [accion_inmediata] Retirar al paciente de la fuente contaminante y colocar la máscara de protección respiratoria PBA o ИПК-1. ADVERTENCIA: Garantizar la protección respiratoria del tripulante rescatador antes de ingresar al área expuesta.
-2. [evaluacion] Identificar la sustancia inhalada, valorar vía aérea, auscultar campos pulmonares y medir SpO2. ADVERTENCIA: Verificar signos de irritación de vía aérea superior o broncoespasmo.
-3. [seguimiento] Administrar O2 al 100% (12 L/min) mediante RSP y registrar pulso y presión arterial cada 5 minutos. ADVERTENCIA: Mantener bajo observación estrecha debido al riesgo de edema pulmonar diferido.
-4. [comunicacion] Solicitar consulta médica privada con el MCC-H para recibir pauta de lavado respiratorio o medicación. ADVERTENCIA: Contactar a Tierra siguiendo el procedimiento de consulta médica privada rutinaria.
+Steps:
+1. [immediate_action] Remove the patient from the contaminated source and fit the PBA respiratory protection mask or the IPK-1. WARNING: Make sure the rescuing crew member has respiratory protection before entering the exposed area.
+2. [assessment] Identify the inhaled substance, assess the airway, listen to the lung fields and measure SpO2. WARNING: Check for signs of upper airway irritation or bronchospasm.
+3. [follow_up] Give 100% O2 (12 L/min) with the RSP and record pulse and blood pressure every 5 minutes. WARNING: Keep under close observation because of the risk of delayed pulmonary edema.
+4. [communication] Request a private medical consultation with MCC-H to receive guidance on respiratory washout or medication. WARNING: Contact Earth following the routine private medical consultation procedure.
 
-## PRO007 — Exposición tóxica por contacto (piel u ojos)
+## PRO007 — Toxic exposure by contact (skin or eyes)
 
 - ID: PRO007
-- Emergencia: Exposición tóxica por contacto (piel u ojos)
-- Categoría: toxicologico
-- Nivel de atención: atencion_medica_remota
-- Síntomas reconocibles: Irritación, dolor o alteraciones en la piel u ojos después del contacto con una sustancia.
-- Evaluación inicial: Identificar sustancia, vía de exposición y zonas afectadas.
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: Solicitar consulta médica privada con el MCC-H según el procedimiento.
-- Documento oficial: International Space Station
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Toxic exposure by contact (skin or eyes)
+- Category: toxicological
+- Attention level: remote_medical_care
+- Recognizable symptoms: Irritation, pain or changes in the skin or eyes after contact with a substance.
+- Initial assessment: Identify the substance, route of exposure and affected areas.
+- Immediate contact with Earth: no
+- When to contact Earth: Request a private medical consultation with MCC-H following the procedure.
+- Official document: International Space Station
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [accion_inmediata] Irrigar de inmediato los ojos o piel expuestos con solución salina estéril o kit de lavado ocular (Eye Wash) durante 15 minutos. ADVERTENCIA: Retirar lentes de contacto inmediatamente antes de iniciar la irrigación ocular continua.
-2. [evaluacion] Examinar córnea y piel (eritema, quemadura química, ulceración) mediante luz focal y tinción con fluoresceína. ADVERTENCIA: Evitar frotar los ojos para impedir abrasión mecánica por partículas del contaminante.
-3. [seguimiento] Colocar parche ocular protector sin presión o aplicar ungüento antibiótico sobre las áreas cutáneas afectadas. ADVERTENCIA: No presionar el globo ocular si existe sospecha de perforación de la córnea.
-4. [comunicacion] Solicitar consulta médica privada con el Cirujano de Vuelo para definir uso de gotas con corticoides o anestésicos. ADVERTENCIA: Contactar al MCC-H según procedimiento regular tras la descontaminación inicial.
+Steps:
+1. [immediate_action] Immediately irrigate the exposed eyes or skin with sterile saline or the eye wash kit for 15 minutes. WARNING: Remove contact lenses immediately before starting continuous eye irrigation.
+2. [assessment] Examine the cornea and skin (erythema, chemical burn, ulceration) with a focal light and fluorescein staining. WARNING: Avoid rubbing the eyes to prevent mechanical abrasion from contaminant particles.
+3. [follow_up] Place a protective eye patch without pressure or apply antibiotic ointment to the affected skin areas. WARNING: Do not press on the eyeball if corneal perforation is suspected.
+4. [communication] Request a private medical consultation with the Flight Surgeon to decide on the use of corticosteroid or anesthetic drops. WARNING: Contact MCC-H following the regular procedure after initial decontamination.
 
-## PRO008 — Incendio y humo en cabina
+## PRO008 — Fire and smoke in the cabin
 
 - ID: PRO008
-- Emergencia: Incendio y humo en cabina
-- Categoría: ambiental
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Disnea, hollín bucal/nasal, tos, quemaduras de vibrisas, confusión
-- Evaluación inicial: Retirar del área expuesta, colocar máscara de gas/PBA, evaluar vía aérea, SpO2 y vitales c/5 min
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Inmediatamente al ocurrir la exposición o detectar compromiso respiratorio
-- Documento oficial: Integrated Medical Group (IMG)
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Fire and smoke in the cabin
+- Category: environmental
+- Attention level: critical_emergency
+- Recognizable symptoms: Shortness of breath, soot in mouth/nose, cough, singed nasal hairs, confusion
+- Initial assessment: Remove from the exposed area, fit a gas mask/PBA, assess airway, SpO2 and vital signs every 5 min
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately when the exposure occurs or respiratory compromise is detected
+- Official document: Integrated Medical Group (IMG)
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [accion_inmediata] Evacuar e aislar inmediatamente al astronauta de la zona afectada por el humo o gases de combustión. ADVERTENCIA: Los signos de toxicidad o edema pulmonar por inhalación pueden retrasarse hasta 2 horas tras el evento.
-2. [evaluacion] Evaluar vía aérea, presencia de respiración/pulso y signos físicos (hollín bucal, vibrisas quemadas). ADVERTENCIA: ¡ADVERTENCIA! La inhalación de monóxido de carbono (CO) genera lecturas de SpO2 falsamente elevadas.
-3. [accion_inmediata] Si está inconsciente sin pulso, iniciar RCP directa; si está consciente, colocar máscara de gas rusa (ИПК-1) o PBA. ADVERTENCIA: En ausencia de pulso o respiración, pasar de inmediato al diagrama de RCP de emergencia.
-4. [seguimiento] Mantener observación clínica estrecha y registrar PA, pulso y FR cada 5 minutos. ADVERTENCIA: Monitorizar la aparición de disnea progresiva, tos persistente o alteración del estado mental.
-5. [comunicacion] Establecer contacto urgente con el Cirujano de Vuelo para informar sobre el nivel de exposición y evaluar fármacos. ADVERTENCIA: Notificar inmediatamente a Tierra si hay sospecha de quemadura de vía aérea o intoxicación por CO. (requiere confirmación)
+Steps:
+1. [immediate_action] Immediately evacuate and isolate the astronaut from the area affected by smoke or combustion gases. WARNING: Signs of toxicity or pulmonary edema from inhalation can be delayed up to 2 hours after the event.
+2. [assessment] Assess the airway, presence of breathing/pulse and physical signs (soot in the mouth, singed nasal hairs). WARNING: WARNING! Inhaling carbon monoxide (CO) gives falsely high SpO2 readings.
+3. [immediate_action] If unconscious with no pulse, start CPR directly; if conscious, fit the Russian gas mask (IPK-1) or PBA. WARNING: If there is no pulse or breathing, go immediately to the emergency CPR diagram.
+4. [follow_up] Keep close clinical observation and record BP, pulse and RR every 5 minutes. WARNING: Watch for progressive shortness of breath, persistent cough or a change in mental state.
+5. [communication] Make urgent contact with the Flight Surgeon to report the level of exposure and consider drugs. WARNING: Notify Earth immediately if an airway burn or CO poisoning is suspected. (requires confirmation)
 
-## PRO009 — Fuga de amoníaco u otro refrigerante
+## PRO009 — Ammonia or other coolant leak
 
 - ID: PRO009
-- Emergencia: Fuga de amoníaco u otro refrigerante
-- Categoría: ambiental
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Irritación respiratoria aguda, quemadura química ocular/cutánea, asfixia
-- Evaluación inicial: Protección de vía aérea (máscaras/PBA), descontaminación de piel/ojos y soporte ventilatorio
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Inmediatamente al confirmar o sospechar fuga química peligrosa
-- Documento oficial: Medical Checklist
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Ammonia or other coolant leak
+- Category: environmental
+- Attention level: critical_emergency
+- Recognizable symptoms: Acute respiratory irritation, chemical burn of the eyes/skin, asphyxia
+- Initial assessment: Airway protection (masks/PBA), skin/eye decontamination and ventilatory support
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately when a dangerous chemical leak is confirmed or suspected
+- Official document: Medical Checklist
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Colocar inmediatamente la máscara respiratoria de emergencia PBA o la máscara ИПК-1 para prevenir asfixia. ADVERTENCIA: ¡ADVERTENCIA CRÍTICA! El amoníaco concentrado provoca espasmo laríngeo e inhibición respiratoria inmediata.
-2. [evaluación] Evaluar la permeabilidad de la vía aérea (estridor, disnea severa, cianosis) y el grado de irritación ocular/cutánea. ADVERTENCIA: La oximetría de pulso puede fluctuar rápidamente; priorizar signos clínicos de dificultad ventilatoria.
-3. [seguimiento] Conectar manguera a la unidad RSP (12 L/min) con O2 al 100% y registrar constantes vitales cada 5 minutos. ADVERTENCIA: Retirar la vestimenta contaminada y sellarla en bolsas herméticas para evitar re-emisión en cabina.
-4. [comunicación] Informar de inmediato al MCC-H sobre la condición hemodinámica del astronauta expuesto y nivel de contaminación. ADVERTENCIA: Coordinar con Tierra los procedimientos operacionales de descontaminación del módulo expuesto.
+Steps:
+1. [immediate_action] Immediately fit the PBA emergency respiratory mask or the IPK-1 mask to prevent asphyxia. WARNING: CRITICAL WARNING! Concentrated ammonia causes laryngeal spasm and immediate respiratory inhibition.
+2. [assessment] Assess airway patency (stridor, severe shortness of breath, cyanosis) and the degree of eye/skin irritation. WARNING: Pulse oximetry can fluctuate quickly; prioritize clinical signs of ventilatory difficulty.
+3. [follow_up] Connect the hose to the RSP unit (12 L/min) with 100% O2 and record vital signs every 5 minutes. WARNING: Remove contaminated clothing and seal it in airtight bags to avoid re-release in the cabin.
+4. [communication] Inform MCC-H immediately about the hemodynamic condition of the exposed astronaut and the level of contamination. WARNING: Coordinate with Earth the operational decontamination procedures for the exposed module.
 
-## PRO010 — Despresurización de cabina
+## PRO010 — Cabin depressurization
 
 - ID: PRO010
-- Emergencia: Despresurización de cabina
-- Categoría: ambiental
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Dolor articular ("bends"), parestesias, prurito, disnea o síntomas neurológicos
-- Evaluación inicial: Administrar O2 al 100%, evaluar SpO2, signos vitales y tratamiento de enfermedad por descompresión
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Inmediatamente tras pérdida de presión o presencia de síntomas
-- Documento oficial: International Space Station
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Cabin depressurization
+- Category: environmental
+- Attention level: critical_emergency
+- Recognizable symptoms: Joint pain ("bends"), paresthesias, itching, shortness of breath or neurological symptoms
+- Initial assessment: Give 100% O2, assess SpO2, vital signs and treatment of decompression sickness
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately after pressure loss or when symptoms appear
+- Official document: International Space Station
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Administrar Oxígeno al 100% a través de máscara respiratoria a fin de acelerar la eliminación de nitrógeno en sangre. ADVERTENCIA: Asegurar sellado hermético de la máscara respiratoria de alto flujo para maximizar la denitrogenación.
-2. [evaluación] Evaluar la presencia de dolor articular (bends), enfisema subcutáneo, parestesias o distrés respiratorio. ADVERTENCIA: Buscar intencionadamente signos de barotrauma pulmonar o bloqueo de senos paranasales/oídos.
-3. [seguimiento] Mantener al paciente en decúbito supino, suministrar rehidratación oral/IV y registrar pulso, PA y SpO2 cada 5 minutos. ADVERTENCIA: Evitar esfuerzos físicos que puedan aumentar la movilización de microburbujas de nitrógeno.
-4. [comunicación] Contactar de inmediato con el Cirujano de Vuelo para coordinar la presurización de trajes o recompresión médica. ADVERTENCIA: Consultar urgencia de presurización adicional con el MCC-H ante la aparición de déficit neurológico.
+Steps:
+1. [immediate_action] Give 100% oxygen through a respiratory mask to speed up the elimination of nitrogen from the blood. WARNING: Make sure the high-flow respiratory mask is sealed tightly to maximize denitrogenation.
+2. [assessment] Check for joint pain (bends), subcutaneous emphysema, paresthesias or respiratory distress. WARNING: Deliberately look for signs of pulmonary barotrauma or blockage of the sinuses/ears.
+3. [follow_up] Keep the patient lying face up, give oral/IV rehydration and record pulse, BP and SpO2 every 5 minutes. WARNING: Avoid physical exertion that could increase the mobilization of nitrogen microbubbles.
+4. [communication] Contact the Flight Surgeon immediately to coordinate suit pressurization or medical recompression. WARNING: Consult MCC-H on the urgency of additional pressurization if a neurological deficit appears.
 
-## PRO011 — Quemaduras
+## PRO011 — Burns
 
 - ID: PRO011
-- Emergencia: Quemaduras
-- Categoría: dermatologico
-- Nivel de atención: atencion_medica_remota
-- Síntomas reconocibles: Eritema, ampollas,dolor localizado, pérdida de integridad cutánea
-- Evaluación inicial: Identificar extensión/profundidad, enfriamiento local, curación estéril, analgesia y vigilar shock
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: Contactar al cirujano de vuelo según severidad y extensión de la lesión
-- Documento oficial: Integrated Medical Group (IMG)
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Burns
+- Category: dermatological
+- Attention level: remote_medical_care
+- Recognizable symptoms: Erythema, blisters, localized pain, loss of skin integrity
+- Initial assessment: Identify extent/depth, local cooling, sterile dressing, analgesia and watch for shock
+- Immediate contact with Earth: no
+- When to contact Earth: Contact the flight surgeon depending on the severity and extent of the injury
+- Official document: Integrated Medical Group (IMG)
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Enfriar la superficie afectada aplicando gasas humedecidas con solución salina estéril durante 10 minutos. ADVERTENCIA: No romper ni puncionar ampollas intactas para reducir el riesgo de colonización bacteriana.
-2. [evaluación] Determinar el porcentaje de superficie corporal quemada mediante la tabla de dermatomas y clasificar el grado (1º, 2º o 3º). ADVERTENCIA: Evaluar si existen quemaduras circulares en extremidades que comprometan la irrigación distal.
-3. [seguimiento] Aplicar ungüento antibiótico, cubrir con compresas no adherentes (Telfa) y fijar con venda Kling/Kerlix. ADVERTENCIA: Monitorizar signos de shock circulatorio en quemaduras que superen el 15% de superficie corporal.
-4. [comunicación] Comunicar extensión y profundidad al Cirujano de Vuelo para prescribir pauta analgésica e hidratación IV. ADVERTENCIA: Contactar para solicitar profilaxis antibiótica o ajuste analgésico según evolución clínica.
+Steps:
+1. [immediate_action] Cool the affected surface with gauze moistened with sterile saline for 10 minutes. WARNING: Do not break or puncture intact blisters, to reduce the risk of bacterial colonization.
+2. [assessment] Determine the percentage of body surface burned using the dermatome chart and classify the degree (1st, 2nd or 3rd). WARNING: Check for circular burns on limbs that compromise distal blood flow.
+3. [follow_up] Apply antibiotic ointment, cover with non-adherent pads (Telfa) and secure with Kling/Kerlix bandage. WARNING: Monitor for signs of circulatory shock in burns exceeding 15% of body surface.
+4. [communication] Report extent and depth to the Flight Surgeon to prescribe a pain regimen and IV hydration. WARNING: Contact to request antibiotic prophylaxis or analgesic adjustment depending on clinical evolution.
 
-## PRO012 — Hemorragia / herida grave
+## PRO012 — Hemorrhage / serious wound
 
 - ID: PRO012
-- Emergencia: Hemorragia / herida grave
-- Categoría: dermatologico
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Sangrado activo abundante, laceración profunda, hipotensión, palidez
-- Evaluación inicial: Presión directa con gasas, sutura/grapas de laceración, evaluar pulso/PA por shock hipovolémico
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Sangrado no controlado o desarrollo de signos de shock
-- Documento oficial: Medical Checklist
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Hemorrhage / serious wound
+- Category: dermatological
+- Attention level: critical_emergency
+- Recognizable symptoms: Heavy active bleeding, deep laceration, hypotension, pallor
+- Initial assessment: Direct pressure with gauze, suture/staples for the laceration, assess pulse/BP for hypovolemic shock
+- Immediate contact with Earth: yes
+- When to contact Earth: Uncontrolled bleeding or development of signs of shock
+- Official document: Medical Checklist
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Aplicar presión directa sobre la herida con gasas estériles (Gauze Pads) o colocar torniquete si hay sangrado arterial violento. ADVERTENCIA: Si la hemorragia es exangüe en una extremidad, apretar el torniquete hasta detener por completo el sangrado.
-2. [evaluación] Limpiar e inspeccionar bordes de la laceración, descartar compromiso tendinoso/nervioso y registrar signos vitales. ADVERTENCIA: Comprobar pulso distal, movilidad y llenado capilar antes y después de cerrar la herida.
-3. [seguimiento] Realizar sutura de piel o aproximación con grapas estériles (Staples) e iniciar infusión salina IV si PA < 90 mmHg. ADVERTENCIA: Infiltrar lidocaína (Xylocaine) en los bordes de la herida previa a la sutura para analgesia local.
-4. [comunicación] Informar al Cirujano de Vuelo sobre la respuesta hemodinámica, pérdida sanguínea estimada y número de suturas. ADVERTENCIA: Contactar de inmediato si persisten signos de colapso circulatorio o la hemorragia no cede.
+Steps:
+1. [immediate_action] Apply direct pressure on the wound with sterile gauze pads or place a tourniquet if there is violent arterial bleeding. WARNING: If a limb is bleeding out, tighten the tourniquet until the bleeding stops completely.
+2. [assessment] Clean and inspect the edges of the laceration, rule out tendon/nerve involvement and record vital signs. WARNING: Check distal pulse, mobility and capillary refill before and after closing the wound.
+3. [follow_up] Suture the skin or approximate it with sterile staples and start an IV saline infusion if BP < 90 mmHg. WARNING: Infiltrate lidocaine (Xylocaine) at the wound edges before suturing for local analgesia.
+4. [communication] Report to the Flight Surgeon the hemodynamic response, estimated blood loss and number of sutures. WARNING: Contact immediately if signs of circulatory collapse persist or the bleeding does not stop.
 
-## PRO013 — Fractura / lesión musculoesquelética
+## PRO013 — Fracture / musculoskeletal injury
 
 - ID: PRO013
-- Emergencia: Fractura / lesión musculoesquelética
-- Categoría: musculoesqueletico
-- Nivel de atención: atencion_medica_remota
-- Síntomas reconocibles: Dolor severo, deformidad, hinchazón, incapacidad funcional
-- Evaluación inicial: Inmovilizar la zona, evaluar estado neurovascular distal, ecografiá con ultrasonido y analgesia
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: Contactar para confirmación de manejo e inmovilización con el cirujano de vuelo
-- Documento oficial: International Space Station
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Fracture / musculoskeletal injury
+- Category: musculoskeletal
+- Attention level: remote_medical_care
+- Recognizable symptoms: Severe pain, deformity, swelling, loss of function
+- Initial assessment: Immobilize the area, assess distal neurovascular status, ultrasound scan and analgesia
+- Immediate contact with Earth: no
+- When to contact Earth: Contact the flight surgeon to confirm management and immobilization
+- Official document: International Space Station
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Inmovilizar la articulación y hueso lesionado mediante férulas adaptables fijadas con vendas elásticas. ADVERTENCIA: No intentar la reducción forzada de fracturas expuestas o luxaciones sin previa orientación médica.
-2. [evaluación] Verificar pulsos distales, sensibilidad y movilidad; realizar rastreo de imágenes mediante ecógrafo (Ultrasound). ADVERTENCIA: Registrar si la extremidad presenta palidez, parestesias o ausencia de pulso distal.
-3. [seguimiento] Aplicar compresas frías en la zona afectada cada 2 horas y administrar analgesia oral o inyectable. ADVERTENCIA: Revaluar la compresión de la férula cada 30 minutos para evitar síndrome compartimental.
-4. [comunicación] Enviar los archivos ecográficos obtenidos al Cirujano de Vuelo para confirmar alineación y descartar fractura. ADVERTENCIA: Contactar a Tierra de acuerdo al procedimiento regular para el ajuste del esquema analgésico.
+Steps:
+1. [immediate_action] Immobilize the injured joint and bone with adaptable splints fixed with elastic bandages. WARNING: Do not attempt forced reduction of open fractures or dislocations without prior medical guidance.
+2. [assessment] Check distal pulses, sensation and mobility; scan with the ultrasound device. WARNING: Record whether the limb shows pallor, paresthesias or absent distal pulse.
+3. [follow_up] Apply cold packs to the affected area every 2 hours and give oral or injectable analgesia. WARNING: Recheck the splint's compression every 30 minutes to avoid compartment syndrome.
+4. [communication] Send the ultrasound files obtained to the Flight Surgeon to confirm alignment and rule out fracture. WARNING: Contact Earth following the regular procedure to adjust the pain regimen.
 
-## PRO014 — Lesión ocular / cuerpo extraño
+## PRO014 — Eye injury / foreign body
 
 - ID: PRO014
-- Emergencia: Lesión ocular / cuerpo extraño
-- Categoría: ocular
-- Nivel de atención: atencion_medica_remota
-- Síntomas reconocibles: Dolor ocular, sensación de cuerpo extraño, abrasión o penetración de objeto
-- Evaluación inicial: Examen ocular, tinción con fluoresceína, lavado o fijación de objeto penetrante
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: Contactar según hallazgos. VERDADERO si hay objeto penetrante o quemadura
-- Documento oficial: Integrated Medical Group (IMG)
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Eye injury / foreign body
+- Category: ocular
+- Attention level: remote_medical_care
+- Recognizable symptoms: Eye pain, foreign body sensation, abrasion or penetration by an object
+- Initial assessment: Eye examination, fluorescein staining, irrigation or stabilization of the penetrating object
+- Immediate contact with Earth: no
+- When to contact Earth: Contact depending on findings. TRUE if there is a penetrating object or a burn
+- Official document: Integrated Medical Group (IMG)
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Irrigar suavemente la superficie ocular con solución salina (Eye Wash) para eliminar el cuerpo extraño no incrustado. ADVERTENCIA: ¡ADVERTENCIA! Si el cuerpo extraño está incrustado o penetra el globo ocular, NO intentar removerlo.
-2. [evaluación] Realizar examen ocular (Eye Examination), teñir con fluoresceína para detectar abrasiones y medir agudeza visual. ADVERTENCIA: Examinar la superficie bajo el párpado superior e inferior utilizando un hisopo de algodón.
-3. [seguimiento] Colocar ungüento oftálmico antibacteriano y ocluir el ojo con un parche estéril no compresivo. ADVERTENCIA: No aplicar parches oculares si se sospecha infección ocular activa de origen bacteriano.
-4. [comunicación] Comunicar los hallazgos del examen oftalmológico al Cirujano de Vuelo para indicar medicamentos tópicos. ADVERTENCIA: Contactar de inmediato si se confirma un objeto penetrante o pérdida brusca de agudeza visual.
+Steps:
+1. [immediate_action] Gently irrigate the eye surface with saline (Eye Wash) to remove a non-embedded foreign body. WARNING: WARNING! If the foreign body is embedded or penetrates the eyeball, do NOT try to remove it.
+2. [assessment] Perform an eye examination, stain with fluorescein to detect abrasions and measure visual acuity. WARNING: Examine the surface under the upper and lower eyelid using a cotton swab.
+3. [follow_up] Apply antibacterial ophthalmic ointment and cover the eye with a sterile, non-compressive patch. WARNING: Do not apply eye patches if an active bacterial eye infection is suspected.
+4. [communication] Report the eye examination findings to the Flight Surgeon to indicate topical medication. WARNING: Contact immediately if a penetrating object is confirmed or there is a sudden loss of visual acuity.
 
-## PRO015 — Pérdida o cambio súbito de visión
+## PRO015 — Sudden loss or change of vision
 
 - ID: PRO015
-- Emergencia: Pérdida o cambio súbito de visión
-- Categoría: ocular
-- Nivel de atención: atencion_medica_remota
-- Síntomas reconocibles: Disminución brusca de agudeza visual, escotomas, visión borrosa
-- Evaluación inicial: Examen oftalmológico completo, medición de presión intraocular
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Inmediatamente al reportar alteración súbita de la visión
-- Documento oficial: Medical Checklist
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Sudden loss or change of vision
+- Category: ocular
+- Attention level: remote_medical_care
+- Recognizable symptoms: Sudden decrease in visual acuity, scotomas, blurred vision
+- Initial assessment: Full eye examination, intraocular pressure measurement
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately when a sudden change in vision is reported
+- Official document: Medical Checklist
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [evaluación] Realizar examen de reflejo fotomotor pupilar, prueba de agudeza visual y estimar campos visuales. ADVERTENCIA: Documentar si la pérdida de visión es unilateral o bilateral y si existió trauma u ojo rojo asociado.
-2. [acción inmediata] Preparar el tonométrico portátil Tonopen y medir la presión intraocular (IOP) en ambos ojos. ADVERTENCIA: Aplicar una gota de anestésico tópico local en el ojo antes de realizar la tonometría.
-3. [seguimiento] Registrar los valores de presión intraocular (en mmHg) e inspeccionar el segmento anterior con lámpara. ADVERTENCIA: Evitar presionar el globo ocular durante las mediciones con el dispositivo Tonopen.
-4. [comunicación] Notificar prioritariamente al Cirujano de Vuelo las lecturas registradas de IOP y alteraciones visuales. ADVERTENCIA: Transmitir los datos oftalmológicos inmediatamente para descartar glaucoma agudo o edema papilar.
+Steps:
+1. [assessment] Perform the pupillary light reflex exam, a visual acuity test and estimate the visual fields. WARNING: Document whether the vision loss is in one eye or both and whether there was trauma or an associated red eye.
+2. [immediate_action] Prepare the portable Tonopen tonometer and measure intraocular pressure (IOP) in both eyes. WARNING: Apply a drop of local topical anesthetic to the eye before doing the tonometry.
+3. [follow_up] Record the intraocular pressure values (in mmHg) and inspect the anterior segment with the lamp. WARNING: Avoid pressing on the eyeball during measurements with the Tonopen device.
+4. [communication] Notify the Flight Surgeon as a priority of the IOP readings and visual changes. WARNING: Transmit the eye data immediately to rule out acute glaucoma or papilledema.
 
-## PRO016 — Alteración neurológica / pérdida de conciencia
+## PRO016 — Neurological alteration / loss of consciousness
 
 - ID: PRO016
-- Emergencia: Alteración neurológica / pérdida de conciencia
-- Categoría: neurologico_cognitivo
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Inconsciencia, estupor, desorientación, déficit motor o escala Glasgow reducida
-- Evaluación inicial: Evaluar ABCs, aplicar escala de Coma de Glasgow y monitorizar vitales c/5 min
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Inmediatamente al identificar la pérdida de conciencia o déficit agudo
-- Documento oficial: International Space Station
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Neurological alteration / loss of consciousness
+- Category: neurological_cognitive
+- Attention level: critical_emergency
+- Recognizable symptoms: Unconsciousness, stupor, disorientation, motor deficit or reduced Glasgow score
+- Initial assessment: Assess ABCs, apply the Glasgow Coma Scale and monitor vital signs every 5 min
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately on identifying loss of consciousness or an acute deficit
+- Official document: International Space Station
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Mantener vía aérea permeable, colocar al paciente en decúbito lateral de seguridad y suministrar O2 de alto flujo. ADVERTENCIA: Si no se detecta pulso o respiración espontánea, iniciar de inmediato el algoritmo de RCP.
-2. [evaluación] Evaluar el estado de conciencia aplicando la Escala de Coma de Glasgow (GCS) (respuestas ocular, verbal, motora). ADVERTENCIA: Registrar de manera objetiva el puntaje inicial GCS para comparar la evolución neurológica.
-3. [seguimiento] Registrar signos vitales cada 5 minutos, monitorear trazado de ECG y realizar glucemia/analítica en PCBA. ADVERTENCIA: Evaluar simetría pupilar y presencia de reflejos patológicos en extremidades.
-4. [comunicación] Conectar con el Cirujano de Vuelo para reportar puntaje GCS y evaluar etiologías (trauma, hipoxia, metabolopatía). ADVERTENCIA: Informar a Tierra de inmediato ante cualquier caída sostenida en el puntaje de la escala Glasgow.
+Steps:
+1. [immediate_action] Keep the airway open, place the patient in the recovery (lateral) position and give high-flow O2. WARNING: If no pulse or spontaneous breathing is detected, start the CPR algorithm immediately.
+2. [assessment] Assess the level of consciousness with the Glasgow Coma Scale (GCS) (eye, verbal and motor responses). WARNING: Record the initial GCS score objectively to compare the neurological evolution.
+3. [follow_up] Record vital signs every 5 minutes, monitor the ECG trace and run a glucose/blood test on the PCBA. WARNING: Check pupil symmetry and the presence of pathological reflexes in the limbs.
+4. [communication] Connect with the Flight Surgeon to report the GCS score and assess causes (trauma, hypoxia, metabolic disorder). WARNING: Inform Earth immediately of any sustained drop in the Glasgow score.
 
-## PRO017 — Traumatismo craneoencefálico
+## PRO017 — Head trauma
 
 - ID: PRO017
-- Emergencia: Traumatismo craneoencefálico
-- Categoría: neurologico_cognitivo
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Cefalea, confusión, amnesia, laceración en cuero cabelludo, alteración pupilar
-- Evaluación inicial: Inmovilizar columna cervical, valoración de Glasgow y examen de pares creaneales
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Inmediatamente ante sospecha de traumatismo en cabeza o cuello
-- Documento oficial: Integrated Medical Group (IMG)
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Head trauma
+- Category: neurological_cognitive
+- Attention level: critical_emergency
+- Recognizable symptoms: Headache, confusion, amnesia, scalp laceration, pupil changes
+- Initial assessment: Immobilize the cervical spine, Glasgow assessment and cranial nerve exam
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately when head or neck trauma is suspected
+- Official document: Integrated Medical Group (IMG)
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Inmovilizar la columna cervical con el collarín del kit CMRS y fijar al paciente a la tabla médica. ADVERTENCIA: Mantener la alineación neutra de cabeza y cuello durante todo el procedimiento de fijación.
-2. [evaluación] Aplicar la Escala de Coma de Glasgow (GCS), inspeccionar el cuero cabelludo y examinar reactividad pupilar. ADVERTENCIA: Palpar con firmeza el cráneo buscando fracturas con hundimiento o pérdida de LCR.
-3. [seguimiento] Medir y registrar la PA, pulso, FR y SpO2 cada 5 minutos; curar y limpiar laceraciones visibles. ADVERTENCIA: Vigilar atentamente la aparición de vómitos en proyectil, anisocoria o bradicardia.
-4. [comunicación] Establecer Conferencia Médica Privada urgente con MCC-H para discutir traumatismo y evacuación. ADVERTENCIA: Reportar inmediatamente si se observa deterioro neurológico progresivo o signo de focalización.
+Steps:
+1. [immediate_action] Immobilize the cervical spine with the CMRS kit collar and secure the patient to the medical board. WARNING: Keep the head and neck in neutral alignment throughout the securing procedure.
+2. [assessment] Apply the Glasgow Coma Scale (GCS), inspect the scalp and examine pupil reactivity. WARNING: Firmly palpate the skull looking for depressed fractures or loss of CSF.
+3. [follow_up] Measure and record BP, pulse, RR and SpO2 every 5 minutes; treat and clean visible lacerations. WARNING: Watch closely for projectile vomiting, unequal pupils or bradycardia.
+4. [communication] Set up an urgent Private Medical Conference with MCC-H to discuss the trauma and evacuation. WARNING: Report immediately if progressive neurological deterioration or a focal sign is seen.
 
-## PRO018 — Convulsión
+## PRO018 — Seizure
 
 - ID: PRO018
-- Emergencia: Convulsión
-- Categoría: neurologico_cognitivo
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Contracciones musculares involuntarias y posible pérdida de conciencia
-- Evaluación inicial: Proteger al paciente de lesiones, evaluar su estado y realizar la valoración posterior
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Ante la aparición de una convulsión solicitar asistencia médica
-- Documento oficial: Medical Checklist
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Seizure
+- Category: neurological_cognitive
+- Attention level: critical_emergency
+- Recognizable symptoms: Involuntary muscle contractions and possible loss of consciousness
+- Initial assessment: Protect the patient from injury, assess their condition and carry out the follow-up assessment
+- Immediate contact with Earth: yes
+- When to contact Earth: When a seizure occurs, request medical assistance
+- Official document: Medical Checklist
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Proteger y guiar suavemente al paciente lejos de estructuras rígidas mediante correas sin sujetar con fuerza. ADVERTENCIA: No introducir ningún objeto en la boca ni restringir bruscamente las extremidades.
-2. [acción inmediata] Administrar Diazepam (Valium / Relanium) 2 cc (10 mg) IV lento (en 2 minutos) o IM si no cede. ADVERTENCIA: Contactar al Cirujano antes de administrar fármacos con asterisco (*). Vía IV puede causar hipotensión.
-3. [evaluación] Reevaluar al paciente tras 5 minutos; si la convulsión persiste, repetir la segunda dosis de Diazepam. ADVERTENCIA: Evitar la administración concomitante de otros sedantes por riesgo de depresión respiratoria.
-4. [seguimiento] Si persisten las convulsiones tras 2 dosis de Diazepam, canalizar vía IV, ECG e inyectar Phenytoin (Dilantin) IV. ADVERTENCIA: ¡ADVERTENCIA! Inyectar Dilantin a velocidad < 1 cc/min (<50 mg/min) con monitoreo continuo.
-5. [comunicación] Contactar al Cirujano de Vuelo para reportar resolución post-ictal y definir pauta de mantenimiento oral. ADVERTENCIA: Consultar con la Tierra la elección y dosis del anticonvulsivo oral preventivo.
+Steps:
+1. [immediate_action] Protect and gently guide the patient away from rigid structures using straps without holding tightly. WARNING: Do not put any object in the mouth or abruptly restrain the limbs.
+2. [immediate_action] Give Diazepam (Valium / Relanium) 2 cc (10 mg) slow IV (over 2 minutes) or IM if it does not stop. WARNING: Contact the Surgeon before giving drugs marked with an asterisk (*). The IV route can cause hypotension.
+3. [assessment] Reassess the patient after 5 minutes; if the seizure persists, repeat the second dose of Diazepam. WARNING: Avoid giving other sedatives at the same time because of the risk of respiratory depression.
+4. [follow_up] If seizures persist after 2 doses of Diazepam, start an IV line, ECG and inject Phenytoin (Dilantin) IV. WARNING: WARNING! Inject Dilantin at a rate < 1 cc/min (<50 mg/min) with continuous monitoring.
+5. [communication] Contact the Flight Surgeon to report post-ictal resolution and define the oral maintenance regimen. WARNING: Consult Earth on the choice and dose of the preventive oral anticonvulsant.
 
-## PRO019 — Cefalea intensa
+## PRO019 — Severe headache
 
 - ID: PRO019
-- Emergencia: Cefalea intensa
-- Categoría: neurologico_cognitivo
-- Nivel de atención: atencion_tripulacion
-- Síntomas reconocibles: Dolor de cabeza persistente
-- Evaluación inicial: Descartar hipercapnia o trauma, tomar vitales y administrar analgésicos
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: Si no cede con analgésicos o si se asocia a síntomas neurológicos
-- Documento oficial: International Space Station
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Severe headache
+- Category: neurological_cognitive
+- Attention level: crew_care
+- Recognizable symptoms: Persistent headache
+- Initial assessment: Rule out hypercapnia or trauma, take vital signs and give painkillers
+- Immediate contact with Earth: no
+- When to contact Earth: If it does not respond to painkillers or is associated with neurological symptoms
+- Official document: International Space Station
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [evaluación] Indagar tipo e intensidad del dolor (1-10), evaluar hallazgos neurológicos y medir CO2 en ambiente. ADVERTENCIA: Descartar que la cefalea sea un síntoma secundario a hipercapnia o hipoxia ambiental.
-2. [acción inmediata] Administrar analgésicos orales (Ascriptin / Tylenol / Ibuprofeno) según severidad reportada. ADVERTENCIA: Comprobar que no exista alergia conocida antes de suministrar fármacos antiinflamatorios.
-3. [seguimiento] Posicionar al paciente en un área tranquila, reducir iluminación y reevaluar signos vitales a los 30 min. ADVERTENCIA: Si la cefalea se acompaña de rigidez de nuca o fotofobia severa, reevaluar déficit neurológico.
-4. [comunicación] Notificar al Cirujano de Vuelo si el dolor de cabeza no cede a analgésicos o si hay alteraciones visuales. ADVERTENCIA: Contactar según rutina salvo que la cefalea sea súbita, máxima (en estallido) o atípica.
+Steps:
+1. [assessment] Ask about the type and intensity of the pain (1-10), assess neurological findings and measure CO2 in the environment. WARNING: Rule out that the headache is a secondary symptom of hypercapnia or environmental hypoxia.
+2. [immediate_action] Give oral painkillers (Ascriptin / Tylenol / Ibuprofen) according to the reported severity. WARNING: Check there is no known allergy before giving anti-inflammatory drugs.
+3. [follow_up] Place the patient in a quiet area, reduce lighting and reassess vital signs at 30 min. WARNING: If the headache comes with a stiff neck or severe photophobia, reassess for a neurological deficit.
+4. [communication] Notify the Flight Surgeon if the headache does not respond to painkillers or there are visual changes. WARNING: Contact routinely unless the headache is sudden, the worst ever (thunderclap) or atypical.
 
-## PRO020 — Infección grave / sepsis
+## PRO020 — Severe infection / sepsis
 
 - ID: PRO020
-- Emergencia: Infección grave / sepsis
-- Categoría: infeccioso_inmune
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Fiebre o hipotermia, taquicardia, hipotensión, alteración del estado mental
-- Evaluación inicial: Analítica sanguínea con PCBA, vitales c/5 min, admin de fluidos IV y antibióticos
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Ante sospecha de infección sistémica grave o shock séptico
-- Documento oficial: Integrated Medical Group (IMG)
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Severe infection / sepsis
+- Category: infectious_immune
+- Attention level: critical_emergency
+- Recognizable symptoms: Fever or hypothermia, tachycardia, hypotension, altered mental state
+- Initial assessment: Blood tests with PCBA, vital signs every 5 min, IV fluids and antibiotics
+- Immediate contact with Earth: yes
+- When to contact Earth: When a severe systemic infection or septic shock is suspected
+- Official document: Integrated Medical Group (IMG)
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [evaluación] Evaluar signos de respuesta sistémica (fiebre > 38°C o hipotermia, taquicardia > 90 bpm, polipnea). ADVERTENCIA: Identificar el posible foco infeccioso primario (piel, respiratorio, urinario o digestivo).
-2. [acción inmediata] Extraer muestra de sangre para análisis de leucocitos y electrolitos con PCBA e iniciar hidratación IV. ADVERTENCIA: Limpiar el sitio de punción venosa con alcohol/yodopovidona antes de tomar la muestra sanguínea.
-3. [seguimiento] Administrar antibióticos inyectables (Ceftriaxona / Kefzol IV) y monitorear PA y pulso cada 5 minutos. ADVERTENCIA: Monitorizar de cerca la aparición de signos de colapso vascular o shock séptico.
-4. [comunicación] Consultar urgentemente al MCC-H para validar la pauta antibiótica y valorar inotrópicos si hay hipotensión. ADVERTENCIA: Contactar al cirujano inmediatamente si la presión arterial sistólica cae por debajo de 90 mmHg.
+Steps:
+1. [assessment] Assess signs of a systemic response (fever > 38°C or hypothermia, tachycardia > 90 bpm, rapid breathing). WARNING: Identify the possible primary source of infection (skin, respiratory, urinary or digestive).
+2. [immediate_action] Draw a blood sample for white cell and electrolyte analysis with the PCBA and start IV hydration. WARNING: Clean the venipuncture site with alcohol/povidone-iodine before taking the blood sample.
+3. [follow_up] Give injectable antibiotics (Ceftriaxone / Kefzol IV) and monitor BP and pulse every 5 minutes. WARNING: Watch closely for signs of vascular collapse or septic shock.
+4. [communication] Consult MCC-H urgently to validate the antibiotic regimen and consider inotropes if there is hypotension. WARNING: Contact the surgeon immediately if systolic blood pressure falls below 90 mmHg.
 
-## PRO021 — Dolor abdominal agudo
+## PRO021 — Acute abdominal pain
 
 - ID: PRO021
-- Emergencia: Dolor abdominal agudo
-- Categoría: digestivo
-- Nivel de atención: atencion_medica_remota
-- Síntomas reconocibles: Dolor abdominal localizado o difuso, rigidez, sensibilidad a la palpación, náuseas
-- Evaluación inicial: Palpación abdominal, exploración con ecógrafo
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: Solicitar conferencia médica privada con el cirujano de vuelo
-- Documento oficial: Medical Checklist
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Acute abdominal pain
+- Category: digestive
+- Attention level: remote_medical_care
+- Recognizable symptoms: Localized or diffuse abdominal pain, rigidity, tenderness to palpation, nausea
+- Initial assessment: Abdominal palpation, ultrasound examination
+- Immediate contact with Earth: no
+- When to contact Earth: Request a private medical conference with the flight surgeon
+- Official document: Medical Checklist
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [evaluación] Realizar palpación metódica de los cuatro cuadrantes abdominales, evaluar defensa muscular y rebote. ADVERTENCIA: Descartar causas digestivas comunes (estreñimiento, dispepsia) antes de asumir abdomen agudo.
-2. [acción inmediata] Desplegar ecógrafo portátil (Ultrasonic Imaging) para examinar vesícula, apéndice, riñones y pelvis. ADVERTENCIA: Mantener al paciente en restricción de vía oral (ayuno / NPO) mientras se completa la evaluación.
-3. [seguimiento] Medir y registrar presión arterial, pulso y temperatura cada 15 minutos; administrar analgesia leve. ADVERTENCIA: No administrar analgésicos narcóticos potentes sin indicación ya que pueden enmascarar el cuadro.
-4. [comunicación] Retransmitir las secuencias de video ecográfico al Cirujano de Vuelo para diagnosticar patología. ADVERTENCIA: Realizar Conferencia Médica Privada para consensuar el manejo conservador o la evacuación.
+Steps:
+1. [assessment] Palpate the four abdominal quadrants methodically, assess muscle guarding and rebound tenderness. WARNING: Rule out common digestive causes (constipation, dyspepsia) before assuming an acute abdomen.
+2. [immediate_action] Deploy the portable ultrasound (Ultrasonic Imaging) to examine the gallbladder, appendix, kidneys and pelvis. WARNING: Keep the patient restricted from oral intake (fasting / NPO) while the assessment is completed.
+3. [follow_up] Measure and record blood pressure, pulse and temperature every 15 minutes; give mild analgesia. WARNING: Do not give strong narcotic painkillers without indication because they can mask the picture.
+4. [communication] Relay the ultrasound video sequences to the Flight Surgeon to diagnose the condition. WARNING: Hold a Private Medical Conference to agree on conservative management or evacuation.
 
-## PRO022 — Cólico renal / cálculos
+## PRO022 — Renal colic / kidney stones
 
 - ID: PRO022
-- Emergencia: Cólico renal / cálculos
-- Categoría: renal_urinario
-- Nivel de atención: atencion_medica_remota
-- Síntomas reconocibles: Dolor lumbar agudo irradiado a ingle, hematuria, disuria
-- Evaluación inicial: Examen de orina, ecografía renal, analgesia e hidratación
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: Para indicaciones de esquema analgésico e inicio de tratamiento médico
-- Documento oficial: International Space Station
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Renal colic / kidney stones
+- Category: renal_urinary
+- Attention level: remote_medical_care
+- Recognizable symptoms: Acute lower back pain radiating to the groin, hematuria, dysuria
+- Initial assessment: Urine test, kidney ultrasound, analgesia and hydration
+- Immediate contact with Earth: no
+- When to contact Earth: For instructions on the pain regimen and to start medical treatment
+- Official document: International Space Station
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [evaluación] Evaluar intensidad del dolor en flanco o región lumbar e inspeccionar orina con tiras reactivas (Urinalysis). ADVERTENCIA: Registrar presencia de hematuria micro o macroscópica y síntomas de disuria o polaquiuria.
-2. [acción inmediata] Administrar analgesia de alta potencia (Ketorolaco IV/IM o narcóticos) e iniciar infusión de fluidos. ADVERTENCIA: Verificar que la presión arterial sea estable previa a la administración de analgésicos parenterales.
-3. [seguimiento] Realizar ecografía de vías urinarias (Ultrasound) para evaluar hidronefrosis o dilatación ureteral. ADVERTENCIA: Filtrar la orina emitida para intentar recuperar el cálculo expulsado para su posterior análisis.
-4. [comunicación] Contactar al Cirujano de Vuelo para comunicar control del dolor y grado de función excretora urinaria. ADVERTENCIA: Consultar en la PMC habitual las indicaciones para la continuación de la terapia expulsiva.
+Steps:
+1. [assessment] Assess the intensity of pain in the flank or lower back and inspect the urine with test strips (Urinalysis). WARNING: Record the presence of micro- or macroscopic hematuria and symptoms of dysuria or urinary frequency.
+2. [immediate_action] Give high-potency analgesia (Ketorolac IV/IM or narcotics) and start a fluid infusion. WARNING: Check that blood pressure is stable before giving parenteral painkillers.
+3. [follow_up] Perform an ultrasound of the urinary tract (Ultrasound) to assess hydronephrosis or ureteral dilation. WARNING: Strain the urine passed to try to recover the expelled stone for later analysis.
+4. [communication] Contact the Flight Surgeon to report pain control and the degree of urinary excretory function. WARNING: Consult in the usual PMC the instructions for continuing expulsive therapy.
 
-## PRO023 — Dolor dental / absceso
+## PRO023 — Dental pain / abscess
 
 - ID: PRO023
-- Emergencia: Dolor dental / absceso
-- Categoría: dental
-- Nivel de atención: atencion_tripulacion
-- Síntomas reconocibles: Dolor dental, fractura dental o exposición de la pulpa
-- Evaluación inicial: Examinar dientes y cavidad oral; documentar los hallazgos
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: Según los hallazgos y la orientación del cirujano de vuelo
-- Documento oficial: Integrated Medical Group (IMG)
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Dental pain / abscess
+- Category: dental
+- Attention level: crew_care
+- Recognizable symptoms: Tooth pain, tooth fracture or exposed pulp
+- Initial assessment: Examine the teeth and oral cavity; document the findings
+- Immediate contact with Earth: no
+- When to contact Earth: Depending on the findings and the flight surgeon's guidance
+- Official document: Integrated Medical Group (IMG)
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [evaluación] Examinar la boca utilizando espejo dental e identificar diente fracturado, caries profunda o pulpa expuesta. ADVERTENCIA: Percutir suavemente las piezas dentales para identificar el diente causante del dolor agudo.
-2. [acción inmediata] En pulpa expuesta o cavidad cavitada, aplicar pasta de eugenol y colocación de obturación temporal (Temporary Filling). ADVERTENCIA: Limpiar y secar la cavidad del diente con una torunda de algodón antes de aplicar el material temporal.
-3. [seguimiento] Administrar analgésicos orales (Ibuprofeno / Tylenol) y antibióticos orales si existe celulitis o absceso. ADVERTENCIA: Evitar el consumo de alimentos extremadamente fríos o calientes sobre la pieza tratada temporalmente.
-4. [comunicación] Informar al Cirujano de Vuelo los resultados de la inspección y solicitar autorización si requiere extracción. ADVERTENCIA: Consultar la realización de anestesia local infiltrativa en caso de persistencia del dolor agudo.
+Steps:
+1. [assessment] Examine the mouth with a dental mirror and identify a fractured tooth, deep cavity or exposed pulp. WARNING: Gently tap the teeth to identify the tooth causing the acute pain.
+2. [immediate_action] For exposed pulp or an open cavity, apply eugenol paste and place a temporary filling (Temporary Filling). WARNING: Clean and dry the tooth cavity with a cotton pellet before applying the temporary material.
+3. [follow_up] Give oral painkillers (Ibuprofen / Tylenol) and oral antibiotics if there is cellulitis or an abscess. WARNING: Avoid extremely cold or hot food on the temporarily treated tooth.
+4. [communication] Report the inspection results to the Flight Surgeon and request authorization if an extraction is needed. WARNING: Consult about infiltrative local anesthesia if the acute pain persists.
 
-## PRO024 — Náuseas, vómito y mareo espacial
+## PRO024 — Nausea, vomiting and space motion sickness
 
 - ID: PRO024
-- Emergencia: Náuseas, vómito y mareo espacial
-- Categoría: digestivo
-- Nivel de atención: atencion_tripulacion
-- Síntomas reconocibles: Náuseas, vómito, mareo de adaptación espacial
-- Evaluación inicial: Evaluar estado de hidratación, administrar antieméticos
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: En consulta médica de rutina o si persiste vómito incontrolable
-- Documento oficial: Medical Checklist
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Nausea, vomiting and space motion sickness
+- Category: digestive
+- Attention level: crew_care
+- Recognizable symptoms: Nausea, vomiting, space adaptation dizziness
+- Initial assessment: Assess hydration status, give antiemetics
+- Immediate contact with Earth: no
+- When to contact Earth: At the routine medical consultation or if vomiting becomes uncontrollable
+- Official document: Medical Checklist
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [evaluación] Valorar la severidad del mareo por adaptación espacial (Space Motion Sickness) y signos de deshidratación. ADVERTENCIA: Evaluar la coloración de la piel, turgencia cutánea y frecuencia cardíaca.
-2. [acción inmediata] Administrar Prometazina (Phenergan) 25 mg vía intramuscular (IM) o en supositorio rectal si no tolera vía oral. ADVERTENCIA: ¡ADVERTENCIA! Phenergan produce somnolencia significativa; restringir actividades operativas.
-3. [seguimiento] Promover el reposo en un área fija con restricciones de movimiento de cabeza e iniciar sorbos de suero oral. ADVERTENCIA: Monitorear la tolerancia a líquidos orales pasadas 2 horas de la inyección del antiemético.
-4. [comunicación] Discutir el progreso y la respuesta a la medicación con el Cirujano de Vuelo durante la conferencia PMC regular. ADVERTENCIA: Reportar en la consulta periódica el estado de aclimatación del astronauta.
+Steps:
+1. [assessment] Assess the severity of space adaptation sickness (Space Motion Sickness) and signs of dehydration. WARNING: Assess skin color, skin turgor and heart rate.
+2. [immediate_action] Give Promethazine (Phenergan) 25 mg intramuscularly (IM) or as a rectal suppository if oral intake is not tolerated. WARNING: WARNING! Phenergan causes significant drowsiness; restrict operational activities.
+3. [follow_up] Encourage rest in a fixed area with head movement restrictions and start sips of oral rehydration solution. WARNING: Monitor tolerance of oral liquids 2 hours after the antiemetic injection.
+4. [communication] Discuss progress and response to the medication with the Flight Surgeon during the regular PMC conference. WARNING: Report the astronaut's acclimatization status at the periodic consultation.
 
-## PRO025 — Enfermedad por descompresión
+## PRO025 — Decompression sickness
 
 - ID: PRO025
-- Emergencia: Enfermedad por descompresión
-- Categoría: descompresion
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Dolor articular ("bends"), parestesias, erupción cutánea o distrés respiratorio post EVA
-- Evaluación inicial: Oxígeno al 100%, evaluar vitales, compresión en traje o cámara si aplica y fluidos IV
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Inmediatamente al detectar síntomas compatibles
-- Documento oficial: International Space Station
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Decompression sickness
+- Category: decompression
+- Attention level: critical_emergency
+- Recognizable symptoms: Joint pain ("bends"), paresthesias, skin rash or respiratory distress after EVA
+- Initial assessment: 100% oxygen, assess vital signs, compression in the suit or chamber if applicable and IV fluids
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately on detecting compatible symptoms
+- Official document: International Space Station
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Iniciar inmediatamente la administración de Oxígeno al 100% mediante máscara respiratoria de alto flujo. ADVERTENCIA: Suministrar O2 puro continuamente para acelerar el lavado de nitrógeno tisular.
-2. [evaluación] Buscar síntomas articular-musculares (bends), manifestaciones cutáneas o neumológicas/neurológicas. ADVERTENCIA: Marcar con un bolígrafo la zona de erupción cutánea para evaluar si se extiende en el tiempo.
-3. [seguimiento] Posicionar al paciente acostado, promover ingesta abundante de fluidos y monitorear constantes vitales cada 5 min. ADVERTENCIA: Si los síntomas son severos, preparar el traje EVA para realizar protocolo de recompresión médica.
-4. [comunicación] Comunicar inmediatamente al MCC-H para recibir el perfil de recompresión o tratamiento prescrito. ADVERTENCIA: Contactar sin demora a la Tierra para coordinar las decisiones de retorno o compresión de emergencia.
+Steps:
+1. [immediate_action] Immediately start giving 100% oxygen through a high-flow respiratory mask. WARNING: Give pure O2 continuously to speed up the washout of tissue nitrogen.
+2. [assessment] Look for joint-muscle symptoms (bends), skin manifestations or pulmonary/neurological ones. WARNING: Mark the area of skin rash with a pen to assess whether it spreads over time.
+3. [follow_up] Position the patient lying down, encourage plenty of fluids and monitor vital signs every 5 min. WARNING: If symptoms are severe, prepare the EVA suit for the medical recompression protocol.
+4. [communication] Report immediately to MCC-H to receive the recompression profile or prescribed treatment. WARNING: Contact Earth without delay to coordinate return or emergency compression decisions.
 
-## PRO026 — Hipertermia / hipotermia
+## PRO026 — Hyperthermia / hypothermia
 
 - ID: PRO026
-- Emergencia: Hipertermia / hipotermia
-- Categoría: termorregulacion
-- Nivel de atención: atencion_medica_remota
-- Síntomas reconocibles: Temperatura corporal extrema, piel fría y pegajosa o caliente, alteración de pulso
-- Evaluación inicial: Medición con monitores térmicos, calentamiento/enfriamiento pasivo, fluidos IV
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: VERDADERO si se presenta shock o alteración de la conciencia
-- Documento oficial: Integrated Medical Group (IMG)
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Hyperthermia / hypothermia
+- Category: thermoregulation
+- Attention level: remote_medical_care
+- Recognizable symptoms: Extreme body temperature, cold clammy or hot skin, changes in pulse
+- Initial assessment: Measurement with thermal monitors, passive warming/cooling, IV fluids
+- Immediate contact with Earth: no
+- When to contact Earth: TRUE if shock or altered consciousness occurs
+- Official document: Integrated Medical Group (IMG)
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [evaluación] Medir la temperatura corporal central utilizando sensores cutáneos (Skin Temp Monitors) o termómetro. ADVERTENCIA: Evaluar la presencia de diaforesis, temblores musculares incontrolados o alteración del estado mental.
-2. [acción inmediata] En hipotermia: envolver en mantas/bolsa térmica; En hipertermia: aplicar compresas húmedas frías y ventilación. ADVERTENCIA: Evitar el recalentamiento o enfriamiento excesivamente rápido que desencadene arritmias o shock.
-3. [seguimiento] Registrar temperatura corporal, presión arterial, pulso y frecuencia respiratoria a intervalos de 10 min. ADVERTENCIA: Administrar líquidos templados (hipotermia) o fríos (hipertermia) por vía oral si está consciente.
-4. [comunicación] Informar la curva de temperatura al Cirujano de Vuelo y solicitar antipiréticos si fiebre > 38.5°C. ADVERTENCIA: Contactar de inmediato si la alteración térmica se acompaña de hipotensión o estupor.
+Steps:
+1. [assessment] Measure core body temperature using skin sensors (Skin Temp Monitors) or a thermometer. WARNING: Check for sweating, uncontrolled muscle tremors or altered mental state.
+2. [immediate_action] For hypothermia: wrap in blankets/thermal bag; for hyperthermia: apply cold damp compresses and ventilation. WARNING: Avoid excessively fast rewarming or cooling that could trigger arrhythmias or shock.
+3. [follow_up] Record body temperature, blood pressure, pulse and respiratory rate at 10-minute intervals. WARNING: Give warm (hypothermia) or cool (hyperthermia) liquids by mouth if conscious.
+4. [communication] Report the temperature curve to the Flight Surgeon and request antipyretics if fever > 38.5°C. WARNING: Contact immediately if the temperature disturbance comes with hypotension or stupor.
 
-## PRO027 — Evento de radiación (tormenta solar)
+## PRO027 — Radiation event (solar storm)
 
 - ID: PRO027
-- Emergencia: Evento de radiación (tormenta solar)
-- Categoría: radiacion
-- Nivel de atención: atencion_medica_remota
-- Síntomas reconocibles: Náuseas, erupción cutánea, astenia, posible neutropenia en analítica
-- Evaluación inicial: Refugio en módulo blindado, recuento celular con PCBA y sintomáticos
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Inmediatamente tras alerta del Control de Misión o aparición de síntomas
-- Documento oficial: Medical Checklist
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Radiation event (solar storm)
+- Category: radiation
+- Attention level: remote_medical_care
+- Recognizable symptoms: Nausea, skin rash, asthenia, possible neutropenia in blood tests
+- Initial assessment: Shelter in the shielded module, cell count with the PCBA and symptomatic treatment
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately after a Mission Control alert or when symptoms appear
+- Official document: Medical Checklist
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Trasladar a la tripulación al área de resguardo blindada de la estación (módulo de servicio o shelter). ADVERTENCIA: Acatar la orden de resguardo inmediatamente al recibir la notificación de tormenta de radiación solar.
-2. [evaluación] Monitorear la aparición de signos de síndrome agudo por radiación (náuseas, vómitos, astenia, eritema). ADVERTENCIA: Registrar los niveles indicados por los dosímetros personales de cada tripulante.
-3. [seguimiento] Extraer muestra de sangre para realizar hemograma completo con PCBA (conteo de linfocitos y leucocitos). ADVERTENCIA: Repetir el análisis sanguíneo a las 12 y 24 horas para comparar la tendencia hematológica.
-4. [comunicación] Mantener comunicación periódica con MCC-H/Flight Director para recibir el reporte de flujo solar. ADVERTENCIA: Esperar la autorización explícita de la Tierra antes de abandonar el área de resguardo blindada.
+Steps:
+1. [immediate_action] Move the crew to the station's shielded shelter area (service module or shelter). WARNING: Obey the shelter order immediately on receiving the solar radiation storm notification.
+2. [assessment] Monitor for signs of acute radiation syndrome (nausea, vomiting, asthenia, erythema). WARNING: Record the levels shown by each crew member's personal dosimeters.
+3. [follow_up] Draw a blood sample for a complete blood count with the PCBA (lymphocyte and white cell counts). WARNING: Repeat the blood test at 12 and 24 hours to compare the hematological trend.
+4. [communication] Keep periodic communication with MCC-H/Flight Director to receive the solar flux report. WARNING: Wait for explicit authorization from Earth before leaving the shielded shelter area.
 
-## PRO028 — Emergencia psicológica / conductual
+## PRO028 — Psychological / behavioral emergency
 
 - ID: PRO028
-- Emergencia: Emergencia psicológica / conductual
-- Categoría: psicologico
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Psicosis aguda, agitación severa, riesgo de autolesión o conducta peligrosa
-- Evaluación inicial: Restricción física con cinta Gray Tape, admin de Haldol o Valium IM/oral, vigilancia CMO
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: Inmediatamente ante brote psicótico o ideación autolítica
-- Documento oficial: International Space Station
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Psychological / behavioral emergency
+- Category: psychological
+- Attention level: critical_emergency
+- Recognizable symptoms: Acute psychosis, severe agitation, risk of self-harm or dangerous behavior
+- Initial assessment: Physical restraint with Gray Tape, give Haldol or Valium IM/oral, CMO supervision
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately for a psychotic outbreak or suicidal ideation
+- Official document: International Space Station
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [acción inmediata] Inmovilizar al paciente de forma segura fijando sus muñecas y tobillos con Gray Tape y torso con correas bungees. ADVERTENCIA: Si es necesario fijar la cabeza, colocar una toalla enrollada bajo el cuello antes de aplicar la cinta.
-2. [evaluación] Designar un tripulante de respaldo (Backup CMO) para verificar constantemente la presencia de pulsos periféricos. ADVERTENCIA: ¡NOTA DE SEGURIDAD! Si los pulsos arteriales periféricos son débiles o ausentes, aflojar fijaciones.
-3. [acción inmediata] Administrar Haldol (Haloperidol) 10 mg VO (o 5 mg IM si no coopera), pudiendo complementar con Valium 5 mg. ADVERTENCIA: Contactar al Cirujano antes de dar la medicación. En pérdida de comunicación, administrar e informar.
-4. [seguimiento] Registrar constantes vitales (PA, pulso, FR, temperatura cutánea) cada 5 min (o 15 min si permanece estable). ADVERTENCIA: Vigilar efectos secundarios como hipotensión, taquicardia o movimientos musculares involuntarios.
-5. [comunicación] Mantener conferencia con el Cirujano de Vuelo para discutir el progreso y obtener autorización para liberar. ADVERTENCIA: No retirar las restricciones físicas sin orden explícita del Cirujano de Vuelo de Tierra.
+Steps:
+1. [immediate_action] Safely immobilize the patient by securing wrists and ankles with Gray Tape and the torso with bungee straps. WARNING: If the head must be secured, place a rolled towel under the neck before applying the tape.
+2. [assessment] Designate a backup crew member (Backup CMO) to constantly check for peripheral pulses. WARNING: SAFETY NOTE! If peripheral arterial pulses are weak or absent, loosen the restraints.
+3. [immediate_action] Give Haldol (Haloperidol) 10 mg PO (or 5 mg IM if uncooperative), optionally supplemented with Valium 5 mg. WARNING: Contact the Surgeon before giving the medication. If communication is lost, give it and report.
+4. [follow_up] Record vital signs (BP, pulse, RR, skin temperature) every 5 min (or 15 min if stable). WARNING: Watch for side effects such as hypotension, tachycardia or involuntary muscle movements.
+5. [communication] Hold a conference with the Flight Surgeon to discuss progress and get authorization to release. WARNING: Do not remove the physical restraints without an explicit order from the Flight Surgeon on Earth.
 
-## PRO029 — Hipoglucemia / hiperglucemia
+## PRO029 — Hypoglycemia / hyperglycemia
 
 - ID: PRO029
-- Emergencia: Hipoglucemia / hiperglucemia
-- Categoría: metabolico
-- Nivel de atención: atencion_medica_remota
-- Síntomas reconocibles: Sudoración fría, confusión, temblor, mareo, alteración metabólica
-- Evaluación inicial: Medición glucémica/analítica con PCBA, admin de glucosa oral o IV según conciencia
-- Contacto con la Tierra inmediato: no
-- Cuándo contactar con la Tierra: VERDADERO si existe pérdida o alteración del estado de conciencia
-- Documento oficial: Integrated Medical Group (IMG)
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Hypoglycemia / hyperglycemia
+- Category: metabolic
+- Attention level: remote_medical_care
+- Recognizable symptoms: Cold sweats, confusion, tremor, dizziness, metabolic disturbance
+- Initial assessment: Blood glucose / blood test with the PCBA, give oral or IV glucose depending on consciousness
+- Immediate contact with Earth: no
+- When to contact Earth: TRUE if there is loss or alteration of consciousness
+- Official document: Integrated Medical Group (IMG)
+- Source: SRC023
+- Review date: 2026-11-13
 
-Pasos:
-1. [evaluación] Reconocer síntomas (sudoración fría, temblor, mareo) y tomar muestra sanguínea para medición glucémica en PCBA. ADVERTENCIA: Verificar si la alteración glucémica se debe a ayuno prolongado o uso inadvertido de fármacos.
-2. [acción inmediata] En hipoglucemia: dar líquidos/caramelos azucarados o solución glucosada IV; En hiperglucemia: hidratar con salino IV. ADVERTENCIA: ¡ADVERTENCIA! No administrar alimentos o líquidos por vía oral si el paciente tiene alteración de conciencia.
-3. [seguimiento] Repetir la determinación glucémica con el analizador PCBA a los 15 y 30 minutos tras la intervención. ADVERTENCIA: Monitorear la recuperación progresiva del estado mental y la estabilización del pulso.
-4. [comunicación] Reportar los valores de glucemia y respuesta clínica al Cirujano de Vuelo para definir pauta alimentaria o insulínica. ADVERTENCIA: Consultar con la Tierra si los niveles de glucosa permanecen anómalos tras dos mediciones.
+Steps:
+1. [assessment] Recognize the symptoms (cold sweats, tremor, dizziness) and take a blood sample for glucose measurement on the PCBA. WARNING: Check whether the glucose disturbance is due to prolonged fasting or inadvertent drug use.
+2. [immediate_action] For hypoglycemia: give sugary liquids/candy or IV glucose solution; for hyperglycemia: hydrate with IV saline. WARNING: WARNING! Do not give food or liquids by mouth if the patient has altered consciousness.
+3. [follow_up] Repeat the glucose measurement with the PCBA analyzer at 15 and 30 minutes after the intervention. WARNING: Monitor the gradual recovery of mental state and the stabilization of the pulse.
+4. [communication] Report the glucose values and clinical response to the Flight Surgeon to define the diet or insulin regimen. WARNING: Consult Earth if glucose levels remain abnormal after two measurements.
 
-## PRO030 — Evacuación médica / contacto urgente con la Tierra
+## PRO030 — Medical evacuation / urgent contact with Earth
 
 - ID: PRO030
-- Emergencia: Evacuación médica / contacto urgente con la Tierra
-- Categoría: general
-- Nivel de atención: emergencia_critica
-- Síntomas reconocibles: Cuadro clínico no manejable en la ISS o riesgo vital persistente
-- Evaluación inicial: Conferencia Médica Privada urgente, estabilización en CMRS y preparación de nave para retorno
-- Contacto con la Tierra inmediato: sí
-- Cuándo contactar con la Tierra: De inmediato al considerar criterios de evacuación médica de la ISS
-- Documento oficial: Medical Checklist
-- Fuente: SRC023
-- Fecha de revisión: 2026-11-13
+- Emergency: Medical evacuation / urgent contact with Earth
+- Category: general
+- Attention level: critical_emergency
+- Recognizable symptoms: Clinical picture that cannot be managed on the ISS or persistent risk to life
+- Initial assessment: Urgent Private Medical Conference, stabilization in the CMRS and preparation of the vehicle for return
+- Immediate contact with Earth: yes
+- When to contact Earth: Immediately when ISS medical evacuation criteria are considered
+- Official document: Medical Checklist
+- Source: SRC023
+- Review date: 2026-11-13

@@ -11,61 +11,61 @@ import protocolos
 
 MODELO = os.environ.get("ASTRO_MODELO", "claude-sonnet-5-5")
 
-SYSTEM_BASE = """Eres Aéter, el asistente de salud de a bordo de una tripulación de astronautas.
-Apoyas al oficial médico y a la tripulación.
-Reglas:
-- Responde siempre en español, claro y breve. En emergencias: pasos cortos y faciles de entender, empezando por la acción más urgente.
-- Ten en cuenta que están en  lejos de la Tierra y la coomunicación con retraso puede tener retraso.
-- Usa solo los signos vitales, ficha médica y alertas del estado actual. No inventar datos.
-- Antes de recomendar cualquier medicamento, revisar alergias, medicamentos actuales y antecedentes del paciente y menciónalos explícitamente.
-- Indica usar la dosis de la etiqueta del botiquín o del protocolo de la misión, confirmada por el oficial médico o el cirujano de vuelo.
-- Basa tus respuestas en los protocolos de emergencia. Si algo no está cubierto, dilo y recomienda consultar al cirujano de vuelo / Control de Misión.
-- No diagnostiques con certeza: habla de posibles causas.
-- Si hay riesgo vital indica en orden: 1) alertar a la tripulación, 2) la acción inmediata, 3) contactar al cirujano de vuelo.
-- Cierra las respuestas de emergencia con qué medir de nuevo y cuándo."""
+SYSTEM_BASE = """You are Aéter, the onboard health assistant for a crew of astronauts.
+You support the medical officer and the crew.
+Rules:
+- Always answer in English, clear and brief. In emergencies: short, easy steps, starting with the most urgent action.
+- Keep in mind they are far from Earth and communication may be delayed.
+- Use only the vital signs, medical record and alerts of the current state. Do not invent data.
+- Before recommending any medication, check the patient's allergies, current medications and history and mention them explicitly.
+- Say to use the dose on the kit label or in the mission protocol, confirmed by the medical officer or the flight surgeon.
+- Base your answers on the emergency protocols. If something is not covered, say so and recommend consulting the flight surgeon / Mission Control.
+- Do not diagnose with certainty: talk about possible causes.
+- If there is a risk to life, say in order: 1) alert the crew, 2) the immediate action, 3) contact the flight surgeon.
+- End emergency answers with what to measure again and when."""
 
 
 def construir_contexto(astronauta: dict, recientes: list[dict], alertas_activas: list[dict],
                        notas: list[dict] | None = None) -> str:
     a = astronauta
     lineas = [
-        "## Paciente",
-        f"- Nombre: {a['nombre']} ({a['rol']})",
-        f"- Edad: {a['edad']} años · Peso: {a['peso_kg']} kg · Grupo sanguíneo: {a['tipo_sangre']}",
-        f"- ALERGIAS: {a['alergias'] or 'no registradas'}",
-        f"- Medicamentos actuales: {a['medicamentos'] or 'ninguno'}",
-        f"- Antecedentes: {a['condiciones'] or 'ninguno'}",
+        "## Patient",
+        f"- Name: {a['nombre']} ({a['rol']})",
+        f"- Age: {a['edad']} years · Weight: {a['peso_kg']} kg · Blood type: {a['tipo_sangre']}",
+        f"- ALLERGIES: {a['alergias'] or 'not recorded'}",
+        f"- Current medications: {a['medicamentos'] or 'none'}",
+        f"- History: {a['condiciones'] or 'none'}",
     ]
     if recientes:
         ult, ini = recientes[-1], recientes[0]
-        lineas.append(f"\n## Signos vitales actuales (hora {ult['ts'][11:19]})")
+        lineas.append(f"\n## Current vital signs (time {ult['ts'][11:19]})")
         for p in mod_alertas.ORDEN:
             u = mod_alertas.UMBRALES[p]
             tendencia = ""
             if len(recientes) > 1 and ini[p] != ult[p]:
-                tendencia = (f"  [tendencia: {mod_alertas.formatear(p, ini[p])} -> "
-                             f"{mod_alertas.formatear(p, ult[p])} en las últimas {len(recientes)} muestras]")
+                tendencia = (f"  [trend: {mod_alertas.formatear(p, ini[p])} -> "
+                             f"{mod_alertas.formatear(p, ult[p])} over the last {len(recientes)} samples]")
             lineas.append(f"- {u['nombre']}: {mod_alertas.formatear(p, ult[p])}{tendencia}")
     else:
-        lineas.append("\n## Signos vitales: sin datos todavía")
+        lineas.append("\n## Vital signs: no data yet")
 
-    lineas.append("\n## Alertas activas")
+    lineas.append("\n## Active alerts")
     if alertas_activas:
         for al in alertas_activas:
             lineas.append(f"- [{al['severidad'].upper()}] {al['mensaje']}")
     else:
-        lineas.append("- Ninguna: todos los signos dentro del rango normal.")
+        lineas.append("- None: all signs within the normal range.")
 
     if notas:
-        lineas.append("\n## Últimas notas clínicas")
+        lineas.append("\n## Latest clinical notes")
         for n in notas[:3]:
             lineas.append(f"- {n['ts'][:16]} ({n['autor']}): {n['nota']}")
     return "\n".join(lineas)
 
 
 def construir_system(contexto: str) -> str:
-    return (f"{SYSTEM_BASE}\n\n# PROTOCOLOS DE REFERENCIA\n{protocolos.texto_referencia()}"
-            f"\n\n# CONTEXTO ACTUAL\n{contexto}")
+    return (f"{SYSTEM_BASE}\n\n# REFERENCE PROTOCOLS\n{protocolos.texto_referencia()}"
+            f"\n\n# CURRENT CONTEXT\n{contexto}")
 
 
 def _mensajes_validos(historial: list[dict], maximo: int = 12) -> list[dict]:
@@ -87,27 +87,28 @@ def respuesta_offline(pregunta: str, astronauta: dict, alertas_activas: list[dic
     q = protocolos.normalizar(pregunta)
     partes: list[str] = []
 
-    quiere_medir = bool(re.search(r"\b(medir|mido|medicion|mediciones|tomar|tomo|mide|se mide)\b", q))
-    pide_guia = any(p in q for p in ("emergencia", "guia", "guiame", "que hago", "ayuda",
+    quiere_medir = bool(re.search(r"\b(measure|measuring|take|taking|check|medir|mido|medicion|mediciones|tomar|tomo|mide|se mide)\b", q))
+    pide_guia = any(p in q for p in ("emergency", "guide", "what do i do", "what should i do", "help", "urgent", "step by step", "current situation", "current",
+                                      "emergencia", "guia", "guiame", "que hago", "ayuda",
                                       "urgente", "paso a paso", "situacion actual", "actual"))
 
     if alertas_activas:
         resumen = "; ".join(a["mensaje"] for a in alertas_activas)
-        partes.append(f" **Estado actual de {astronauta['nombre']}:** {resumen}.\n"
-                      "**Primero: avisa a la tripulación.**")
+        partes.append(f" **Current status of {astronauta['nombre']}:** {resumen}.\n"
+                      "**First: alert the crew.**")
 
     if protocolos.detectar(q, {"med": protocolos.MEDICAMENTOS}):
-        partes.append(f"**Ficha de {astronauta['nombre']}** · Alergias: {astronauta['alergias'] or 'no registradas'} · "
-                      f"Medicamentos actuales: {astronauta['medicamentos'] or 'ninguno'} · "
-                      f"Antecedentes: {astronauta['condiciones'] or 'ninguno'}")
+        partes.append(f"**Record of {astronauta['nombre']}** · Allergies: {astronauta['alergias'] or 'not recorded'} · "
+                      f"Current medications: {astronauta['medicamentos'] or 'none'} · "
+                      f"History: {astronauta['condiciones'] or 'none'}")
         partes.append(protocolos.medicamentos_md())
     elif quiere_medir:
         claves = protocolos.detectar(q, protocolos.MEDICIONES)
         if claves:
             partes.extend(protocolos.medicion_md(c) for c in claves)
         else:
-            opciones = ", ".join(m["titulo"].replace("Cómo medir ", "") for m in protocolos.MEDICIONES.values())
-            partes.append(f"Puedo guiarte para medir: {opciones}. ¿Cuál necesitas?")
+            opciones = ", ".join(m["titulo"].replace("How to measure ", "") for m in protocolos.MEDICIONES.values())
+            partes.append(f"I can guide you to measure: {opciones}. Which one do you need?")
     else:
         claves = protocolos.detectar(q, protocolos.EMERGENCIAS)
         if pide_guia and alertas_activas:
@@ -118,14 +119,14 @@ def respuesta_offline(pregunta: str, astronauta: dict, alertas_activas: list[dic
             partes.extend(protocolos.emergencia_md(c) for c in claves)
         elif not alertas_activas:
             partes.append(
-                "No hay alertas activas y no reconozco la consulta. Puedo ayudarte con:\n"
-                "- Cómo medir presión, SpO₂, pulso, temperatura o respiración\n"
-                "- Guías para hipoxia, taquicardia/bradicardia, hipertensión/hipotensión, fiebre o hipotermia\n"
-                "- Uso seguro de medicamentos del botiquín"
+                "There are no active alerts and I did not understand the request. I can help with:\n"
+                "- How to measure blood pressure, SpO₂, pulse, temperature or breathing\n"
+                "- Guides for hypoxia, tachycardia/bradycardia, hypertension/hypotension, fever or hypothermia\n"
+                "- Safe use of medications from the kit"
             )
 
-    partes.append("_Modo offline: respuesta basada en los protocolos locales de la aplicación. "
-                  "Confirma con el oficial médico / cirujano de vuelo._")
+    partes.append("_Offline mode: answer based on the app's local protocols. "
+                  "Confirm with the medical officer / flight surgeon._")
     return "\n\n".join(partes)
 
 
@@ -150,7 +151,7 @@ def responder_stream(historial: list[dict], astronauta: dict, recientes: list[di
             yield from medico.responder_stream(_mensajes_validos(historial), contexto)
             return
     except Exception as e:
-        yield f"No pude contactar a Aéter ({type(e).__name__}). Uso el respaldo.\n\n"
+        yield f"I could not reach Aéter ({type(e).__name__}). Using the backup.\n\n"
 
     if clave:
         try:
@@ -168,6 +169,6 @@ def responder_stream(historial: list[dict], astronauta: dict, recientes: list[di
                     yield texto
             return
         except Exception as e:  # sin internet, key inválida, límite de uso...
-            yield f"No pude contactar a la IA ({type(e).__name__}). Respondo en modo offline.\n\n"
+            yield f"I could not reach the AI ({type(e).__name__}). Answering in offline mode.\n\n"
 
     yield from _stream_texto(respuesta_offline(pregunta, astronauta, alertas_activas))

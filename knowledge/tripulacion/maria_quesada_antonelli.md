@@ -1,78 +1,79 @@
-# Ficha de la tripulante María Antonelli
+# Medical record of crew member María Antonelli
 
-> Fuente: documento «Persona de prueba: María» entregado por el equipo (Astronauta_María.docx).
-> Es una persona de prueba para la demostración. Los datos de simulación y los umbrales son **de ejemplo**, sin validar clínicamente.
+> Source: document «Test person: María» provided by the team (Astronauta_María.docx).
+> She is a test person for the demonstration. Simulation data and thresholds are **examples**, not clinically validated.
+> Language note: the original records of the other knowledge files are written in Spanish; Aéter translates them when answering.
 
-## PAC001 — Perfil general de María Antonelli
+## PAC001 — General profile of María Antonelli
 
 - ID: PAC001
-- Nombre: María Antonelli
-- Edad / sexo: 38 años / femenino
-- Rol: especialista de misión, 2.ª misión
-- Misión: estancia de 180 días en una estación espacial en órbita baja
-- Altura / peso: 168 cm / 62 kg (IMC 22)
-- Condición física: muy buena; entrena 5 días por semana (fuerza y core)
-- Fuente: documento del equipo (persona de prueba)
+- Name: María Antonelli
+- Age / sex: 38 years / female
+- Role: mission specialist, 2nd mission
+- Mission: 180-day stay on a low-Earth-orbit space station
+- Height / weight: 168 cm / 62 kg (BMI 22)
+- Fitness: very good; trains 5 days a week (strength and core)
+- Source: team document (test person)
 
-## PAC002 — Escoliosis de María Antonelli
+## PAC002 — Scoliosis of María Antonelli
 
 - ID: PAC002
-- Tipo: escoliosis idiopática
-- Diagnóstico: a los 13 años
-- Curva principal: torácica derecha, T7-T12
-- Ángulo de Cobb: 12° al diagnóstico, 14° actual (estable)
-- Curva compensatoria: lumbar izquierda, 8°
-- Tratamiento previo: fisioterapia, natación y danza aérea. No se realizó cirugía
-- Síntomas: molestia leve tras cargas prolongadas (dolor 2/10)
-- Medicación: ibuprofeno 400 mg ocasional
-- Fuente: documento del equipo (persona de prueba)
+- Type: idiopathic scoliosis
+- Diagnosis: at age 13
+- Main curve: right thoracic, T7-T12
+- Cobb angle: 12° at diagnosis, 14° now (stable)
+- Compensatory curve: left lumbar, 8°
+- Previous treatment: physiotherapy, swimming and aerial dance. No surgery was performed
+- Symptoms: mild discomfort after prolonged loads (pain 2/10)
+- Medication: ibuprofen 400 mg occasionally
+- Source: team document (test person)
 
-## PAC003 — Historial médico de María Antonelli
+## PAC003 — Medical history of María Antonelli
 
 - ID: PAC003
-- Antecedentes: fractura de muñeca a los 16 años (caída en bicicleta). Sin cirugías. Sin enfermedades crónicas.
-- Alergias: penicilina (erupción leve).
-- Familiares: madre con diabetes, padre hipertenso.
-- Hábitos: no fuma, alcohol ocasional, duerme 7 h.
-- Vacunas: al día.
-- Fuente: documento del equipo (persona de prueba)
+- History: wrist fracture at age 16 (bicycle fall). No surgeries. No chronic illnesses.
+- Allergies: penicillin (mild rash).
+- Family: mother with diabetes, father hypertensive.
+- Habits: does not smoke, drinks alcohol occasionally, sleeps 7 h.
+- Vaccines: up to date.
+- Source: team document (test person)
 
-## PAC004 — Valores basales de María Antonelli (pre-misión)
+## PAC004 — Baseline values of María Antonelli (pre-mission)
 
 - ID: PAC004
-- Frecuencia cardíaca en reposo: 56 lpm
-- Presión arterial: 112/70 mmHg
+- Resting heart rate: 56 bpm
+- Blood pressure: 112/70 mmHg
 - SpO2: 98 %
-- Temperatura: 36,6 °C
-- Densidad ósea (DXA, columna): T-score -0,4
-- Vitamina D: 34 ng/mL
-- Altura de columna: 168 cm (se esperan +3 a 5 cm en microgravedad)
-- Fuente: documento del equipo (persona de prueba)
+- Temperature: 36.6 °C
+- Bone density (DXA, spine): T-score -0.4
+- Vitamin D: 34 ng/mL
+- Spine height: 168 cm (+3 to 5 cm expected in microgravity)
+- Source: team document (test person)
 
-## PAC005 — Riesgos específicos de María Antonelli en el espacio
+## PAC005 — Specific risks of María Antonelli in space
 
 - ID: PAC005
-- Elongación de la columna: puede cambiar la curva de la escoliosis.
-- Dolor de espalda: muy común en las primeras semanas.
-- Pérdida ósea: cerca de 1 % al mes si no hay ejercicio.
-- Atrofia de músculos paravertebrales (los que sostienen la columna).
-- Riesgo de hernia discal al volver a la gravedad.
-- Radiación: efecto acumulado sobre hueso y tejidos.
-- Fuente: documento del equipo (persona de prueba)
+- Spine elongation: may change the scoliosis curve.
+- Back pain: very common in the first weeks.
+- Bone loss: about 1 % per month without exercise.
+- Atrophy of the paravertebral muscles (the ones that support the spine).
+- Risk of disc herniation when returning to gravity.
+- Radiation: cumulative effect on bone and tissues.
+- Source: team document (test person)
 
-## PAC006 — Datos de ejemplo para simular alertas de María Antonelli
+## PAC006 — Sample data to simulate alerts for María Antonelli
 
 - ID: PAC006
-- Aviso: datos de ejemplo para simulación, no son mediciones reales.
+- Notice: sample data for simulation, not real measurements.
 
-| Día | Dolor de espalda (0-10) | FC reposo (lpm) | Sueño (h) | Estado |
+| Day | Back pain (0-10) | Resting HR (bpm) | Sleep (h) | Status |
 |---|---|---|---|---|
-| 1 | 1 | 58 | 6,5 | Normal |
-| 14 | 4 | 60 | 6,0 | Vigilancia |
-| 45 | 3 | 57 | 7,0 | Normal |
-| 90 | 6 | 64 | 5,0 | Alerta |
-| 150 | 7 | 66 | 5,0 | Crítico |
+| 1 | 1 | 58 | 6.5 | Normal |
+| 14 | 4 | 60 | 6.0 | Watch |
+| 45 | 3 | 57 | 7.0 | Normal |
+| 90 | 6 | 64 | 5.0 | Alert |
+| 150 | 7 | 66 | 5.0 | Critical |
 
-Umbrales sugeridos (de ejemplo, sin validar):
-- Dolor ≥ 5: alerta. Dolor ≥ 7: crítico.
-- FC en reposo 10 lpm por encima de la basal: alerta.
+Suggested thresholds (sample, not validated):
+- Pain ≥ 5: alert. Pain ≥ 7: critical.
+- Resting HR 10 bpm above baseline: alert.

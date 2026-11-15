@@ -1,4 +1,4 @@
-"""Pantallas de Aéter (borrador de diseño): portada, Estado, Signos Vitales, Bitácora, Historial y ficha médica.
+"""Aéter screens: cover, Status, Vitals, Journal, History and medical record.
 
 Aquí no hay lógica del asistente, de la voz ni de las acciones: eso vive en medico/ y en app.py.
 """
@@ -31,7 +31,7 @@ def hora_texto(d: datetime) -> str:
 
 
 def fecha_texto(d: datetime) -> str:
-    return f"{d.day} {MESES[d.month - 1]} {d.year}"
+    return f"{MESES[d.month - 1]} {d.day}, {d.year}"
 
 
 def estado_de(med: dict | None) -> tuple[str, list[dict]]:
@@ -74,8 +74,8 @@ def pantalla_inicio(astronautas: list[dict]) -> None:
     logo = RAIZ / "assets" / "logo.png"
     st.markdown(
         "<div class='portada'>" + (tema.marte_img("calma", clase="") if not logo.exists() else "")
-        + "<h1>Aéter</h1><p class='sub'>Asistente de salud a bordo para astronautas</p>"
-        "<p style='opacity:.9;font-size:1.05rem;margin-bottom:.6rem'>¿Quién eres?</p></div>",
+        + "<h1>Aéter</h1><p class='sub'>Onboard health assistant for astronauts</p>"
+        "<p style='opacity:.9;font-size:1.05rem;margin-bottom:.6rem'>Who are you?</p></div>",
         unsafe_allow_html=True)
     if logo.exists():
         st.image(str(logo), width=220)
@@ -89,17 +89,20 @@ def pantalla_inicio(astronautas: list[dict]) -> None:
                 st.markdown(
                     f"<div class='tarjeta {'sel' if es_sel else ''}'>{tema.avatar_img(a['nombre'], 104)}"
                     f"<div class='nom'>{E(a['nombre'])}</div><div class='rol'>{E(a['rol'].split('(')[0].strip())}</div>"
-                    f"<div class='marca'>{'Seleccionado' if es_sel else 'Toca para elegir'}</div></div>",
+                    f"<div class='marca'>{'Selected' if es_sel else 'Tap to choose'}</div></div>",
                     unsafe_allow_html=True)
-                st.button("Elegir", key=f"tapa_usr_{a['id']}", on_click=_elegir, args=(a["id"],))
+                st.button("Choose", key=f"tapa_usr_{a['id']}", on_click=_elegir, args=(a["id"],))
         st.write("")
         _, b, _ = st.columns([1, 1.6, 1])
         quien = next((a["nombre"].split()[0] for a in astronautas if a["id"] == sel), None)
-        b.button(f"Iniciar como {quien}" if quien else "Elige un astronauta para iniciar", key="btn_iniciar",
+        b.button(f"Start as {quien}" if quien else "Choose an astronaut to start", key="btn_iniciar",
                  type="primary", width="stretch", disabled=sel is None, on_click=_iniciar)
         st.markdown("<p style='text-align:center;opacity:.8;font-size:.9rem;margin-top:.8rem'>"
-                    "Al iniciar, Aéter te saluda y queda escuchando: di «Aéter» para hablarle. "
-                    "Permite el micrófono si el navegador lo pide.</p>", unsafe_allow_html=True)
+                    "When you start, Aéter greets you. Press «Talk» to speak with it. "
+                    "Allow the microphone if the browser asks.</p>", unsafe_allow_html=True)
+    st.markdown("<div class='descargo'><b>Educational app.</b> Aéter is a learning prototype built for a hackathon. "
+                "It does not replace formal medical care or professional medical assistance. "
+                "In a real emergency, contact a qualified health professional.</div>", unsafe_allow_html=True)
 
 
 def cerrar_sesion() -> None:
@@ -109,7 +112,7 @@ def cerrar_sesion() -> None:
 
 
 # --------------------------------------------------------------------------- ficha médica
-CAMPOS_OCULTOS = {"ID", "Fuente", "Fecha de revisión", "Estado del registro"}
+CAMPOS_OCULTOS = {"ID", "Source", "Review date", "Record status", "Fuente", "Fecha de revisión", "Estado del registro"}
 
 
 def _datos_de_archivo(nombre: str) -> list[tuple[str, list[tuple[str, str]]]]:
@@ -138,7 +141,7 @@ def _datos_de_archivo(nombre: str) -> list[tuple[str, list[tuple[str, str]]]]:
 
 
 def _tabla(titulo: str, filas: list[tuple[str, str]]) -> str:
-    cuerpo = "".join(f"<tr><td class='k'>{E(k)}</td><td>{E(v) if v else 'Sin información'}</td></tr>" for k, v in filas)
+    cuerpo = "".join(f"<tr><td class='k'>{E(k)}</td><td>{E(v) if v else 'No information'}</td></tr>" for k, v in filas)
     return f"<table class='ficha-tabla'><tr><th colspan='2'>{E(titulo.upper())}</th></tr>{cuerpo}</table>"
 
 
@@ -147,33 +150,33 @@ def _csv_historial(astro_id: int) -> bytes:
     return pd.DataFrame(db.todas_mediciones(astro_id)).to_csv(index=False).encode("utf-8")
 
 
-@st.dialog("Ficha médica", width="large")
+@st.dialog("Medical record", width="large")
 def ficha(astro_id: int) -> None:
     a = db.obtener_astronauta(astro_id)
     st.markdown(
         f"<div style='display:flex;align-items:center;gap:18px;margin-bottom:12px'>{tema.avatar_img(a['nombre'], 78)}"
         f"<div><div style='font-family:Poppins;font-weight:700;font-size:1.5rem'>{E(a['nombre'])}</div>"
         f"<div style='opacity:.8'>{E(a['rol'])}</div></div></div>", unsafe_allow_html=True)
-    st.markdown(_tabla("Información médica", [
-        ("Nombre", a["nombre"]), ("Edad", f"{a['edad']} años" if a["edad"] else ""),
-        ("Peso", f"{a['peso_kg']:.0f} kg" if a["peso_kg"] else ""),
-        ("Grupo sanguíneo", a["tipo_sangre"] or ""), ("Cargo", a["rol"])]), unsafe_allow_html=True)
-    st.markdown(_tabla("Alergias", [("Alergias", a["alergias"] or "")]) +
-                _tabla("Enfermedades y antecedentes", [("Condiciones", a["condiciones"] or "")]) +
-                _tabla("Medicamentos", [("Medicamentos actuales", a["medicamentos"] or "")]), unsafe_allow_html=True)
+    st.markdown(_tabla("Medical information", [
+        ("Name", a["nombre"]), ("Age", f"{a['edad']} years" if a["edad"] else ""),
+        ("Weight", f"{a['peso_kg']:.0f} kg" if a["peso_kg"] else ""),
+        ("Blood type", a["tipo_sangre"] or ""), ("Role", a["rol"])]), unsafe_allow_html=True)
+    st.markdown(_tabla("Allergies", [("Allergies", a["alergias"] or "")]) +
+                _tabla("Conditions and history", [("Conditions", a["condiciones"] or "")]) +
+                _tabla("Medications", [("Current medications", a["medicamentos"] or "")]), unsafe_allow_html=True)
     for titulo, filas in _datos_de_archivo(a["nombre"]):
         st.markdown(_tabla(titulo, filas), unsafe_allow_html=True)
     c1, c2 = st.columns(2)
-    c1.download_button("Exportar signos vitales (CSV)", _csv_historial(astro_id), width="stretch",
-                       file_name=f"signos_{a['nombre'].replace(' ', '_')}.csv", mime="text/csv")
-    if c2.button("Cerrar sesión", key="btn_cerrar_sesion", type="primary", width="stretch"):
+    c1.download_button("Export vital signs (CSV)", _csv_historial(astro_id), width="stretch",
+                       file_name=f"vitals_{a['nombre'].replace(' ', '_')}.csv", mime="text/csv")
+    if c2.button("Log out", key="btn_cerrar_sesion", type="primary", width="stretch"):
         cerrar_sesion()
         st.rerun()  # redibuja toda la app (no solo la ventana) para volver a la portada
 
 
 # --------------------------------------------------------------------------- estado
 def enviar_sos(astro_id: int, nombre: str) -> None:
-    db.insertar_evento(astro_id, "critica", "sos", 0, f"{nombre}: solicita ayuda inmediata")
+    db.insertar_evento(astro_id, "critica", "sos", 0, f"{nombre}: requests immediate help")
     st.session_state["sos_aviso"] = True  # el aviso se muestra fuera del callback
 
 
@@ -194,7 +197,7 @@ def tarjeta_estado(astro_id: int, nombre: str) -> None:
                     unsafe_allow_html=True)
         c2.button("SOS", key="btn_sos", on_click=enviar_sos, args=(astro_id, nombre))
         if st.session_state.pop("sos_aviso", False):
-            st.toast("SOS enviado a la tripulación")
+            st.toast("SOS sent to the crew")
 
         pendientes = db.listar_eventos(astro_id, limite=60, solo_pendientes=True)
         vistos, unicos = set(), []
@@ -208,20 +211,20 @@ def tarjeta_estado(astro_id: int, nombre: str) -> None:
             items.append(f"<div class='alerta-item'><span class='punto' style='background:{color}'></span>"
                          f"<span>{E(e['mensaje'])}</span><span style='margin-left:auto;opacity:.7'>{e['ts'][11:16]}</span></div>")
         if len(unicos) > 4:
-            items.append(f"<div class='alerta-item vacia'>y {len(unicos) - 4} alertas más</div>")
+            items.append(f"<div class='alerta-item vacia'>and {len(unicos) - 4} more alerts</div>")
         for r in med_rec.pendientes(astro_id)[:3]:
             items.append(f"<div class='alerta-item'><span class='punto' style='background:#60a5fa'></span>"
-                         f"<span>Recordatorio · {E(r['texto'])}</span><span style='margin-left:auto;opacity:.7'>{r['vence'][11:16]}</span></div>")
+                         f"<span>Reminder · {E(r['texto'])}</span><span style='margin-left:auto;opacity:.7'>{r['vence'][11:16]}</span></div>")
         if not items:
-            items.append("<div class='alerta-item vacia'>Sin alertas ni recordatorios pendientes</div>")
-        st.markdown("<div class='zona-alertas'><h4>Alertas y Recordatorios:</h4>" + "".join(items) + "</div>",
+            items.append("<div class='alerta-item vacia'>No pending alerts or reminders</div>")
+        st.markdown("<div class='zona-alertas'><h4>Alerts and Reminders:</h4>" + "".join(items) + "</div>",
                     unsafe_allow_html=True)
         b1, b2 = st.columns(2)
         if unicos:
-            b1.button("Reconocer alertas", key="btn_reconocer", width="stretch",
+            b1.button("Acknowledge alerts", key="btn_reconocer", width="stretch",
                       on_click=db.reconocer_eventos, args=(nombre, astro_id))
         if st.session_state.get("sirena"):
-            b2.button("Silenciar pitido", key="btn_silenciar", width="stretch",
+            b2.button("Mute beep", key="btn_silenciar", width="stretch",
                       on_click=lambda: st.session_state.update(sirena=False))
 
 
@@ -232,12 +235,14 @@ def _pasos_de(texto: str) -> list[tuple[str, str]]:
         m = re.match(r"\s*\d+\.\s*(?:\[[^\]]+\]\s*)?(.*)", l)
         if m:
             cuerpo, _, adv = m.group(1).partition("ADVERTENCIA:")
+            if not adv:
+                cuerpo, _, adv = m.group(1).partition("WARNING:")
             pasos.append((cuerpo.strip(), adv.strip()))
     return pasos
 
 
 def fijar_protocolo(astro_id: int, codigo: str, titulo: str, pasos: list[tuple[str, str]]) -> None:
-    """Deja en la pestaña Estado el protocolo que Aéter está guiando."""
+    """Deja en la pestaña Status el protocolo que Aéter está guiando."""
     if pasos:
         st.session_state[f"proto_{astro_id}"] = {"codigo": codigo, "titulo": titulo, "pasos": pasos}
 
@@ -259,17 +264,17 @@ def _terminar_protocolo(astro_id: int) -> None:
 def panel_protocolo(astro_id: int) -> None:
     proto = st.session_state.get(f"proto_{astro_id}")
     if not proto:
-        st.markdown("<div class='proto'><h3>Protocolo a seguir</h3><p class='vacio'>Cuando Aéter te guíe con un "
-                    "protocolo, los pasos aparecerán aquí.</p></div>", unsafe_allow_html=True)
+        st.markdown("<div class='proto'><h3>Protocol to follow</h3><p class='vacio'>When Aéter guides you with a "
+                    "protocol, the steps will appear here.</p></div>", unsafe_allow_html=True)
         return
     items = []
     for i, (paso, adv) in enumerate(proto["pasos"], 1):
-        extra = f"<div class='adv'>Advertencia: {E(adv)}</div>" if adv else ""
+        extra = f"<div class='adv'>Warning: {E(adv)}</div>" if adv else ""
         items.append(f"<li><span class='n'>{i}</span><div>{E(paso)}{extra}</div></li>")
     codigo = f"{E(proto['codigo'])} · " if re.match(r"PRO\d+", proto["codigo"]) else ""
-    st.markdown(f"<div class='proto'><h3>Protocolo a seguir</h3><div class='ptit'>{codigo}{E(proto['titulo'])}</div>"
+    st.markdown(f"<div class='proto'><h3>Protocol to follow</h3><div class='ptit'>{codigo}{E(proto['titulo'])}</div>"
                 f"<ol>{''.join(items)}</ol></div>", unsafe_allow_html=True)
-    st.button("Terminar protocolo", key="btn_fin_proto", on_click=_terminar_protocolo, args=(astro_id,))
+    st.button("End protocol", key="btn_fin_proto", on_click=_terminar_protocolo, args=(astro_id,))
 
 
 def pantalla_estado(astro: dict) -> None:
@@ -278,8 +283,8 @@ def pantalla_estado(astro: dict) -> None:
         nombre_saludo = astro["nombre"] if len(astro["nombre"].split()) <= 2 else " ".join(astro["nombre"].split()[:2])
         with st.container(key="clic_perfil"):
             st.markdown(f"<div class='saludo'>{tema.avatar_img(astro['nombre'], 96)}"
-                        f"<div class='txt'>¡Hola, {E(nombre_saludo)}!</div></div>", unsafe_allow_html=True)
-            if st.button("Ver ficha médica", key="tapa_perfil"):
+                        f"<div class='txt'>Hello, {E(nombre_saludo)}!</div></div>", unsafe_allow_html=True)
+            if st.button("View medical record", key="tapa_perfil"):
                 ficha(astro["id"])
         marte_grande(astro["id"])
     with der:
@@ -290,23 +295,23 @@ def pantalla_estado(astro: dict) -> None:
 
 # --------------------------------------------------------------------------- signos vitales
 VITALES = (
-    ("fc", "Frecuencia<br>Cardiaca", "", ("fc",), ("fc",)),
-    ("pa", "Presión", "sistólica y diastólica", ("pas", "pad"), ("pas", "pad")),
-    ("spo2", "Saturación<br>de oxígeno", "", ("spo2",), ("spo2",)),
-    ("temp", "Temperatura", "", ("temp",), ("temp",)),
-    ("fr", "Frecuencia<br>respiratoria", "", ("fr",), ("fr",)),
+    ("fc", "Heart<br>Rate", "", ("fc",), ("fc",)),
+    ("pa", "Blood<br>Pressure", "systolic and diastolic", ("pas", "pad"), ("pas", "pad")),
+    ("spo2", "Oxygen<br>Saturation", "", ("spo2",), ("spo2",)),
+    ("temp", "Temperature", "", ("temp",), ("temp",)),
+    ("fr", "Respiratory<br>Rate", "", ("fr",), ("fr",)),
 )
 
 
 def _valor(clave: str, med: dict) -> str:
     if clave == "fc":
-        return f"{med['fc']:.0f} lpm"
+        return f"{med['fc']:.0f} bpm"
     if clave == "pa":
         return f"<span class='frac'>{med['pas']:.0f}<i></i>{med['pad']:.0f}</span>"
     if clave == "spo2":
         return f"{med['spo2']:.0f}%"
     if clave == "temp":
-        return f"{med['temp']:.1f}".replace(".", ",") + " °C"
+        return f"{med['temp']:.1f} °C"
     return f"{med['fr']:.0f} rpm"
 
 
@@ -336,7 +341,7 @@ def grafica_vital(df: pd.DataFrame, param: str, key: str, color: str) -> None:
 def panel_signos(astro_id: int, n_puntos: int) -> None:
     recientes = db.ultimas_mediciones(astro_id, n_puntos)
     if not recientes:
-        st.info("Esperando datos de los sensores...")
+        st.info("Waiting for sensor data...")
         return
     actual = recientes[-1]
     _, lista = estado_de(actual)
@@ -362,16 +367,16 @@ def panel_signos(astro_id: int, n_puntos: int) -> None:
 
 
 # --------------------------------------------------------------------------- listas estilo Notion
-@st.dialog("Registro")
+@st.dialog("Entry")
 def detalle(r: dict) -> None:
     st.markdown(tema.pill(r["etiqueta"]), unsafe_allow_html=True)
     st.markdown(f"### {r['resumen']}")
-    st.caption(f"Registrado el {registros.fecha_larga(r['ts'])}")
+    st.caption(f"Recorded on {registros.fecha_larga(r['ts'])}")
     st.markdown(r["texto"])
 
 
 def lista_registros(filas: list[dict], prefijo: str, vacio: str, alto: int = 430) -> None:
-    st.markdown("<div class='cab'><span>Registro</span><span>Resumen</span><span>Fecha</span></div>", unsafe_allow_html=True)
+    st.markdown("<div class='cab'><span>Entry</span><span>Summary</span><span>Date</span></div>", unsafe_allow_html=True)
     with st.container(height=alto, border=False, key=f"lista_{prefijo}"):
         if not filas:
             st.markdown(f"<p style='opacity:.8;text-align:center;padding:30px'>{vacio}</p>", unsafe_allow_html=True)
@@ -380,7 +385,7 @@ def lista_registros(filas: list[dict], prefijo: str, vacio: str, alto: int = 430
                 st.markdown(
                     f"<div class='fila'><span>{tema.pill(r['etiqueta'])}</span><span class='res'>{E(r['resumen'])}</span>"
                     f"<span class='fec'>{registros.fecha_corta(r['ts'])}</span></div>", unsafe_allow_html=True)
-                if st.button("Abrir", key=f"tapa_{prefijo}_{r['id']}"):
+                if st.button("Open", key=f"tapa_{prefijo}_{r['id']}"):
                     detalle(r)
 
 
@@ -389,20 +394,20 @@ def pantalla_bitacora(astro: dict, yo_nombre: str) -> None:
         with st.form("bit_form", clear_on_submit=True, border=False):
             c0, c1, c2 = st.columns([0.7, 12, 2.2], vertical_alignment="center")
             c0.markdown(tema.marte_img("calma", "46px"), unsafe_allow_html=True)
-            texto = c1.text_input("Bitácora", placeholder="Registra cómo te has sentido hoy en la bitácora.",
+            texto = c1.text_input("Journal", placeholder="Write how you have felt today in the journal.",
                                   label_visibility="collapsed")
-            enviado = c2.form_submit_button("Enviar", icon=":material/arrow_upward:", width="stretch")
+            enviado = c2.form_submit_button("Send", icon=":material/arrow_upward:", width="stretch")
     if enviado and texto.strip():
-        with st.spinner("Aéter está leyendo y clasificando tu anotación..."):
+        with st.spinner("Aéter is reading and classifying your entry..."):
             db.insertar_nota(astro["id"], yo_nombre, texto.strip())
-        st.toast("Anotación guardada en la bitácora")
+        st.toast("Entry saved to the journal")
     st.write("")
-    lista_registros(registros.listar(astro["id"], ("Bitácora",), 100), "bit",
-                    "Aún no hay anotaciones. Escribe arriba o dile a Aéter: «anota en la bitácora que…».", alto=400)
+    lista_registros(registros.listar(astro["id"], ("Journal",), 100), "bit",
+                    "No entries yet. Write above or tell Aéter: «add to the journal that…».", alto=400)
 
 
 def pantalla_historial(astro: dict) -> None:
-    st.markdown("<h2 style='text-align:left;margin:.2rem 0 1rem'>Historial General</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:left;margin:.2rem 0 1rem'>General History</h2>", unsafe_allow_html=True)
     lista_registros(registros.historial(astro["id"]), "his",
-                    "Aquí quedará todo lo que Aéter registre: conversaciones, protocolos, emergencias, "
-                    "recordatorios y la bitácora.", alto=470)
+                    "Everything Aéter records will appear here: conversations, protocols, emergencies, "
+                    "reminders and the journal.", alto=470)

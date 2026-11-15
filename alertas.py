@@ -1,4 +1,4 @@
-"""Reglas de alerta por umbral.
+"""Threshold alert rules (sample thresholds, not clinically validated).
 
 Cada signo vital tiene dos niveles:
   adv  -> advertencia (amarillo): fuera del rango normal
@@ -15,12 +15,12 @@ import time
 ORDEN = ("fc", "pas", "pad", "spo2", "temp", "fr")
 
 UMBRALES = {
-    "fc":   {"nombre": "Frecuencia cardíaca",    "unidad": "lpm",  "adv": (50, 110),   "crit": (40, 130),   "decimales": 0},
-    "pas":  {"nombre": "Presión sistólica",      "unidad": "mmHg", "adv": (100, 140), "crit": (85, 180),   "decimales": 0},
-    "pad":  {"nombre": "Presión diastólica",     "unidad": "mmHg", "adv": (60, 90),    "crit": (50, 110),   "decimales": 0},
-    "spo2": {"nombre": "Saturación de oxígeno",  "unidad": "%",    "adv": (94, None),  "crit": (90, None),  "decimales": 0},
-    "temp": {"nombre": "Temperatura corporal",   "unidad": "°C",   "adv": (36.0, 37.8), "crit": (35.0, 39.0), "decimales": 1},
-    "fr":   {"nombre": "Frecuencia respiratoria", "unidad": "rpm", "adv": (10, 20),    "crit": (8, 28),     "decimales": 0},
+    "fc":   {"nombre": "Heart rate",    "unidad": "bpm",  "adv": (50, 110),   "crit": (40, 130),   "decimales": 0},
+    "pas":  {"nombre": "Systolic pressure",      "unidad": "mmHg", "adv": (100, 140), "crit": (85, 180),   "decimales": 0},
+    "pad":  {"nombre": "Diastolic pressure",     "unidad": "mmHg", "adv": (60, 90),    "crit": (50, 110),   "decimales": 0},
+    "spo2": {"nombre": "Oxygen saturation",  "unidad": "%",    "adv": (94, None),  "crit": (90, None),  "decimales": 0},
+    "temp": {"nombre": "Body temperature",   "unidad": "°C",   "adv": (36.0, 37.8), "crit": (35.0, 39.0), "decimales": 1},
+    "fr":   {"nombre": "Respiratory rate", "unidad": "rpm", "adv": (10, 20),    "crit": (8, 28),     "decimales": 0},
 }
 
 
@@ -49,7 +49,8 @@ def evaluar_medicion(med: dict) -> list[dict]:
         elif hi_a is not None and valor > hi_a:
             sev, direccion, limite = "advertencia", "alta", hi_a
         if sev:
-            prefijo = "críticamente " if sev == "critica" else ""
+            prefijo = "critically " if sev == "critica" else ""
+            palabra = "low" if direccion == "baja" else "high"
             resultado.append({
                 "parametro": p,
                 "nombre": u["nombre"],
@@ -58,8 +59,8 @@ def evaluar_medicion(med: dict) -> list[dict]:
                 "severidad": sev,
                 "direccion": direccion,
                 "limite": limite,
-                "mensaje": f"{u['nombre']} {prefijo}{direccion}: {formatear(p, valor)} "
-                           f"(límite {formatear(p, limite)})",
+                "mensaje": f"{u['nombre']} {prefijo}{palabra}: {formatear(p, valor)} "
+                           f"(limit {formatear(p, limite)})",
             })
     return resultado
 

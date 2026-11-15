@@ -17,15 +17,20 @@ from zoneinfo import ZoneInfo
 import db
 
 CR = ZoneInfo("America/Costa_Rica")
-MESES = ("ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic")
-MESES_LARGOS = ("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre",
-                "octubre", "noviembre", "diciembre")
+MESES = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+MESES_LARGOS = ("January", "February", "March", "April", "May", "June", "July", "August", "September",
+                "October", "November", "December")
 
-TIPOS = ("Conversación", "Protocolo", "Emergencia", "Recordatorio", "Bitácora")
+TIPOS = ("Conversation", "Protocol", "Emergency", "Reminder", "Journal")
+# Valores antiguos (español) -> inglés, para bases de datos que ya existían.
+_ANTIGUOS = {"Conversación": "Conversation", "Protocolo": "Protocol", "Emergencia": "Emergency",
+             "Recordatorio": "Reminder", "Bitácora": "Journal", "Síntoma": "Symptom", "Dolor": "Pain", "Ánimo": "Mood",
+             "Sueño": "Sleep", "Ejercicio": "Exercise", "Alimentación": "Food", "Medicación": "Medication",
+             "Hidratación": "Hydration", "Equipo": "Equipment", "Tarea": "Task", "Nota": "Note"}
 
 # Palabras que la IA puede usar al clasificar una entrada de bitácora.
-PALABRAS_BITACORA = ("Síntoma", "Dolor", "Ánimo", "Sueño", "Ejercicio", "Alimentación",
-                     "Medicación", "Hidratación", "Equipo", "Tarea", "Nota")
+PALABRAS_BITACORA = ("Symptom", "Pain", "Mood", "Sleep", "Exercise", "Food",
+                     "Medication", "Hydration", "Equipment", "Task", "Note")
 
 
 def ahora_cr() -> datetime:
@@ -39,6 +44,9 @@ def _tabla() -> None:
                     " tipo TEXT NOT NULL, etiqueta TEXT NOT NULL, resumen TEXT NOT NULL,"
                     " texto TEXT NOT NULL, ts TEXT NOT NULL)")
         con.execute("CREATE INDEX IF NOT EXISTS idx_reg_astro ON registros (astronauta_id, id)")
+        for es, en in _ANTIGUOS.items():
+            con.execute("UPDATE registros SET tipo=? WHERE tipo=?", (en, es))
+            con.execute("UPDATE registros SET etiqueta=? WHERE etiqueta=?", (en, es))
 
 
 def recortar(texto: str, n: int = 70) -> str:
@@ -75,10 +83,10 @@ def historial(astro_id: int, limite: int = 150) -> list[dict]:
     for e in db.listar_eventos(astro_id, limite=40):
         if e["severidad"] != "critica":
             continue
-        filas.append({"id": f"e{e['id']}", "tipo": "Emergencia", "etiqueta": "Emergencia",
-                      "resumen": recortar(e["mensaje"].replace("SOS de", "SOS:"), 90),
-                      "texto": e["mensaje"] + (f"\nReconocida por {e['reconocida_por']}." if e["reconocida"] else
-                                               "\nAún sin reconocer."),
+        filas.append({"id": f"e{e['id']}", "tipo": "Emergency", "etiqueta": "Emergency",
+                      "resumen": recortar(e["mensaje"], 90),
+                      "texto": e["mensaje"] + (f"\nAcknowledged by {e['reconocida_por']}." if e["reconocida"] else
+                                               "\nNot acknowledged yet."),
                       "ts": e["ts"]})
     filas.sort(key=lambda r: r["ts"], reverse=True)
     for r in filas:  # en el historial cada fila lleva su tipo (Conversación, Protocolo, Bitácora...)
@@ -88,12 +96,12 @@ def historial(astro_id: int, limite: int = 150) -> list[dict]:
 
 def fecha_corta(ts: str) -> str:
     d = datetime.fromisoformat(ts)
-    return f"{d.day} {MESES[d.month - 1]} {d.year} · {d:%H:%M}"
+    return f"{MESES[d.month - 1]} {d.day}, {d.year} · {d:%H:%M}"
 
 
 def fecha_larga(ts: str) -> str:
     d = datetime.fromisoformat(ts)
-    return f"{d.day} de {MESES_LARGOS[d.month - 1]} de {d.year}, {d:%H:%M}"
+    return f"{MESES_LARGOS[d.month - 1]} {d.day}, {d.year}, {d:%H:%M}"
 
 
 # --------------------------------------------------------------------------- clasificación
@@ -103,16 +111,16 @@ def _norm(t: str) -> str:
 
 
 _REGLAS = (
-    ("Dolor", r"dolor|duele|molest|punzada|calambre"),
-    ("Síntoma", r"mareo|nausea|vomit|fiebre|tos|falta de aire|cansanc|palpita|sintoma|dolor de cabeza|cefalea"),
-    ("Sueño", r"dorm|sueno|desvel|insomn|descans"),
-    ("Ánimo", r"triste|ansied|estres|feliz|animo|solo|sola|extrano|nervios|preocup|contento|content"),
-    ("Ejercicio", r"ejercicio|entren|correr|cinta|bicicleta|pesas|fuerza"),
-    ("Alimentación", r"comi|comida|desayun|almuerz|cena|apetito|hambre"),
-    ("Hidratación", r"agua|hidrat|sed\b"),
-    ("Medicación", r"pastilla|medicament|ibuprofeno|dosis|tomé|tome|losartan"),
-    ("Equipo", r"equipo|sensor|panel|modulo|falla|bateria|oxigeno del|cabina"),
-    ("Tarea", r"tarea|experimento|mision|reparac|mantenimiento|revision|eva\b"),
+    ("Pain", r"pain|hurts|ache|sore|cramp|dolor|duele|molest|punzada|calambre"),
+    ("Symptom", r"dizz|nausea|vomit|fever|cough|short of breath|tired|palpitat|symptom|headache|mareo|fiebre|tos|falta de aire|cansanc|sintoma|cefalea"),
+    ("Sleep", r"sleep|slept|insomnia|rest|dorm|sueno|desvel|insomn|descans"),
+    ("Mood", r"sad|anxi|stress|happy|mood|lonely|homesick|nervous|worr|content|triste|ansied|estres|feliz|animo|solo|sola|extrano|nervios|preocup"),
+    ("Exercise", r"exercise|workout|train|run|treadmill|bike|weights|strength|ejercicio|entren|correr|cinta|bicicleta|pesas|fuerza"),
+    ("Food", r"ate\b|eat|meal|breakfast|lunch|dinner|appetite|hungry|comi|comida|desayun|almuerz|cena|apetito|hambre"),
+    ("Hydration", r"water|hydrat|thirst|agua|hidrat|sed\b"),
+    ("Medication", r"pill|medic|ibuprofen|dose|took|losartan|pastilla|medicament|ibuprofeno|dosis|tome"),
+    ("Equipment", r"equipment|sensor|panel|module|failure|battery|cabin|equipo|modulo|falla|bateria|oxigeno del|cabina"),
+    ("Task", r"task|experiment|mission|repair|maintenance|check-?up|eva\b|tarea|mision|reparac|mantenimiento|revision"),
 )
 
 
@@ -121,7 +129,7 @@ def clasificar_simple(texto: str) -> tuple[str, str]:
     for etiqueta, patron in _REGLAS:
         if re.search(patron, n):
             return etiqueta, recortar(texto, 70)
-    return "Nota", recortar(texto, 70)
+    return "Note", recortar(texto, 70)
 
 
 def clasificar(texto: str) -> tuple[str, str]:
@@ -129,14 +137,14 @@ def clasificar(texto: str) -> tuple[str, str]:
     try:
         from medico import modelo
         if modelo.hay_llave():
-            sistema = ("Clasifica una anotación de la bitácora personal de un astronauta. Responde SOLO con una línea: "
-                       "PALABRA | resumen. PALABRA es UNA sola palabra, preferiblemente una de: "
-                       + ", ".join(PALABRAS_BITACORA) + ". El resumen tiene menos de 70 caracteres, sin comillas, "
-                       "en español, y no añade datos que no estén en la anotación. No des consejos.")
+            sistema = ("Classify an entry from an astronaut's personal journal. Answer with ONLY one line: "
+                       "WORD | summary. WORD is ONE single word, preferably one of: "
+                       + ", ".join(PALABRAS_BITACORA) + ". The summary is under 70 characters, without quotes, "
+                       "in English, and adds no facts that are not in the entry. Give no advice.")
             salida = "".join(modelo.stream([{"role": "user", "content": texto[:1500]}], sistema)).strip()
             primera = salida.splitlines()[0] if salida else ""
             palabra, _, resumen = primera.partition("|")
-            palabra = re.sub(r"[^A-Za-zÁÉÍÓÚáéíóúÑñ]", "", palabra).strip().capitalize()
+            palabra = re.sub(r"[^A-Za-z]", "", palabra).strip().capitalize()
             if 2 <= len(palabra) <= 16 and resumen.strip():
                 return palabra, recortar(resumen.strip(), 70)
     except Exception:
@@ -146,4 +154,4 @@ def clasificar(texto: str) -> tuple[str, str]:
 
 def agregar_bitacora(astro_id: int, texto: str) -> int:
     palabra, resumen = clasificar(texto)
-    return agregar(astro_id, "Bitácora", resumen, texto.strip(), etiqueta=palabra)
+    return agregar(astro_id, "Journal", resumen, texto.strip(), etiqueta=palabra)

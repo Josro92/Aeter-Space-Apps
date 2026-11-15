@@ -12,11 +12,11 @@ import re
 
 import streamlit.components.v1 as components
 
-VERSION_JS = "3"
+VERSION_JS = "4"
 
 JS = r"""
 window.__voz = (function(){
-  const VER='3';
+  const VER='4';
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const LS = {get:function(k,d){try{return localStorage.getItem(k)||d;}catch(_){return d;}}, set:function(k,v){try{localStorage.setItem(k,v);}catch(_){}}};
   function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
@@ -57,17 +57,17 @@ window.__voz = (function(){
     el.style.cssText='position:fixed;bottom:104px;right:16px;z-index:9999;font:13px sans-serif;color:#fff;max-width:310px';
     el.innerHTML='<div id="vp-ultimo" style="text-align:right;font-size:11px;opacity:.7;margin-bottom:4px;max-width:310px"></div>'+
       '<div style="display:flex;gap:6px;align-items:center;justify-content:flex-end">'+
-      '<button id="vp-hablar" style="border:1px solid rgba(255,255,255,.55);background:#0b0b7a;color:#fff;border-radius:22px;height:40px;min-width:92px;padding:0 18px;cursor:pointer;font:600 14px Poppins,sans-serif">Hablar</button>'+
+      '<button id="vp-hablar" style="border:1px solid rgba(255,255,255,.55);background:#0b0b7a;color:#fff;border-radius:22px;height:40px;min-width:92px;padding:0 18px;cursor:pointer;font:600 14px Poppins,sans-serif">Talk</button>'+
       '<span id="vp-estado" style="display:none;padding:6px 14px;border-radius:16px;background:rgba(15,20,45,.7);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(8px);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>'+
-      '<button id="vp-ajustes" style="border:1px solid rgba(255,255,255,.45);background:rgba(15,20,45,.7);color:#fff;border-radius:20px;height:34px;padding:0 14px;cursor:pointer;font:600 12px Poppins,sans-serif">Ajustes</button></div>'+
+      '<button id="vp-ajustes" style="border:1px solid rgba(255,255,255,.45);background:rgba(15,20,45,.7);color:#fff;border-radius:20px;height:34px;padding:0 14px;cursor:pointer;font:600 12px Poppins,sans-serif">Settings</button></div>'+
       '<div id="vp-det" style="display:none;margin-top:8px;padding:12px;border-radius:16px;background:rgba(15,20,45,.92);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(14px)">'+
-      '<div style="margin-bottom:6px"><b>Voz de Aéter</b></div>'+
+      '<div style="margin-bottom:6px"><b>Voice of Aéter</b></div>'+
       '<select id="vp-voz" style="width:100%;margin-bottom:6px;padding:4px"></select>'+
-      '<div style="margin-bottom:6px">Velocidad <input id="vp-vel" type="range" min="0.8" max="1.5" step="0.05" style="width:130px;vertical-align:middle"></div>'+
-      '<div style="display:flex;gap:6px;margin-bottom:8px"><button id="vp-probar" style="flex:1;padding:5px;cursor:pointer">Probar voz</button><button id="vp-pitido" style="flex:1;padding:5px;cursor:pointer">Probar pitido</button></div>'+
-      '<button id="vp-nivel" style="width:100%;padding:5px;margin-bottom:4px;cursor:pointer">Probar micrófono (6 s)</button>'+
+      '<div style="margin-bottom:6px">Speed <input id="vp-vel" type="range" min="0.8" max="1.5" step="0.05" style="width:130px;vertical-align:middle"></div>'+
+      '<div style="display:flex;gap:6px;margin-bottom:8px"><button id="vp-probar" style="flex:1;padding:5px;cursor:pointer">Test voice</button><button id="vp-pitido" style="flex:1;padding:5px;cursor:pointer">Test beep</button></div>'+
+      '<button id="vp-nivel" style="width:100%;padding:5px;margin-bottom:4px;cursor:pointer">Test microphone (6 s)</button>'+
       '<div style="height:8px;background:#333;border-radius:4px;margin-bottom:8px;overflow:hidden"><div id="vp-barra-nivel" style="height:100%;width:0;background:#2ecc71"></div></div>'+
-      '<button id="vp-reset" style="width:100%;padding:6px;margin-bottom:8px;cursor:pointer;font-weight:700">Reiniciar voz</button>'+
+      '<button id="vp-reset" style="width:100%;padding:6px;margin-bottom:8px;cursor:pointer;font-weight:700">Reset voice</button>'+
       '<div id="vp-diag" style="opacity:.75;font-size:11px;white-space:pre-wrap;max-height:150px;overflow:auto"></div></div>';
     document.body.appendChild(el);
     const q=function(id){return el.querySelector(id);};
@@ -75,7 +75,7 @@ window.__voz = (function(){
     q('#vp-ajustes').onclick=function(){ const d=q('#vp-det'); d.style.display=d.style.display==='none'?'block':'none'; llenarVoces(); pintaDiag(); };
     q('#vp-voz').onchange=function(e){ LS.set('voz_nombre',e.target.value); };
     q('#vp-vel').value=LS.get('voz_vel','1'); q('#vp-vel').onchange=function(e){ LS.set('voz_vel',e.target.value); };
-    q('#vp-probar').onclick=function(){ asegurarAudio(); desbloqueado=true; overlay(false); cola.length=0; esRespuesta=false; decir('Hola, soy su asistente virtual. Así suena mi voz.'); };
+    q('#vp-probar').onclick=function(){ asegurarAudio(); desbloqueado=true; overlay(false); cola.length=0; esRespuesta=false; decir('Hello, I am your virtual assistant. This is how my voice sounds.'); };
     q('#vp-pitido').onclick=function(){ asegurarAudio(); for(let i=0;i<3;i++) setTimeout(beep,i*500); };
     q('#vp-nivel').onclick=function(){ probarMicrofono(); };
     q('#vp-reset').onclick=function(){ reiniciar(false); };
@@ -83,29 +83,29 @@ window.__voz = (function(){
   }
   function llenarVoces(){
     const sel=panel().querySelector('#vp-voz'); if(!sel) return;
-    const vs=speechSynthesis.getVoices().filter(function(v){return v.lang.toLowerCase().indexOf('es')===0;});
+    const vs=speechSynthesis.getVoices().filter(function(v){return v.lang.toLowerCase().indexOf('en')===0;});
     const actual=LS.get('voz_nombre','');
-    sel.innerHTML='<option value="">(automática)</option>'+vs.map(function(v){return '<option value="'+v.name+'"'+(v.name===actual?' selected':'')+'>'+v.name+' · '+v.lang+'</option>';}).join('');
+    sel.innerHTML='<option value="">(automatic)</option>'+vs.map(function(v){return '<option value="'+v.name+'"'+(v.name===actual?' selected':'')+'>'+v.name+' · '+v.lang+'</option>';}).join('');
   }
   function log(m){
-    const h=new Date().toLocaleTimeString('es',{hour12:false});
+    const h=new Date().toLocaleTimeString('en-US',{hour12:false});
     if(diag.length && diag[diag.length-1].slice(10).trim()===m) return;
     diag.push(h+'  '+m); if(diag.length>14) diag.shift(); pintaDiag();
     const u=document.getElementById('vp-ultimo'); if(u) u.textContent=m;
   }
   function pintaDiag(){
     const d=document.getElementById('vp-diag'); if(!d) return;
-    d.textContent='Audio: '+(ctx?ctx.state:'sin iniciar')+' · Voces es: '+speechSynthesis.getVoices().filter(function(v){return v.lang.toLowerCase().indexOf('es')===0;}).length+
-      ' · Reconocimiento: '+(SR?'sí':'NO (use Chrome/Edge)')+' · Solo con botón\n'+diag.slice().reverse().join('\n');
+    d.textContent='Audio: '+(ctx?ctx.state:'not started')+' · English voices: '+speechSynthesis.getVoices().filter(function(v){return v.lang.toLowerCase().indexOf('en')===0;}).length+
+      ' · Speech recognition: '+(SR?'yes':'NO (use Chrome/Edge)')+' · Button only\n'+diag.slice().reverse().join('\n');
   }
   function estado(t){ const e=panel().querySelector('#vp-estado'); e.style.display=t?'inline-block':'none'; e.textContent=t||''; }
   function aviso(t, ms){ clearTimeout(avisoTimer); estado(t); avisoTimer=setTimeout(refrescar, ms||3000); }
   function refrescar(){
     const b=panel().querySelector('#vp-hablar'); if(!b) return;
-    if(speaking){ b.textContent='Silenciar'; estado('Hablando…'); }
-    else if(busy){ b.textContent='Hablar'; estado('Pensando…'); }
-    else if(rec && recTipo==='una'){ b.textContent='Enviar'; estado('Escuchando…'); }
-    else { b.textContent='Hablar'; estado(''); }
+    if(speaking){ b.textContent='Mute'; estado('Speaking…'); }
+    else if(busy){ b.textContent='Talk'; estado('Thinking…'); }
+    else if(rec && recTipo==='una'){ b.textContent='Send'; estado('Listening…'); }
+    else { b.textContent='Talk'; estado(''); }
   }
 
   /* ---------- activación de audio ---------- */
@@ -114,7 +114,7 @@ window.__voz = (function(){
     if(!mostrar){ if(b) b.remove(); return; }
     if(b) return;
     b=document.createElement('button'); b.id='voz-overlay';
-    b.textContent='Toque en cualquier parte para activar a Aéter';
+    b.textContent='Tap anywhere to activate Aéter';
     b.style.cssText='position:fixed;bottom:112px;left:50%;transform:translateX(-50%);z-index:10000;padding:14px 26px;border-radius:30px;border:1px solid rgba(255,255,255,.6);background:#0b0b7a;color:#fff;font:600 16px Poppins,sans-serif;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.5)';
     b.onclick=desbloquear; document.body.appendChild(b);
     document.addEventListener('pointerdown', function f(){ document.removeEventListener('pointerdown', f); if(!desbloqueado) desbloquear(); }, true);
@@ -126,14 +126,14 @@ window.__voz = (function(){
   function desbloquear(){
     desbloqueado=true; overlay(false); asegurarAudio(); llenarVoces();
     speechSynthesis.onvoiceschanged=llenarVoces;
-    sirena(sirenaOn); log('Activado'); siguiente();
+    sirena(sirenaOn); log('Activated'); siguiente();
   }
 
   /* ---------- voz de salida (el micrófono se apaga mientras habla) ---------- */
   function elegirVoz(){
     const vs=speechSynthesis.getVoices(), nombre=LS.get('voz_nombre','');
     if(nombre){ const v=vs.find(function(v){return v.name===nombre;}); if(v) return v; }
-    const es=vs.filter(function(v){return v.lang.toLowerCase().indexOf('es')===0;});
+    const es=vs.filter(function(v){return v.lang.toLowerCase().indexOf('en')===0;});
     return es.find(function(v){return /natural|online|google/i.test(v.name);}) || es[0] || null;
   }
   function trozos(texto){
@@ -151,17 +151,17 @@ window.__voz = (function(){
       if(tk!==vozToken) return;
       if(i>=lista.length){ terminarHabla(tk); return; }
       const u=new SpeechSynthesisUtterance(lista[i++]); uref=u;
-      u.lang='es-MX'; u.rate=parseFloat(LS.get('voz_vel','1'))||1;
+      u.lang='en-US'; u.rate=parseFloat(LS.get('voz_vel','1'))||1;
       const v=elegirVoz(); if(v){ u.voice=v; u.lang=v.lang; }
       u.onend=function(){ if(tk===vozToken) uno(); };
-      u.onerror=function(e){ if(tk!==vozToken||e.error==='interrupted'||e.error==='canceled') return; log('Voz: '+(e.error||'error')); uno(); };
+      u.onerror=function(e){ if(tk!==vozToken||e.error==='interrupted'||e.error==='canceled') return; log('Voice: '+(e.error||'error')); uno(); };
       try{ speechSynthesis.resume(); }catch(_){}
       speechSynthesis.speak(u);
     }
     speaking=true; refrescar();
     hablado.push({n:norm(texto),ts:Date.now()}); if(hablado.length>6) hablado.shift();
     clearTimeout(vozTimer);
-    vozTimer=setTimeout(function(){ if(speaking && tk===vozToken){ log('La voz no terminó: continúo'); terminarHabla(tk); } }, 6000+texto.length*110);
+    vozTimer=setTimeout(function(){ if(speaking && tk===vozToken){ log('The voice did not finish: continuing'); terminarHabla(tk); } }, 6000+texto.length*110);
     setTimeout(uno, 80);
   }
   function terminarHabla(tk){
@@ -182,54 +182,54 @@ window.__voz = (function(){
   /* ---------- micrófono ---------- */
   function parar(){ clearTimeout(silencioTimer); if(rec){ const r=rec; rec=null; recTipo=''; r.onend=null; r.onresult=null; r.onerror=null; try{r.abort();}catch(_){} } refrescar(); }
   function nuevoSR(continuo){
-    const r=new SR(); r.lang='es-MX'; r.interimResults=true; r.continuous=!!continuo; r.maxAlternatives=3; return r;
+    const r=new SR(); r.lang='en-US'; r.interimResults=true; r.continuous=!!continuo; r.maxAlternatives=3; return r;
   }
   function escuchar(tipo){                                          // una sola frase: «Hablar»
     asegurarAudio();
     if(!desbloqueado){ desbloqueado=true; overlay(false); llenarVoces(); }
-    if(!SR){ aviso('Use Chrome o Edge para hablar'); log('Este navegador no tiene reconocimiento de voz'); return; }
+    if(!SR){ aviso('Use Chrome or Edge to talk'); log('This browser has no speech recognition'); return; }
     cortarVoz(); parar(); cola.length=0;
     const r=nuevoSR(false); let final='', parcial=''; rec=r; recTipo='una';
     let ventana=null;
     r.onstart=function(){
-      log(tipo==='seguimiento'?'Te escucho (5 s)':'Hable ahora'); refrescar();
-      if(tipo==='seguimiento') ventana=setTimeout(function(){ if(!final.trim()&&!parcial.trim()){ log('Nada que oír: apago el micrófono'); try{r.abort();}catch(_){} } }, 5000);
+      log(tipo==='seguimiento'?'I am listening (5 s)':'Speak now'); refrescar();
+      if(tipo==='seguimiento') ventana=setTimeout(function(){ if(!final.trim()&&!parcial.trim()){ log('Nothing heard: microphone off'); try{r.abort();}catch(_){} } }, 5000);
     };
     r.onresult=function(e){
       clearTimeout(ventana); parcial=''; for(let i=e.resultIndex;i<e.results.length;i++){ const x=e.results[i][0].transcript; if(e.results[i].isFinal) final+=x; else parcial+=x; }
-      estado((final+parcial).trim().slice(0,40)||'Escuchando…');
+      estado((final+parcial).trim().slice(0,40)||'Listening…');
       clearTimeout(silencioTimer);
       if(final.trim()){ try{r.stop();}catch(_){} return; }
       silencioTimer=setTimeout(function(){ try{r.stop();}catch(_){} }, 950);   // si calla casi un segundo, cierra y envía
     };
     r.onerror=function(e){
       if(e.error==='no-speech'||e.error==='aborted') return;
-      log('Micrófono: '+e.error);
-      if(e.error==='not-allowed'||e.error==='service-not-allowed') aviso('Permiso de micrófono denegado', 6000);
+      log('Microphone: '+e.error);
+      if(e.error==='not-allowed'||e.error==='service-not-allowed') aviso('Microphone permission denied', 6000);
     };
     r.onend=function(){
       clearTimeout(silencioTimer); clearTimeout(ventana); if(rec===r){ rec=null; recTipo=''; }
       const txt=(final||parcial).trim(); refrescar();
-      if(txt){ log('Oí: '+txt); enviar(txt); } else if(tipo!=='seguimiento'){ log('No oí nada'); aviso('No te oí, prueba de nuevo'); }
+      if(txt){ log('Heard: '+txt); enviar(txt); } else if(tipo!=='seguimiento'){ log('Heard nothing'); aviso('I did not hear you, try again'); }
     };
     try{ r.start(); }catch(e){ rec=null; recTipo=''; log('Mic start: '+e); refrescar(); }
   }
   /* ---------- enviar al chat ---------- */
   function intencionNav(t){
     const n=norm(t);
-    if(!/(muestr|ensen|\bver\b|\bveo\b|abr[ae]\b|llev|\bir\b|ve a |vamos|pasa a|cambia a|quiero ver|ponme)/.test(n)) return null;
-    if(/alerta|alarma|recordatorio/.test(n)) return ['Estado'];
-    if(/bitacora|diario|\bnotas?\b|anotacion/.test(n)) return ['Bitácora'];
-    if(/historial|registros?|expediente/.test(n)) return ['Historial'];
-    if(/monitor|grafic|signos|vitales|en vivo|tiempo real/.test(n)) return ['Signos Vitales'];
-    if(/estado|reloj|pantalla principal|inicio/.test(n)) return ['Estado'];
-    if(/asistente|\bchat\b|conversacion|aeter/.test(n)) return ['Aéter'];
+    if(!/(muestr|ensen|\bver\b|\bveo\b|abr[ae]\b|llev|\bir\b|ve a |vamos|pasa a|cambia a|quiero ver|ponme|\bshow\b|\bopen\b|\bgo to\b|take me|\bswitch\b|i want to see|let me see|bring up)/.test(n)) return null;
+    if(/alerta|alarma|recordatorio|alert|alarm|reminder/.test(n)) return ['Status'];
+    if(/bitacora|diario|\bnotas?\b|anotacion|journal|diary|\bnotes?\b/.test(n)) return ['Journal'];
+    if(/historial|registros?|expediente|history|records?/.test(n)) return ['History'];
+    if(/monitor|grafic|signos|vitales|en vivo|tiempo real|vitals|vital signs|charts?|graphs?|live/.test(n)) return ['Vitals'];
+    if(/estado|reloj|pantalla principal|inicio|status|clock|home screen|main screen/.test(n)) return ['Status'];
+    if(/asistente|\bchat\b|conversacion|aeter|assistant|conversation/.test(n)) return ['Aéter'];
     return null;
   }
   function enviar(t, reintento){
     const ta=document.querySelector('[data-testid="stChatInputTextArea"]')||document.querySelector('[data-testid="stChatInput"] textarea');
     if(!ta){
-      log('No encuentro el cuadro de chat'+(reintento?'':' · abro Aéter'));
+      log('Chat box not found'+(reintento?'':' · opening Aéter'));
       if(!reintento){ navegar(['Aéter']); setTimeout(function(){enviar(t,true);},900); }
       return;
     }
@@ -237,11 +237,11 @@ window.__voz = (function(){
     const set=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set;
     set.call(ta,t); ta.dispatchEvent(new Event('input',{bubbles:true}));
     busy=true; ventanaHasta=Date.now()+30000; clearTimeout(busyTimer); refrescar();
-    busyTimer=setTimeout(function(){ busy=false; log('Sin respuesta en 30 s'); refrescar(); siguiente(); },30000);
+    busyTimer=setTimeout(function(){ busy=false; log('No answer in 30 s'); refrescar(); siguiente(); },30000);
     setTimeout(function(){
       const b=document.querySelector('[data-testid="stChatInputSubmitButton"]');
-      if(b && !b.disabled){ b.click(); log('Enviado'); }
-      else { ta.focus(); ['keydown','keypress','keyup'].forEach(function(tp){ ta.dispatchEvent(new KeyboardEvent(tp,{key:'Enter',code:'Enter',keyCode:13,which:13,bubbles:true})); }); log('Enviado con Enter'); }
+      if(b && !b.disabled){ b.click(); log('Sent'); }
+      else { ta.focus(); ['keydown','keypress','keyup'].forEach(function(tp){ ta.dispatchEvent(new KeyboardEvent(tp,{key:'Enter',code:'Enter',keyCode:13,which:13,bubbles:true})); }); log('Sent with Enter'); }
     },150);
   }
 
@@ -251,7 +251,7 @@ window.__voz = (function(){
     if(!desbloqueado){ desbloqueado=true; overlay(false); llenarVoces(); }
     if(speaking){ cortarVoz(); cola.length=0; escuchar('manual'); return; }          // Silenciar: la calla y escucha la nueva pregunta
     if(rec && recTipo==='una'){ try{rec.stop();}catch(_){} return; }                 // enviar lo que lleva
-    if(busy){ aviso('Estoy pensando…'); return; }
+    if(busy){ aviso('Thinking…'); return; }
     escuchar('manual');
   }
   function reiniciar(silencioso){
@@ -260,26 +260,26 @@ window.__voz = (function(){
     try{ speechSynthesis.cancel(); }catch(_){}
     if(ctx){ try{ ctx.close(); }catch(_){} ctx=null; }
     asegurarAudio(); if(sirenaOn) sirena(true);
-    refrescar(); if(!silencioso){ log('Voz reiniciada'); aviso('Voz reiniciada'); }
+    refrescar(); if(!silencioso){ log('Voice reset'); aviso('Voice reset'); }
   }
   function probarMicrofono(){
     parar(); cortarVoz();
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ log('Este navegador no permite usar el micrófono aquí'); return; }
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ log('This browser does not allow the microphone here'); return; }
     navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
-      const track=stream.getAudioTracks()[0]; log('Micrófono en uso: '+(track?track.label:'?'));
+      const track=stream.getAudioTracks()[0]; log('Microphone in use: '+(track?track.label:'?'));
       asegurarAudio(); const an=ctx.createAnalyser(); an.fftSize=1024; ctx.createMediaStreamSource(stream).connect(an);
-      const buf=new Uint8Array(an.fftSize); let max=0; const t0=Date.now(); estado('Habla ahora (6 s)…');
+      const buf=new Uint8Array(an.fftSize); let max=0; const t0=Date.now(); estado('Speak now (6 s)…');
       const barra=document.getElementById('vp-barra-nivel');
       const iv=setInterval(function(){
         an.getByteTimeDomainData(buf); let m=0; for(let i=0;i<buf.length;i++){ m=Math.max(m,Math.abs(buf[i]-128)/128); }
         max=Math.max(max,m); if(barra) barra.style.width=Math.min(100,Math.round(m*300))+'%';
         if(Date.now()-t0>6000){
           clearInterval(iv); stream.getTracks().forEach(function(x){x.stop();}); if(barra) barra.style.width='0';
-          log('Nivel máximo del micrófono: '+max.toFixed(2)+(max<0.03?' → NO capta voz (silenciado o dispositivo equivocado)':max<0.1?' → muy bajo, sube el volumen de entrada':' → el micrófono sí capta'));
+          log('Peak microphone level: '+max.toFixed(2)+(max<0.03?' → NOT picking up voice (muted or wrong device)':max<0.1?' → very low, raise the input volume':' → the microphone works'));
           refrescar();
         }
       },60);
-    }).catch(function(e){ log('No pude abrir el micrófono: '+(e.name||e)); refrescar(); });
+    }).catch(function(e){ log('Could not open the microphone: '+(e.name||e)); refrescar(); });
   }
 
   /* ---------- pitido y navegación ---------- */
@@ -289,7 +289,7 @@ window.__voz = (function(){
       const o=ctx.createOscillator(), g=ctx.createGain();
       o.type='square'; o.frequency.value=(nbeep++%2)?700:950; g.gain.value=0.3;
       o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.4);
-    }catch(e){ log('Pitido: '+e); }
+    }catch(e){ log('Beep: '+e); }
   }
   function sirena(activa){
     clearInterval(sirenaTimer); sirenaTimer=null;
@@ -306,7 +306,7 @@ window.__voz = (function(){
     (function clic(i){
       const tabs=[].slice.call(document.querySelectorAll('[data-testid="stTab"], button[role="tab"]'));
       const b=tabs.find(function(x){return x.textContent.indexOf(pasos[i])>=0;});
-      if(b){ pulsar(b); } else { log('No encuentro la pestaña «'+pasos[i]+'»'); }
+      if(b){ pulsar(b); } else { log('Tab not found: '+pasos[i]); }
       if(i+1<pasos.length) setTimeout(function(){clic(i+1);},450);
     })(0);
   }
@@ -329,13 +329,8 @@ window.__voz = (function(){
 
 
 def sin_palabra_de_llamado(texto: str) -> str:
-    """La voz no debe decir «Aéter» ni «médico» (palabras de llamado): el micrófono las oiría."""
-    t = re.sub(r"(?i)\b(?:el\s+)?(?:a\s?)?[eé]t(?:h)?er\b", "su asistente", texto)
-    t = re.sub(r"(?i)\bm[eé]dic[oa]s? virtual(es)?\b", "asistente virtual", t)
-    t = re.sub(r"(?i)\bm[eé]dic[oa]s\b", "profesionales de salud", t)
-    t = re.sub(r"(?i)\bm[eé]dic[oa]\b", "profesional de salud", t)
-    t = re.sub(r"(?i)\bdoctor(es)?\b|\bdoctora(s)?\b", "profesional de salud", t)
-    return t
+    """La voz inglesa pronuncia mal «Aéter»: se cambia por «your assistant»."""
+    return re.sub(r"(?i)\b(?:el\s+)?(?:a\s?)?[eé]t(?:h)?er\b", "your assistant", texto)
 
 
 def limpiar_para_voz(texto: str) -> str:

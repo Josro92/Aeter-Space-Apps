@@ -13,15 +13,15 @@ from . import recordatorios, voz
 
 def _saludo(yo_nombre: str, astro_id: int) -> str:
     h = recordatorios.ahora().hour
-    momento = "Buenos días" if h < 12 else "Buenas tardes" if h < 19 else "Buenas noches"
+    momento = "Good morning" if h < 12 else "Good afternoon" if h < 19 else "Good evening"
     pendientes = db.listar_eventos(astro_id, solo_pendientes=True, limite=40)
     vistos, msgs = set(), []
     for e in pendientes:
         if (e["astronauta_id"], e["parametro"]) not in vistos:
             vistos.add((e["astronauta_id"], e["parametro"]))
             msgs.append(e["mensaje"])
-    estado = ("Hay alertas activas. " + ". ".join(msgs[:3]) + ".") if msgs else "Sus signos vitales están estables."
-    return (f"{momento}, {yo_nombre.split()[0]}. Soy su asistente virtual de salud; pulse Hablar cuando me necesite. "
+    estado = ("There are active alerts. " + ". ".join(msgs[:3]) + ".") if msgs else "Your vital signs are stable."
+    return (f"{momento}, {yo_nombre.split()[0]}. I am your virtual health assistant; press Talk when you need me. "
             f"{estado}")
 
 
@@ -43,18 +43,18 @@ def capa_global(astro_id: int, yo_nombre: str) -> None:
     for e in db.eventos_desde(ss["ultimo_ev_voz"]):
         ss["ultimo_ev_voz"] = max(ss["ultimo_ev_voz"], e["id"])
         if e["severidad"] == "critica" and e["astronauta_id"] == astro_id:
-            cola.append({"id": f"ev{e['id']}", "text": f"Alerta crítica. {e['mensaje']}"})
+            cola.append({"id": f"ev{e['id']}", "text": f"Critical alert. {e['mensaje']}"})
 
     # Recordatorios que llegaron a su hora
     for r in [x for x in recordatorios.vencidos() if x.get("astronauta_id") in (None, astro_id)]:
-        st.toast(f"Recordatorio: {r['texto']}")
-        cola.append({"id": f"rec{r['id']}", "text": f"Recordatorio: {r['texto']}"})
+        st.toast(f"Reminder: {r['texto']}")
+        cola.append({"id": f"rec{r['id']}", "text": f"Reminder: {r['texto']}"})
     hechos = ss.setdefault("recordatorios_archivo_hechos", set())
     for r in recordatorios.del_archivo():
         if r["id"] not in hechos:
             hechos.add(r["id"])
-            st.toast(f"Recordatorio: {r['texto']}")
-            cola.append({"id": r["id"], "text": f"Recordatorio: {r['texto']}"})
+            st.toast(f"Reminder: {r['texto']}")
+            cola.append({"id": r["id"], "text": f"Reminder: {r['texto']}"})
 
     # Respuesta del chat para leer en voz alta
     nueva = ss.pop("voz_texto", None)
@@ -67,9 +67,9 @@ def capa_global(astro_id: int, yo_nombre: str) -> None:
 def contexto_extra(astro_id: int) -> str:
     """Líneas que se añaden al contexto de Aéter en cada pregunta."""
     ss = st.session_state
-    lineas = [f"\n## Estado de la pantalla\n- Hora actual: {recordatorios.ahora().strftime('%H:%M')}",
-              f"- Pitido de emergencia: {'ACTIVO' if ss.get('sirena') else 'apagado'}"]
+    lineas = [f"\n## Screen state\n- Current time: {recordatorios.ahora().strftime('%H:%M')}",
+              f"- Emergency beep: {'ACTIVE' if ss.get('sirena') else 'off'}"]
     pend = recordatorios.pendientes(astro_id)
     if pend:
-        lineas.append("- Recordatorios pendientes: " + "; ".join(f"{r['vence'][11:16]} {r['texto']}" for r in pend[:5]))
+        lineas.append("- Pending reminders: " + "; ".join(f"{r['vence'][11:16]} {r['texto']}" for r in pend[:5]))
     return "\n".join(lineas)

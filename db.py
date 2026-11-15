@@ -73,18 +73,18 @@ CREATE INDEX IF NOT EXISTS idx_nota_astro ON notas (astronauta_id, id);
 
 # Tripulación FICTICIA para la demo.
 TRIPULACION = [
-    dict(nombre="Ana Rojas", rol="Comandante", edad=41, peso_kg=63, tipo_sangre="O+",
-         alergias="Polen (rinitis estacional)", medicamentos="Loratadina 10 mg solo en temporada de alergia",
-         condiciones="Asma leve inducida por ejercicio; un cálculo renal a los 33 años (sin recurrencia)"),
-    dict(nombre="Jason Durán", rol="Astronauta (caso de prueba de Aéter)", edad=42, peso_kg=78,
-         tipo_sangre="A+", alergias="Sulfonamidas (erupción cutánea)",
-         medicamentos="Losartán 50 mg al día",
-         condiciones="Hipertensión leve; colesterol LDL levemente elevado; ligamento cruzado de la rodilla izquierda reparado a los 30 años"),
-    dict(nombre="María Antonelli", rol="Especialista de misión (2.ª misión)", edad=38, peso_kg=62,
-         tipo_sangre="No registrado", alergias="Penicilina (erupción leve)",
-         medicamentos="Ibuprofeno 400 mg ocasional",
-         condiciones="Escoliosis idiopática (curva torácica derecha T7-T12, ángulo de Cobb 14°, estable); "
-                     "fractura de muñeca a los 16 años; sin enfermedades crónicas"),
+    dict(nombre="Ana Rojas", rol="Commander", edad=41, peso_kg=63, tipo_sangre="O+",
+         alergias="Pollen (seasonal rhinitis)", medicamentos="Loratadine 10 mg only during allergy season",
+         condiciones="Mild exercise-induced asthma; one kidney stone at age 33 (no recurrence)"),
+    dict(nombre="Jason Durán", rol="Astronaut (Aéter test case)", edad=42, peso_kg=78,
+         tipo_sangre="A+", alergias="Sulfonamides (skin rash)",
+         medicamentos="Losartan 50 mg daily",
+         condiciones="Mild hypertension; slightly elevated LDL cholesterol; left knee ligament repaired at age 30"),
+    dict(nombre="María Antonelli", rol="Mission specialist (2nd mission)", edad=38, peso_kg=62,
+         tipo_sangre="Not recorded", alergias="Penicillin (mild rash)",
+         medicamentos="Ibuprofen 400 mg occasionally",
+         condiciones="Idiopathic scoliosis (right thoracic curve T7-T12, Cobb angle 14°, stable); "
+                     "wrist fracture at age 16; no chronic illnesses"),
 ]
 
 # Valores de reposo propios de cada persona (los demás se generan al azar y de forma repetible).
@@ -142,11 +142,15 @@ def sembrar_astronautas() -> None:
         for a in TRIPULACION:
             if a["nombre"] in existentes:
                 con.execute("UPDATE astronautas SET rol=? WHERE nombre=?", (a["rol"], a["nombre"]))
-                if a["nombre"] in ("Ana Rojas", "Jason Durán"):  # fichas nuevas: solo si aún tienen los datos de fábrica anteriores
-                    con.execute(
-                        "UPDATE astronautas SET tipo_sangre=:tipo_sangre, alergias=:alergias, medicamentos=:medicamentos,"
-                        " condiciones=:condiciones WHERE nombre=:nombre AND condiciones IN"
-                        " ('Sin antecedentes relevantes','Hipertensión leve')", a)
+                # fichas de fábrica anteriores (español) -> versión en inglés; no toca lo que alguien haya editado
+                con.execute(
+                    "UPDATE astronautas SET tipo_sangre=:tipo_sangre, alergias=:alergias, medicamentos=:medicamentos,"
+                    " condiciones=:condiciones WHERE nombre=:nombre AND condiciones IN"
+                    " ('Sin antecedentes relevantes','Hipertensión leve',"
+                    "  'Asma leve inducida por ejercicio; un cálculo renal a los 33 años (sin recurrencia)',"
+                    "  'Hipertensión leve; colesterol LDL levemente elevado; ligamento cruzado de la rodilla izquierda reparado a los 30 años',"
+                    "  'Escoliosis idiopática (curva torácica derecha T7-T12, ángulo de Cobb 14°, estable); "
+                    "fractura de muñeca a los 16 años; sin enfermedades crónicas')", a)
             if a["nombre"] not in existentes:
                 con.execute(
                     "INSERT INTO astronautas (nombre, rol, edad, peso_kg, tipo_sangre, alergias,"

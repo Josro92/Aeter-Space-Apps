@@ -1,4 +1,4 @@
 [
-  {"_ejemplo": "Quite el guion bajo para activar. 'fecha' es opcional (AAAA-MM-DD); sin fecha suena hoy a esa hora.",
-   "hora": "08:00", "texto": "Tome sus signos vitales de la mañana", "activo": false}
+  {"_ejemplo": "Remove the underscore to activate. 'fecha' is optional (YYYY-MM-DD); without a date it sounds today at that time.",
+   "hora": "08:00", "texto": "Take your morning vital signs", "activo": false}
 ]

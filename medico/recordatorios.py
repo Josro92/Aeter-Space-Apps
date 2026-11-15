@@ -31,7 +31,7 @@ def crear(astro_id: int, hora: str, texto: str, origen: str = "astronauta") -> s
     _tabla()
     h, m = (int(x) for x in hora.split(":"))
     if not (0 <= h < 24 and 0 <= m < 60):
-        raise ValueError("hora inválida")
+        raise ValueError("invalid time")
     t = ahora().replace(hour=h, minute=m, second=0, microsecond=0)
     if t <= ahora():
         t += timedelta(days=1)
@@ -40,8 +40,8 @@ def crear(astro_id: int, hora: str, texto: str, origen: str = "astronauta") -> s
                     (astro_id, t.isoformat(timespec="minutes"), texto, origen))
     try:  # queda anotado en el historial de la persona
         import registros
-        registros.agregar(astro_id, "Recordatorio", f"{h:02d}:{m:02d} · {texto}",
-                          f"Recordatorio creado para las {h:02d}:{m:02d} ({t:%d/%m/%Y}).\n\n{texto}")
+        registros.agregar(astro_id, "Reminder", f"{h:02d}:{m:02d} · {texto}",
+                          f"Reminder created for {h:02d}:{m:02d} ({t:%m/%d/%Y}).\n\n{texto}")
     except Exception:
         pass
     return t.isoformat(timespec="minutes")

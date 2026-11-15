@@ -41,12 +41,12 @@ ESCENARIOS: dict[str, dict[str, float]] = {
 }
 
 ETIQUETAS_ESCENARIO = {
-    "normal": "Normal (reposo)",
-    "hipoxia": "Hipoxia (SpO₂ baja)",
-    "taquicardia": "Taquicardia",
-    "hipertension": "Hipertensión",
-    "hipotension": "Hipotensión / shock",
-    "fiebre": "Fiebre",
+    "normal": "Normal (resting)",
+    "hipoxia": "Hypoxia (low SpO₂)",
+    "taquicardia": "Tachycardia",
+    "hipertension": "Hypertension",
+    "hipotension": "Hypotension / shock",
+    "fiebre": "Fever",
 }
 
 # Desviación del "temblor" aleatorio de cada signo en cada tick.

@@ -12,17 +12,17 @@ import hashlib
 import streamlit as st
 
 COLOR = {"normal": "#34d399", "advertencia": "#facc15", "critica": "#ef4444"}
-NIVEL_TEXTO = {"normal": "Estable", "advertencia": "Atención", "critica": "Emergencia"}
+NIVEL_TEXTO = {"normal": "Stable", "advertencia": "Warning", "critica": "Emergency"}
 
 # Colores de las etiquetas del historial (una palabra, un color)
 COLORES_TIPO = {
-    "Protocolo": "#34d399", "Conversación": "#60a5fa", "Recordatorio": "#fbbf24",
-    "Emergencia": "#f87171", "Bitácora": "#a78bfa",
+    "Protocol": "#34d399", "Conversation": "#60a5fa", "Reminder": "#fbbf24",
+    "Emergency": "#f87171", "Journal": "#a78bfa",
 }
 COLORES_PALABRA = {
-    "Síntoma": "#fb7185", "Dolor": "#f87171", "Ánimo": "#f472b6", "Sueño": "#818cf8",
-    "Ejercicio": "#34d399", "Alimentación": "#fbbf24", "Medicación": "#2dd4bf",
-    "Hidratación": "#38bdf8", "Equipo": "#94a3b8", "Tarea": "#fb923c", "Nota": "#a78bfa",
+    "Symptom": "#fb7185", "Pain": "#f87171", "Mood": "#f472b6", "Sleep": "#818cf8",
+    "Exercise": "#34d399", "Food": "#fbbf24", "Medication": "#2dd4bf",
+    "Hydration": "#38bdf8", "Equipment": "#94a3b8", "Task": "#fb923c", "Note": "#a78bfa",
 }
 _PALETA = ("#f472b6", "#38bdf8", "#fb923c", "#a3e635", "#c084fc", "#2dd4bf", "#fda4af", "#fcd34d")
 
@@ -343,6 +343,8 @@ body:has([data-testid="stSidebar"][aria-expanded="true"]) [data-baseweb="tab-lis
 /* ---- conversación ---- */
 [data-testid="stLayoutWrapper"]:has(>.st-key-chat_caja){flex:0 0 calc(100vh - 262px)!important;min-height:300px}
 .bienvenida{text-align:left;opacity:.9;padding:10px 6px;font-size:1.05rem}
+.descargo{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:min(680px,92vw);box-sizing:border-box;margin:0;z-index:5;padding:12px 18px;border-radius:14px;text-align:center;font-size:.85rem;line-height:1.45;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.88)}
 [data-testid="stChatMessage"],[data-testid="stChatMessage"] *{text-align:left!important}
 @media (min-width:1000px){[data-testid="stChatInput"]{margin-right:330px}}
 [data-testid="stChatMessage"]{background:transparent!important;padding:0!important;margin-bottom:14px}

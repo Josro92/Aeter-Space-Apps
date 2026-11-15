@@ -20,6 +20,45 @@ SINONIMOS = {
     "escoliosis": "columna espalda", "espalda": "columna escoliosis dolor", "infeccion": "antibiotico", "dolor": "analgesico",
 }
 VACIAS = set("de la el los las un una y o que en a por para con del al se me mi es lo su si no como puedo tengo".split())
+VACIAS |= set("the and for with what which when where how can could should would does did are was were have has had you your yours "
+              "any that this these those from into about there their them they will may might also than then just not out too very".split())
+
+# Las preguntas llegan en inglés; muchos archivos del conocimiento están en español: estas equivalencias los encuentran.
+EN_ES = {
+    "pain": "dolor analgesico", "painkiller": "analgesico dolor", "painkillers": "analgesico dolor", "analgesic": "analgesico dolor",
+    "headache": "cefalea dolor cabeza", "migraine": "cefalea migrana", "fever": "fiebre temperatura", "cough": "tos respiratorio",
+    "nausea": "nauseas vomito antiemetico", "vomiting": "vomito nauseas", "vomit": "vomito nauseas", "dizzy": "mareo vertigo", "dizziness": "mareo vertigo",
+    "motion": "mareo espacial", "sickness": "mareo nauseas enfermedad", "sleep": "sueno dormir insomnio melatonina", "sleeping": "sueno dormir",
+    "insomnia": "insomnio sueno hipnotico", "allergy": "alergia antihistaminico antialergico", "allergic": "alergia antihistaminico",
+    "antibiotic": "antibiotico infeccion", "antibiotics": "antibiotico infeccion", "infection": "infeccion antibiotico", "sepsis": "sepsis infeccion",
+    "medication": "medicamento", "medications": "medicamento", "medicine": "medicamento", "medicines": "medicamento", "drug": "medicamento farmaco",
+    "drugs": "medicamento farmaco", "pill": "medicamento tableta", "pills": "medicamento tableta", "dose": "dosis", "dosage": "dosis",
+    "kit": "botiquin inventario medicamento", "inventory": "inventario medicamento", "stock": "inventario medicamento",
+    "blood": "sangre", "pressure": "presion arterial", "hypertension": "hipertension presion arterial", "hypotension": "hipotension presion arterial",
+    "heart": "corazon cardiaca cardiovascular", "cardiac": "cardiaca corazon", "arrhythmia": "arritmia cardiaca", "pulse": "pulso frecuencia cardiaca",
+    "oxygen": "oxigeno saturacion spo2", "saturation": "saturacion oxigeno spo2", "breathing": "respiracion respiratoria", "breath": "respiracion",
+    "respiratory": "respiratoria respiracion", "temperature": "temperatura corporal", "glucose": "glucosa azucar", "sugar": "glucosa azucar",
+    "diabetes": "glucosa diabetes", "weight": "masa corporal peso", "mass": "masa corporal", "mood": "animo estado psicologico", "fatigue": "fatiga cansancio",
+    "tired": "fatiga cansancio", "stress": "estres psicologico", "anxiety": "ansiedad psicologico", "depression": "depresion psicologico",
+    "radiation": "radiacion dosis", "cabin": "cabina ambiental", "carbon": "dioxido carbono co2", "co2": "dioxido carbono co2 hipercapnia", "dioxide": "dioxido carbono co2",
+    "bone": "hueso oseo densidad osteopenia", "bones": "hueso oseo densidad osteopenia", "muscle": "muscular atrofia musculo", "muscles": "muscular atrofia musculo",
+    "kidney": "renal rinon calculos", "stone": "calculos renal", "stones": "calculos renal", "eye": "ocular ojo vision", "eyes": "ocular ojo vision",
+    "vision": "vision ocular sans", "skin": "piel dermatologico", "burn": "quemadura quemaduras", "burns": "quemaduras", "bleeding": "hemorragia sangrado herida",
+    "wound": "herida hemorragia", "fracture": "fractura musculoesqueletico", "broken": "fractura", "tooth": "dental diente", "dental": "dental diente",
+    "seizure": "convulsion", "seizures": "convulsion", "unconscious": "inconsciente perdida conciencia", "faint": "desmayo perdida conciencia", "fainting": "desmayo perdida conciencia",
+    "cpr": "rcp paro cardiorrespiratorio", "arrest": "paro cardiorrespiratorio rcp", "anaphylaxis": "anafilaxia alergica", "choking": "atragantamiento via aerea",
+    "decompression": "descompresion", "depressurization": "despresurizacion", "fire": "incendio humo", "smoke": "incendio humo", "ammonia": "amoniaco fuga refrigerante",
+    "leak": "fuga", "toxic": "toxica toxicologico", "poison": "toxica toxicologico", "thrombosis": "trombosis venosa", "anemia": "anemia", "cholesterol": "colesterol",
+    "indicator": "indicador", "indicators": "indicador", "range": "rango valor", "normal": "rango valor normal", "limit": "limite umbral rango",
+    "threshold": "umbral limite", "source": "fuente", "sources": "fuente", "mission": "mision espacio", "space": "espacio vuelo", "spaceflight": "vuelo espacial",
+    "evacuation": "evacuacion", "scoliosis": "escoliosis columna", "spine": "columna escoliosis", "back": "espalda columna", "asthma": "asma respiratorio",
+    "ibuprofen": "ibuprofeno", "aspirin": "aspirina acido acetilsalicilico", "acetaminophen": "paracetamol acetaminofen", "paracetamol": "paracetamol acetaminofen",
+    "antihistamine": "antihistaminico alergia", "sedative": "sedante hipnotico", "constipation": "estrenimiento laxante", "diarrhea": "diarrea loperamida",
+    "stomach": "estomago omeprazol digestivo", "heartburn": "omeprazol acidez", "nasal": "nasal congestion", "congestion": "congestion nasal pseudoefedrina",
+    "epinephrine": "epinefrina adrenalina", "adrenaline": "epinefrina adrenalina", "nitroglycerin": "nitroglicerina", "penicillin": "penicilina amoxicilina",
+    "hydration": "hidratacion agua", "water": "agua hidratacion", "exercise": "ejercicio", "sulfa": "sulfonamidas sulfametoxazol", "sulfonamides": "sulfonamidas sulfametoxazol",
+}
+SINONIMOS = {**EN_ES, **SINONIMOS}
 
 
 def norm(t: str) -> str:
@@ -31,7 +70,7 @@ def tokens(t: str) -> set[str]:
     return {w[:6] for w in re.findall(r"[a-z0-9]{3,}", norm(t)) if w not in VACIAS}
 
 
-OCULTAR = re.compile(r"^- (Fecha de revisión|Estado del registro):")
+OCULTAR = re.compile(r"^- (Fecha de revisión|Estado del registro|Review date|Record status):")
 MARCA_PENDIENTE = "[REVISAR]"
 
 

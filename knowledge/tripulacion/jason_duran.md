@@ -1,74 +1,75 @@
-# Ficha del tripulante Jason Durán
+# Medical record of crew member Jason Durán
 
-> Persona de prueba para la demostración (ficticia). Los datos de simulación y los umbrales son **de ejemplo**, sin validar clínicamente.
+> Test person for the demonstration (fictional). Simulation data and thresholds are **examples**, not clinically validated.
+> Language note: the original records of the other knowledge files are written in Spanish; Aéter translates them when answering.
 
-## PAC201 — Perfil general de Jason Durán
+## PAC201 — General profile of Jason Durán
 
 - ID: PAC201
-- Nombre: Jason Durán
-- Edad / sexo: 42 años / masculino
-- Rol: astronauta, caso de prueba de Aéter (1.ª misión)
-- Misión: estancia de 180 días en una estación espacial en órbita baja
-- Altura / peso: 180 cm / 78 kg (IMC 24,1)
-- Grupo sanguíneo: A+
-- Condición física: buena; entrena 3 o 4 días por semana (cardio y fuerza)
-- Fuente: documento del equipo (persona de prueba)
+- Name: Jason Durán
+- Age / sex: 42 years / male
+- Role: astronaut, Aéter test case (1st mission)
+- Mission: 180-day stay on a low-Earth-orbit space station
+- Height / weight: 180 cm / 78 kg (BMI 24.1)
+- Blood type: A+
+- Fitness: good; trains 3 or 4 days a week (cardio and strength)
+- Source: team document (test person)
 
-## PAC202 — Hipertensión leve de Jason Durán
+## PAC202 — Mild hypertension of Jason Durán
 
 - ID: PAC202
-- Diagnóstico: a los 38 años; hipertensión arterial leve, bien controlada
-- Tratamiento: losartán 50 mg al día, por la mañana
-- Control: presión habitual 122/78 mmHg con tratamiento
-- Colesterol: LDL levemente elevado; dieta y ejercicio, sin medicación
-- Riesgo en la misión: en microgravedad la presión puede variar; no suspender el losartán sin indicación; vigilar mareo, dolor de cabeza intenso y dolor de pecho
-- Fuente: documento del equipo (persona de prueba)
+- Diagnosis: at age 38; mild arterial hypertension, well controlled
+- Treatment: losartan 50 mg daily, in the morning
+- Control: usual pressure 122/78 mmHg on treatment
+- Cholesterol: slightly elevated LDL; diet and exercise, no medication
+- Risk on the mission: in microgravity pressure can vary; do not stop losartan without instruction; watch for dizziness, severe headache and chest pain
+- Source: team document (test person)
 
-## PAC203 — Historial médico de Jason Durán
+## PAC203 — Medical history of Jason Durán
 
 - ID: PAC203
-- Antecedentes: rotura del ligamento cruzado anterior de la rodilla izquierda, reparado quirúrgicamente a los 30 años. Sin otras cirugías.
-- Alergias: sulfonamidas (erupción cutánea). Evitar sulfametoxazol/trimetoprima y otros antibióticos de esa familia. No es alérgico a la penicilina.
-- Medicación: losartán 50 mg al día
-- Familiares: padre con infarto de miocardio a los 58 años; madre sana
-- Hábitos: no fuma, alcohol ocasional, duerme 6 a 7 h
-- Vacunas: al día
-- Fuente: documento del equipo (persona de prueba)
+- History: torn anterior cruciate ligament of the left knee, surgically repaired at age 30. No other surgeries.
+- Allergies: sulfonamides (skin rash). Avoid sulfamethoxazole/trimethoprim and other antibiotics of that family. Not allergic to penicillin.
+- Medication: losartan 50 mg daily
+- Family: father with myocardial infarction at age 58; mother healthy
+- Habits: does not smoke, drinks alcohol occasionally, sleeps 6 to 7 h
+- Vaccines: up to date
+- Source: team document (test person)
 
-## PAC204 — Valores basales de Jason Durán (pre-misión)
+## PAC204 — Baseline values of Jason Durán (pre-mission)
 
 - ID: PAC204
-- Frecuencia cardíaca en reposo: 64 lpm
-- Presión arterial: 122/78 mmHg (con losartán)
+- Resting heart rate: 64 bpm
+- Blood pressure: 122/78 mmHg (on losartan)
 - SpO2: 98 %
-- Temperatura: 36,6 °C
-- Frecuencia respiratoria: 15 rpm
-- Densidad ósea (DXA, columna): T-score -0,1
-- Vitamina D: 29 ng/mL
-- Fuente: documento del equipo (persona de prueba)
+- Temperature: 36.6 °C
+- Respiratory rate: 15 breaths/min
+- Bone density (DXA, spine): T-score -0.1
+- Vitamin D: 29 ng/mL
+- Source: team document (test person)
 
-## PAC205 — Riesgos específicos de Jason Durán en el espacio
+## PAC205 — Specific risks of Jason Durán in space
 
 - ID: PAC205
-- Riesgo cardiovascular: hipertensión más antecedente familiar de infarto; ante dolor de pecho tratar como urgencia (protocolo de dolor agudo en el pecho).
-- Hipotensión ortostática al volver a la gravedad, con mayor riesgo por el antihipertensivo.
-- Rodilla izquierda: puede dar molestias con el ejercicio en cinta con arnés.
-- Alergia a sulfonamidas: antes de usar un antibiótico del botiquín, comprobar que no sea de esa familia.
-- Pérdida muscular y ósea en piernas si baja el ejercicio.
-- Fuente: documento del equipo (persona de prueba)
+- Cardiovascular risk: hypertension plus a family history of heart attack; treat chest pain as an emergency (acute chest pain protocol).
+- Orthostatic hypotension when returning to gravity, with higher risk because of the blood pressure drug.
+- Left knee: may give discomfort during harness treadmill exercise.
+- Sulfonamide allergy: before using an antibiotic from the kit, check that it is not from that family.
+- Muscle and bone loss in the legs if exercise drops.
+- Source: team document (test person)
 
-## PAC206 — Datos de ejemplo para simular alertas de Jason Durán
+## PAC206 — Sample data to simulate alerts for Jason Durán
 
 - ID: PAC206
-- Aviso: datos de ejemplo para simulación, no son mediciones reales.
+- Notice: sample data for simulation, not real measurements.
 
-| Día | Presión arterial (mmHg) | FC reposo (lpm) | Sueño (h) | Estado |
+| Day | Blood pressure (mmHg) | Resting HR (bpm) | Sleep (h) | Status |
 |---|---|---|---|---|
-| 1 | 122/78 | 64 | 7,0 | Normal |
-| 30 | 126/80 | 65 | 6,5 | Normal |
-| 80 | 138/88 | 70 | 6,0 | Vigilancia |
-| 130 | 150/95 | 76 | 5,0 | Alerta |
+| 1 | 122/78 | 64 | 7.0 | Normal |
+| 30 | 126/80 | 65 | 6.5 | Normal |
+| 80 | 138/88 | 70 | 6.0 | Watch |
+| 130 | 150/95 | 76 | 5.0 | Alert |
 
-Umbrales sugeridos (de ejemplo, sin validar):
-- Presión sistólica ≥ 140 o diastólica ≥ 90: vigilancia. Sistólica ≥ 160 o diastólica ≥ 100: alerta.
-- FC en reposo 10 lpm por encima de la basal: alerta.
+Suggested thresholds (sample, not validated):
+- Systolic ≥ 140 or diastolic ≥ 90: watch. Systolic ≥ 160 or diastolic ≥ 100: alert.
+- Resting HR 10 bpm above baseline: alert.
