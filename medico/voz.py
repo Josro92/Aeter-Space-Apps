@@ -14,7 +14,7 @@ window.__voz = (function(){
   let rec=null, on=false, busy=false, speaking=false, busyTimer=null, desbloqueado=false;
   let vistos={}, cola=[], navVisto=null, sirenaOn=false, sirenaTimer=null, ctx=null, nbeep=0, uref=null;
   let interimTimer=null, marcaProc=null;
-  let ultimoSonido=0, esperaTimer=null, ultimoEstado='', oido='', diag=[], ventanaHasta=0, vozTimer=null, avisoTimer=null, vozToken=0, manual=false, bargeRec=null, hablado=[], ignorarHasta=0, interrumpidoEn=0, finHabla=0;
+  let ultimoSonido=0, esperaTimer=null, iniciaHabla=0, vigilando=false, ultimoEstado='', oido='', diag=[], ventanaHasta=0, vozTimer=null, avisoTimer=null, vozToken=0, manual=false, bargeRec=null, hablado=[], ignorarHasta=0, interrumpidoEn=0, finHabla=0;
   function cortarVoz(){ pararBarge(); vozToken++; clearTimeout(vozTimer); try{speechSynthesis.cancel();}catch(_){} speaking=false; }
   function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
   const LLAMADO=/(^|[^a-z])(aeter|a eter|ae ter|aether|a ether|ayter|aiter|aider|ayder|ether|eter|ater|ahter|el eter|el ether)([^a-z]|$)/;
@@ -121,7 +121,7 @@ window.__voz = (function(){
       u.onerror=function(e){ if(tk!==vozToken||e.error==='interrupted'||e.error==='canceled') return; log('Voz: '+(e.error||'error')); uno(); };
       speechSynthesis.speak(u);
     }
-    speaking=true; estado('Hablando…'); hablado.push({n:norm(texto),ts:Date.now()}); if(hablado.length>6) hablado.shift();
+    speaking=true; iniciaHabla=Date.now(); estado('Hablando…'); hablado.push({n:norm(texto),ts:Date.now()}); if(hablado.length>6) hablado.shift();
     clearTimeout(vozTimer);
     vozTimer=setTimeout(function(){ if(speaking && tk===vozToken){ log('La voz no terminó: continúo'); cortarVoz(); if(!inmediato) siguiente(); else iniciar(); } }, 5000+texto.length*110);
     setTimeout(uno, inmediato?120:0);
@@ -178,9 +178,11 @@ window.__voz = (function(){
         if(!LLAMADO.test(norm(t))){ for(let k=1;k<res.length;k++){ const alt=(res[k].transcript||'').trim(); if(alt && LLAMADO.test(norm(alt))){ t=alt; break; } } }  // otra lectura que sí trae «Aéter»
         const n=norm(t);
         if(speaking){                                    // mientras habla, solo atiende la interrupción
-          const corta=/^(para|basta|alto|silencio|callate|calla|espera|esperame|un momento)\b/.test(limpio(n).trim()) && n.split(' ').length<=3;
-          if(LS.get('voz_barge','1')==='1' && (LLAMADO.test(n) || corta)){ ultimoSonido=Date.now(); interrumpir(); }
-          continue;
+          const palabras=limpio(n).trim().split(' ').filter(Boolean);
+          const esEco=eco(n)||ecoBolsa(n)||Date.now()-iniciaHabla<700;       // lo que oye es su propia voz
+          if(LS.get('voz_barge','1')==='1' && (LLAMADO.test(n) || (!esEco && n.replace(/\s/g,'').length>=3 && palabras.length>=1))){
+            ultimoSonido=Date.now(); interrumpir();                                // el usuario habla: se calla y escucha
+          } else continue;
         }
         ultimoSonido=Date.now();                         // el usuario está hablando: Aéter espera a que termine
         if(busy || Date.now()<ignorarHasta) continue;
@@ -227,9 +229,24 @@ window.__voz = (function(){
     }).catch(function(e){ log('No pude abrir el micrófono: '+(e.name||e)); manual=false; estado(''); });
   }
   function pararBarge(){}
+  function vigilar(){
+    if(vigilando||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) return; vigilando=true;
+    navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:false}}).then(function(stream){
+      asegurarAudio(); const an=ctx.createAnalyser(); an.fftSize=512; ctx.createMediaStreamSource(stream).connect(an);
+      const buf=new Uint8Array(an.fftSize); let hist=[], alto=0;
+      setInterval(function(){
+        an.getByteTimeDomainData(buf); let m=0; for(let i=0;i<buf.length;i++){ m=Math.max(m,Math.abs(buf[i]-128)/128); }
+        hist.push(m); if(hist.length>30) hist.shift();
+        if(!speaking){ alto=0; return; }
+        const previo=hist.slice(0,-4), prom=previo.length?previo.reduce(function(a,b){return a+b;},0)/previo.length:0;
+        if(LS.get('voz_barge','1')==='1' && LS.get('voz_barge_audio','1')==='1' && Date.now()-iniciaHabla>1000 && m>Math.max(0.14,prom*2.4+0.05)) alto++; else alto=0;
+        if(alto>=3){ alto=0; interrumpir(); }
+      },60);
+    }).catch(function(e){ vigilando=false; log('Sin vigilancia de volumen: '+(e.name||e)); });
+  }
   function interrumpir(){
     cortarVoz(); cola.length=0; busy=false; ventanaHasta=Date.now()+45000; interrumpidoEn=Date.now(); ignorarHasta=0;
-    log('Interrumpido al decir «Aéter»'); estado('Lo escucho…');
+    log('Te oí hablar: me callo'); estado('Lo escucho…');
   }
   function hablarAhora(){
     asegurarAudio();
@@ -302,7 +319,7 @@ window.__voz = (function(){
   }
 
   panel();
-  setInterval(function(){ if(on && desbloqueado && !rec && !busy && !speaking) iniciar(); }, 2500);
+  setInterval(function(){ if(on && desbloqueado && !rec && !busy && !speaking) iniciar(); if(on && desbloqueado) vigilar(); }, 2500);
   return {config:function(o){
     on=!!o.on; const antes=sirenaOn; sirenaOn=!!o.sirena;
     if(!desbloqueado && hayActivacion()) desbloquear();
