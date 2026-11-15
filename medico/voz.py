@@ -12,11 +12,11 @@ import re
 
 import streamlit.components.v1 as components
 
-VERSION_JS = "4"
+VERSION_JS = "5"
 
 JS = r"""
 window.__voz = (function(){
-  const VER='4';
+  const VER='5';
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const LS = {get:function(k,d){try{return localStorage.getItem(k)||d;}catch(_){return d;}}, set:function(k,v){try{localStorage.setItem(k,v);}catch(_){}}};
   function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
@@ -170,7 +170,7 @@ window.__voz = (function(){
     if(cola.length){ setTimeout(siguiente, 150); return; }
     const respondio=hablaRespuesta; hablaRespuesta=false;
     if(!on) return;
-    if(respondio && SR){ setTimeout(function(){ if(!speaking&&!busy&&!rec) escuchar('seguimiento'); }, 700); }   // abre el micrófono ~5 s
+    // El micrófono NO se reabre solo: para hablar de nuevo hay que tocar «Talk».
   }
   function siguiente(){
     if(speaking||!desbloqueado||!on) return;
@@ -249,7 +249,7 @@ window.__voz = (function(){
   function clicHablar(){
     asegurarAudio();
     if(!desbloqueado){ desbloqueado=true; overlay(false); llenarVoces(); }
-    if(speaking){ cortarVoz(); cola.length=0; escuchar('manual'); return; }          // Silenciar: la calla y escucha la nueva pregunta
+    if(speaking){ cortarVoz(); cola.length=0; return; }                              // Mute: solo la calla; para preguntar, otro toque en Talk
     if(rec && recTipo==='una'){ try{rec.stop();}catch(_){} return; }                 // enviar lo que lleva
     if(busy){ aviso('Thinking…'); return; }
     escuchar('manual');
