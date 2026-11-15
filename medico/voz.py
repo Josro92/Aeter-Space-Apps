@@ -26,11 +26,29 @@ window.__voz = (function(){
   const LLAMADO=/(^|[^a-z])(aeter|a eter|ae ter|aether|a ether|ayter|aiter|aider|ayder|ether|eter|ater|ahter|el eter|el ether)([^a-z]|$)/;
   const QUITAR=/^\s*(oye|hey|ok|okay|hola|buenas)?[\s,.:;!¡¿?]*(el )?(a ?[eé] ?t(?:h)?er|a[iy][td]er|[eé]t(?:h)?er|ater|ahter)(?![a-záéíóúñ])[\s,.:;!¡¿?]*/i;
 
+  function esLlamado(w){ return w.length>=4 && w.length<=6 && /^(h|j)?a?[eiy]?(t|d)(e|a)?r$/.test(w) || w==='ether' || w==='aether' || w==='haeter'; }
+  const RELLENO=/^(oye|hey|hola|ok|okay|buenas|el|a)$/;
+  function hayLlamado(t){
+    const n=norm(t); if(LLAMADO.test(n)) return true;
+    const w=limpio(n).trim().split(' ');
+    for(let i=0;i<Math.min(w.length,3);i++){ if(RELLENO.test(w[i]) && i<w.length-1) continue; return esLlamado(w[i]); }
+    return false;
+  }
+  function sinLlamado(t){
+    const w=t.trim().split(/\s+/); let i=0;
+    while(i<w.length){
+      const p=norm(w[i]).replace(/[^a-z0-9ñ]/g,'');
+      if(RELLENO.test(p) && i<w.length-1 && hayLlamado(w.slice(i).join(' '))){ i++; continue; }
+      if(esLlamado(p) || LLAMADO.test(' '+p+' ')){ i++; }
+      break;
+    }
+    return w.slice(i).join(' ').replace(/^[\s,.:;!¡¿?]+/,'').trim();
+  }
   let on=false, desbloqueado=false, ctx=null, nbeep=0;
   let rec=null, recTipo='', silencioTimer=null, busy=false, busyTimer=null;
   let speaking=false, vozToken=0, vozTimer=null, finHabla=0, hablado=[], uref=null, esRespuesta=false, hablaRespuesta=false;
   let cola=[], vistos={}, navVisto=null, sirenaOn=false, sirenaTimer=null;
-  let diag=[], avisoTimer=null, ventanaHasta=0;
+  let diag=[], avisoTimer=null, ventanaHasta=0, ultParcial=null, yaProc=null;
 
   function modo(){ return LS.get('v2_modo','boton'); }
   function seguir(){ return LS.get('v2_seguir','1')==='1'; }
@@ -48,7 +66,8 @@ window.__voz = (function(){
       '<div id="vp-det" style="display:none;margin-top:8px;padding:12px;border-radius:16px;background:rgba(15,20,45,.92);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(14px)">'+
       '<div style="margin-bottom:6px"><b>Cómo hablar con Aéter</b></div>'+
       '<select id="vp-modo" style="width:100%;margin-bottom:8px;padding:4px"><option value="boton">Con botón (recomendado, sin eco)</option><option value="manos">Manos libres, di «Aéter» (usa audífonos)</option></select>'+
-      '<label style="display:block;margin-bottom:10px"><input id="vp-seguir" type="checkbox"> Escuchar de nuevo cuando termine de responder</label>'+
+      '<label style="display:block;margin-bottom:6px"><input id="vp-seguir" type="checkbox"> Escuchar de nuevo cuando termine de responder</label>'+
+      '<label style="display:block;margin-bottom:10px"><input id="vp-todo" type="checkbox"> Manos libres: responder sin decir «Aéter»</label>'+
       '<div style="margin-bottom:6px"><b>Voz de Aéter</b></div>'+
       '<select id="vp-voz" style="width:100%;margin-bottom:6px;padding:4px"></select>'+
       '<div style="margin-bottom:6px">Velocidad <input id="vp-vel" type="range" min="0.8" max="1.5" step="0.05" style="width:130px;vertical-align:middle"></div>'+
@@ -63,6 +82,7 @@ window.__voz = (function(){
     q('#vp-ajustes').onclick=function(){ const d=q('#vp-det'); d.style.display=d.style.display==='none'?'block':'none'; llenarVoces(); pintaDiag(); };
     q('#vp-modo').value=modo(); q('#vp-modo').onchange=function(e){ LS.set('v2_modo',e.target.value); reiniciar(true); };
     q('#vp-seguir').checked=seguir(); q('#vp-seguir').onchange=function(e){ LS.set('v2_seguir',e.target.checked?'1':'0'); };
+    q('#vp-todo').checked=LS.get('v2_todo','0')==='1'; q('#vp-todo').onchange=function(e){ LS.set('v2_todo',e.target.checked?'1':'0'); };
     q('#vp-voz').onchange=function(e){ LS.set('voz_nombre',e.target.value); };
     q('#vp-vel').value=LS.get('voz_vel','1'); q('#vp-vel').onchange=function(e){ LS.set('voz_vel',e.target.value); };
     q('#vp-probar').onclick=function(){ asegurarAudio(); desbloqueado=true; overlay(false); cola.length=0; esRespuesta=false; decir('Hola, soy su asistente virtual. Así suena mi voz.'); };
@@ -209,16 +229,26 @@ window.__voz = (function(){
     r.onresult=function(e){
       for(let i=e.resultIndex;i<e.results.length;i++){
         const res=e.results[i]; let t=(res[0].transcript||'').trim(); if(!t) continue;
-        if(!LLAMADO.test(norm(t))){ for(let k=1;k<res.length;k++){ const a=(res[k].transcript||'').trim(); if(a&&LLAMADO.test(norm(a))){ t=a; break; } } }
+        if(!hayLlamado(t)){ for(let k=1;k<res.length;k++){ const a=(res[k].transcript||'').trim(); if(a&&hayLlamado(a)){ t=a; break; } } }
         const n=norm(t);
         if(speaking){                                                // con audífonos: la voz del usuario la interrumpe
           if(Date.now()-hablado[hablado.length-1].ts<900 || eco(n)) continue;
-          if(LLAMADO.test(n) || n.replace(/\s/g,'').length>=3){ cortarVoz(); cola.length=0; ventanaHasta=Date.now()+30000; log('Te oí hablar: me callo'); }
+          if(hayLlamado(t) || n.replace(/\s/g,'').length>=3){ cortarVoz(); cola.length=0; ventanaHasta=Date.now()+30000; log('Te oí hablar: me callo'); }
           else continue;
         }
         if(busy || Date.now()-finHabla<1200 || eco(n)) continue;
-        if(res.isFinal){ procesar(t); }
-        else { clearTimeout(silencioTimer); silencioTimer=setTimeout(function(){ try{r.stop();}catch(_){} }, 900); estado(t.slice(0,40)); }
+        if(res.isFinal){
+          clearTimeout(silencioTimer);
+          if(yaProc && Date.now()-yaProc.ts<6000 && (n===yaProc.n || n.indexOf(yaProc.n)===0 || yaProc.n.indexOf(n)===0)) continue;   // ya lo atendí con el texto parcial
+          procesar(t);
+        } else {
+          estado(t.slice(0,40)); ultParcial={t:t,n:n}; clearTimeout(silencioTimer);
+          silencioTimer=setTimeout(function(){                       // si calla ~1 s, lo envía sin esperar al evento final
+            const u=ultParcial; ultParcial=null; if(!u||rec!==r) return;
+            yaProc={n:u.n,ts:Date.now()}; procesar(u.t);
+            parar(); setTimeout(asegurarContinuo, 250);               // empieza una escucha limpia
+          }, 1000);
+        }
       }
     };
     r.onerror=function(e){ if(e.error==='no-speech'||e.error==='aborted') return; log('Micrófono: '+e.error); if(e.error==='not-allowed'||e.error==='service-not-allowed'){ on=false; aviso('Permiso de micrófono denegado', 6000); } };
@@ -227,10 +257,10 @@ window.__voz = (function(){
   }
   function eco(n){ const q=limpio(n), ahora=Date.now(); return hablado.some(function(h){ return ahora-h.ts<30000 && limpio(h.n).indexOf(q)>=0; }); }
   function procesar(t){
-    const n=norm(t), llamado=LLAMADO.test(n), abierto=Date.now()<ventanaHasta;
+    const n=norm(t), llamado=hayLlamado(t), abierto=Date.now()<ventanaHasta||LS.get('v2_todo','0')==='1';
     log('Oí: '+t);
-    if(!llamado && !abierto){ aviso('Oí «'+t.slice(0,30)+'». Di «Aéter»'); return; }
-    const texto=t.replace(QUITAR,'').trim();
+    if(!llamado && !abierto){ aviso('Oí «'+t.slice(0,30)+'». Di «Aéter»', 4500); return; }
+    const texto=sinLlamado(t);
     if(!texto||norm(texto).length<2){ ventanaHasta=Date.now()+30000; aviso('Dime'); return; }
     enviar(texto);
   }
@@ -382,8 +412,6 @@ def resumen_hablado(texto: str, max_frases: int = 2, max_chars: int = 260) -> st
     hablado = " ".join(salida)
     if len(hablado) > max_chars + 80:                      # una sola frase enorme
         hablado = hablado[:max_chars].rsplit(" ", 1)[0] + "."
-    if len(salida) < len(frases) or len(hablado) < len(t) - 2:
-        hablado += " El resto está en pantalla."
     return hablado
 
 
