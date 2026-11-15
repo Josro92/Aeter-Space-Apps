@@ -326,6 +326,8 @@ body:has([data-testid="stSidebar"][aria-expanded="true"]) [data-baseweb="tab-lis
 [data-testid="stChatInput"]>div{background:transparent!important;border:none!important}
 [data-testid="stChatInput"] textarea{color:#fff!important}
 .st-key-bit_barra{padding:10px 16px}
+.st-key-bit_barra [data-testid="stColumn"]:first-child [data-testid="stElementContainer"],.st-key-bit_barra [data-testid="stColumn"]:first-child [data-testid="stMarkdown"],.st-key-bit_barra [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"]{height:46px!important;display:flex!important;align-items:center;justify-content:center;margin:0!important}
+.st-key-bit_barra img.marte{display:block;margin:0!important}
 .st-key-bit_barra [data-testid="stForm"]{border:none!important;padding:0!important;background:transparent!important}
 .st-key-bit_barra input{background:transparent!important;color:#fff!important;font-size:1.05rem}
 .st-key-bit_barra [data-baseweb="input"],.st-key-bit_barra [data-baseweb="base-input"],
