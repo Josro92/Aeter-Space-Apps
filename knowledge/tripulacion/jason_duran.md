@@ -8,7 +8,7 @@
 - ID: PAC201
 - Name: Jason Durán
 - Age / sex: 42 years / male
-- Role: astronaut, Aéter test case (1st mission)
+- Role: analog astronaut, Aéter test case (1st mission)
 - Mission: 180-day stay on a low-Earth-orbit space station
 - Height / weight: 180 cm / 78 kg (BMI 24.1)
 - Blood type: A+

@@ -76,7 +76,7 @@ TRIPULACION = [
     dict(nombre="Ana Rojas", rol="Commander", edad=41, peso_kg=63, tipo_sangre="O+",
          alergias="Pollen (seasonal rhinitis)", medicamentos="Loratadine 10 mg only during allergy season",
          condiciones="Mild exercise-induced asthma; one kidney stone at age 33 (no recurrence)"),
-    dict(nombre="Jason Durán", rol="Astronaut (Aéter test case)", edad=42, peso_kg=78,
+    dict(nombre="Jason Durán", rol="Analog Astronaut (Aéter test case)", edad=42, peso_kg=78,
          tipo_sangre="A+", alergias="Sulfonamides (skin rash)",
          medicamentos="Losartan 50 mg daily",
          condiciones="Mild hypertension; slightly elevated LDL cholesterol; left knee ligament repaired at age 30"),
